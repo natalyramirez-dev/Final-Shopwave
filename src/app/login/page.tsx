@@ -2,13 +2,13 @@
 
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import styles from "./login.module.scss";
+import styles from "@/components/ui/scss/login.module.scss";
 
 export default function LoginPage() {
   const { login } = useAuth();
 
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("admin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
