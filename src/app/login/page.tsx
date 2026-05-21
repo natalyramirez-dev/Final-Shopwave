@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/components/ui/scss/login.module.scss";
@@ -25,6 +26,10 @@ export default function LoginPage() {
   return (
     <main className={styles.container}>
       <form className={styles.form} onSubmit={handleSubmit}>
+        <Link href="/" className={styles.backButton}>
+          ← Volver al inicio
+        </Link>
+
         <h1>Iniciar sesión</h1>
 
         <input

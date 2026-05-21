@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { register } from "@/services/auth.service";
@@ -40,6 +41,10 @@ export default function RegisterPage() {
   return (
     <main className={styles.container}>
       <form className={styles.form} onSubmit={handleSubmit}>
+        <Link href="/" className={styles.backButton}>
+          ← Volver al inicio
+        </Link>
+
         <h1>Crear cuenta</h1>
 
         <input
