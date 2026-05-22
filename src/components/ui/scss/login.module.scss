@@ -1,0 +1,146 @@
+.container,
+.form,
+.form * {
+  box-sizing: border-box;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f5f5f5;
+}
+
+.form {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 40px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  h1 {
+    margin-bottom: 12px;
+    text-align: center;
+    color: #111827;
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  input {
+    width: 100%;
+    padding: 16px 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    color: #111827;
+    background: #ffffff;
+    font-size: 16px;
+    outline: none;
+
+    &::placeholder {
+      color: #9da4b2;
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: #111827;
+    }
+  }
+
+  button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: #1f2937;
+    }
+  }
+}
+
+.backButton {
+  width: fit-content;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  .form {
+    max-width: 460px;
+    padding: 32px;
+    gap: 16px;
+
+    h1 {
+      font-size: 28px;
+    }
+
+    input,
+    button {
+      padding: 14px 16px;
+      font-size: 15px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    min-height: 100dvh;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .form {
+    max-width: 100%;
+    padding: 24px 20px;
+    border-radius: 14px;
+    gap: 14px;
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    input,
+    button {
+      padding: 13px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+  }
+
+  .backButton {
+    font-size: 13px;
+  }
+
+  .error {
+    font-size: 13px;
+  }
+}
