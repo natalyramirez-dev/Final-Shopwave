@@ -1,3 +1,5 @@
+import { Role } from "@/types/role.type";
+
 export interface Address {
   id?: number;
   firstName: string;
@@ -14,8 +16,8 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
   mobile: string;
+  role: Role;
   addresses: Address[];
-  createdAt: string;
+  createdAt?: string;
 }

@@ -1,6 +1,7 @@
-export interface ApiResponse {
+export interface ApiResponse<T> {
   message: string;
-  status: boolean;
+  success: boolean;
+  data: T;
 }
 
 export interface PaginatedResponse<T> {
