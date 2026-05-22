@@ -1,46 +1,29 @@
-import { LoginRequest, RegisterRequest } from "@/models/auth.model";
+import { fetchApi } from "./api.service";
+import { Cart, CartItem } from "@/models/cart.model";
+import { ApiResponse } from "@/types/api-response.type";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+export const cartService = {
+  getUserCart: (): Promise<Cart> => {
+    return fetchApi<Cart>("/cart/");
+  },
 
-export const login = async (data: LoginRequest): Promise<string> => {
-  const basicToken = btoa(`${data.email}:${data.password}`);
+  addItemToCart: (data: { productId: number; size: string; quantity: number }): Promise<CartItem> => {
+    return fetchApi<CartItem>("/cart/add", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
 
-  const response = await fetch(`${API_URL}/auth/signin`, {
-    method: "GET",
-    headers: {
-      Authorization: `Basic ${basicToken}`,
-    },
-  });
+  updateCartItem: (cartItemId: number, data: { quantity: number }): Promise<CartItem> => {
+    return fetchApi<CartItem>(`/cart_items/${cartItemId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
 
-  if (!response.ok) {
-    throw new Error("Credenciales inválidas");
-  }
-
-  const jwt = response.headers.get("Authorization");
-
-  if (!jwt) {
-    throw new Error("No se recibió token JWT");
-  }
-
-  return jwt;
-};
-
-export const register = async (data: RegisterRequest): Promise<void> => {
-  const response = await fetch(`${API_URL}/auth/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      password: data.password,
-      mobile: data.mobile,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error("No se pudo registrar el usuario");
-  }
+  removeCartItem: (cartItemId: number): Promise<ApiResponse> => {
+    return fetchApi<ApiResponse>(`/cart_items/${cartItemId}`, {
+      method: "DELETE",
+    });
+  },
 };
