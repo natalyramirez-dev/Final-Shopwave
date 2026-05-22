@@ -1,46 +1,29 @@
-import { LoginRequest, RegisterRequest } from "@/models/auth.model";
-import { User } from "@/models/user.model";
+import { fetchApi } from "./api.service";
+import { Cart, CartItem } from "@/models/cart.model";
+import { ApiResponse } from "@/types/api-response.type";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+export const cartService = {
+  getUserCart: (): Promise<Cart> => {
+    return fetchApi<Cart>("/cart/");
+  },
 
-export const login = async (data: LoginRequest): Promise<{ token: string; user: User }> => {
-  const basicToken = btoa(`${data.email}:${data.password}`);
+  addItemToCart: (data: { productId: number; size: string; quantity: number }): Promise<CartItem> => {
+    return fetchApi<CartItem>("/cart/add", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
 
-  const response = await fetch(`${API_URL}/auth/signin`, {
-    method: "GET",
-    headers: {
-      Authorization: `Basic ${basicToken}`,
-    },
-  });
+  updateCartItem: (cartItemId: number, data: { quantity: number }): Promise<CartItem> => {
+    return fetchApi<CartItem>(`/cart_items/${cartItemId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || errorData.error || "Credenciales inválidas. Intente nuevamente.");
-  }
-
-  const jwt = response.headers.get("Authorization");
-
-  if (!jwt) {
-    throw new Error("El servidor no emitió la cabecera de autorización JWT.");
-  }
-
-  const user: User = await response.json();
-  return { token: jwt, user };
-};
-
-export const register = async (data: RegisterRequest): Promise<User> => {
-  const response = await fetch(`${API_URL}/auth/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || errorData.error || "No se pudo completar el registro del usuario.");
-  }
-
-  return await response.json();
+  removeCartItem: (cartItemId: number): Promise<ApiResponse> => {
+    return fetchApi<ApiResponse>(`/cart_items/${cartItemId}`, {
+      method: "DELETE",
+    });
+  },
 };
