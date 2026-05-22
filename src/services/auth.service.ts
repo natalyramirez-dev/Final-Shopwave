@@ -1,8 +1,9 @@
 import { LoginRequest, RegisterRequest } from "@/models/auth.model";
+import { User } from "@/models/user.model";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-export const login = async (data: LoginRequest): Promise<string> => {
+export const login = async (data: LoginRequest): Promise<{ token: string; user: User }> => {
   const basicToken = btoa(`${data.email}:${data.password}`);
 
   const response = await fetch(`${API_URL}/auth/signin`, {
@@ -13,7 +14,8 @@ export const login = async (data: LoginRequest): Promise<string> => {
   });
 
   if (!response.ok) {
-    throw new Error("Credenciales inválidas");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || "Credenciales inválidas");
   }
 
   const jwt = response.headers.get("Authorization");
@@ -22,25 +24,24 @@ export const login = async (data: LoginRequest): Promise<string> => {
     throw new Error("No se recibió token JWT");
   }
 
-  return jwt;
+  const user: User = await response.json();
+
+  return { token: jwt, user };
 };
 
-export const register = async (data: RegisterRequest): Promise<void> => {
+export const register = async (data: RegisterRequest): Promise<User> => {
   const response = await fetch(`${API_URL}/auth/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      password: data.password,
-      mobile: data.mobile,
-    }),
+    body: JSON.stringify(data),
   });
 
   if (!response.ok) {
-    throw new Error("No se pudo registrar el usuario");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || "No se pudo registrar el usuario");
   }
+
+  return await response.json();
 };
