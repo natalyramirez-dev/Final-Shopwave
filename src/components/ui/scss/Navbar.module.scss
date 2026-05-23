@@ -1,0 +1,57 @@
+@use "../../../components/ui/scss/variables" ;
+
+.navbar {
+  width: 100%;
+  min-height: 10vh;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 5%;
+
+  background-color: variables.$color-surface;
+  box-shadow: variables.$shadow-sm;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: variables.$color-primary;
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  list-style: none;
+}
+
+.links a {
+  text-decoration: none;
+  color: variables.$color-text-light;
+  font-size: 1rem;
+  transition: variables.$transition-default;
+}
+
+.links a:hover {
+  color: variables.$color-primary;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+
+    padding: 2vh 5%;
+  }
+
+  .links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
