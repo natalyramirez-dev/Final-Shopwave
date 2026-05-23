@@ -15,7 +15,7 @@ export const fetchApi = async <T>(
   }
 
   if (token) {
-    headers.set("Authorization", token);
+    headers.set("Authorization", `Bearer ${token}`);
   }
 
   try {
