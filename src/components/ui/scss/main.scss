@@ -1,2 +1,24 @@
+// ─── Google Fonts ─────
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+ 
+// ─── Partials ─────
 @use './login.module.scss';
 @use './register.module.scss';
+@use './Navbar.module.scss';
+@use './ProductCard.module.scss';
+@use './Hero.module.scss';
+ 
+// ─── Reset ─────
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+ 
+// ─── Smooth rendering ─────
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+ 
