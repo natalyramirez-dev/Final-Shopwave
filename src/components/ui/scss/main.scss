@@ -2,3 +2,10 @@
 @use './register.module.scss';
 @use './Navbar.module.scss';
 @use './ProductCard.module.scss';
+@use './Hero.module.scss';
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}

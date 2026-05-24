@@ -21,13 +21,8 @@ export const cartService = {
     });
   },
 
-<<<<<<< HEAD
-  removeCartItem: (cartItemId: number): Promise<void> => {
-    return fetchApi<void>(`/cart_items/${cartItemId}`, {
-=======
   removeCartItem: (cartItemId: number): Promise<ApiResponse<any>> => {
     return fetchApi<ApiResponse<any>>(`/cart_items/${cartItemId}`, {
->>>>>>> origin
       method: "DELETE",
     });
   },

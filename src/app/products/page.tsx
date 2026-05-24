@@ -6,6 +6,8 @@ import ProductCard from "@/components/products/ProductCard/ProductCard";
 import { Product } from "@/models/product.model";
 import { productService } from "@/services/product.service";
 import styles from "../../components/ui/scss/ProductCard.module.scss";
+import Hero from "@/components/layout/Hero/Hero";
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -55,6 +57,8 @@ export default function ProductsPage() {
   return (
     <main className={styles.container}>
       <Navbar />
+
+      <Hero />
 
       <section className={styles.productsSection}>
         <h1>Products</h1>
