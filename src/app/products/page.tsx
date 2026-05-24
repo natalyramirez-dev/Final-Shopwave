@@ -1,23 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import Navbar from "@/components/layout/Navbar/Navbar";
-import ProductCard from "@/components/products/ProductCard/ProductCard";
-import { Product } from "@/models/product.model";
-import { productService } from "@/services/product.service";
 import Hero from "@/components/layout/Hero/Hero";
-import styles from "./products.module.scss";
-import productCardStyles from "@/components/ui/scss/ProductCard.module.scss";
+
+import ProductCard from "@/components/products/ProductCard/ProductCard";
+
+import EmptyState from "@/components/ui/EmptyState/EmptyState";
+
+import { Product } from "@/models/product.model";
+
+import { productService } from "@/services/product.service";
+
+import styles from "@/components/ui/scss/products.module.scss";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
         const response = await productService.getAllProducts();
+
         console.log("PRODUCTS:", response);
+
         setProducts(response);
       } catch (error) {
         console.error("Error loading products:", error);
@@ -31,41 +40,35 @@ export default function ProductsPage() {
 
   return (
     <main className={styles.container}>
-      <div className={styles.navbar}>
-        <Navbar />
-      </div>
+      <Navbar />
 
-      <div className={styles.hero}>
-        <Hero />
-      </div>
+      <Hero />
 
-      <div className={styles.content}>
-        <section className={styles.productsSection}>
-          <div className={styles.header}>
-            <h1>Nuestros Productos</h1>
-            <p>{products.length} productos disponibles</p>
+      <section className={styles.productsSection}>
+        <div className={styles.header}>
+          <h1>Nuestros Productos</h1>
+        </div>
+
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <p>Cargando productos...</p>
           </div>
-
-          {loading ? (
-            <div className={styles.loadingContainer}>
-              <p>Cargando productos...</p>
-            </div>
-          ) : (
-            <div className={styles.productsGrid}>
-              {products.length > 0 ? (
-                products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                  />
-                ))
-              ) : (
-                <p>No hay productos disponibles</p>
-              )}
-            </div>
-          )}
-        </section>
-      </div>
+        ) : products.length > 0 ? (
+          <div className={styles.productsGrid}>
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="No hay productos disponibles"
+            description="Actualmente no existen productos en la tienda."
+          />
+        )}
+      </section>
     </main>
   );
 }

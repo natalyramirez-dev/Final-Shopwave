@@ -1,4 +1,4 @@
-import styles from "./EmptyState.module.scss";
+import styles from "../scss/EmptyState.module.scss";
 
 interface EmptyStateProps {
   title: string;
