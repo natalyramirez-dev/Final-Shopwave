@@ -68,3 +68,67 @@ Reusable UI components were implemented to maintain visual consistency and scala
 - Input
 - Spinner
 - Empty State Card
+
+24/05/2026
+## Home Page and Products Catalog
+
+The application now includes a modern ecommerce interface built with reusable components and SCSS modules.
+
+### Home Page (`app/page.tsx`)
+
+The main page was redesigned to provide a more professional ecommerce experience.
+
+#### Features
+- Responsive Navbar
+- Hero section
+- Featured products section
+- Reusable UI components
+- Responsive layout using CSS Grid
+- SCSS module structure
+- Clean architecture with separated components
+
+---
+
+### Products Catalog (`app/products/page.tsx`)
+
+The products page was implemented as a complete catalog view connected to the backend services.
+
+#### Features
+- Dynamic product listing
+- Product search
+- Category filters
+- Pagination system
+- Responsive products grid
+- Empty state handling
+- Loading states
+- Integration with product services
+
+---
+
+### Reusable Components
+
+The following reusable components are used across the application:
+
+- Navbar
+- Hero
+- ProductCard
+- EmptyState
+
+---
+
+### Styling
+
+The project uses:
+- SCSS Modules
+- Responsive units (`rem`, `%`, `vh`)
+- CSS Grid for layouts
+- Reusable and maintainable styles
+
+---
+
+### Backend Integration
+
+Products are fetched from the backend API using:
+
+```ts
+GET /products

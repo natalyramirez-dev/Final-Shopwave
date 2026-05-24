@@ -7,6 +7,9 @@
 @use './Navbar.module.scss';
 @use './ProductCard.module.scss';
 @use './Hero.module.scss';
+@use './home.module.scss';
+@use './EmptyState.module.scss';
+@use './products.module.scss';
  
 // ─── Reset ─────
 *, *::before, *::after {
