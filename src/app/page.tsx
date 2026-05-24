@@ -1,78 +1,83 @@
 import Link from "next/link";
+import Navbar from "@/components/layout/Navbar/Navbar";
+import Hero from "@/components/layout/Hero/Hero";
+import styles from "@/components/ui/scss/home.module.scss";
+import TeamCard from "@/components/ui/TeamCard/TeamCard";
+
+const team = [
+  { name: "Ramírez", role: "Frontend Developer", image: "/team/ramirez.jpg" },
+  { name: "Rodríguez", role: "Backend Developer", image: "/team/rodriguez.jpg" },
+  { name: "Orozco", role: "UI/UX Designer", image: "/team/orozco.jpg" },
+  { name: "Aguilar", role: "Full Stack Developer", image: "/team/aguilar.jpg" },
+  { name: "Sandoval", role: "Product Manager", image: "/team/sandoval.jpg" },
+];
 
 export default function HomePage() {
   return (
-    <main style={styles.container}>
-      <section style={styles.card}>
-        <h1 style={styles.title}>ShopWave Fusion</h1>
+    <main className={styles.container}>
+      <Navbar />
+      <Hero />
 
-        <p style={styles.description}>
-          Bienvenido a la tienda online. Inicia sesión o crea una cuenta para
-          continuar.
-        </p>
-
-        <div style={styles.buttons}>
-          <Link href="/login" style={styles.primaryButton}>
-            Iniciar sesión
-          </Link>
-
-          <Link href="/register" style={styles.secondaryButton}>
-            Registrarse
-          </Link>
+      {/* About */}
+      <section className={styles.aboutSection}>
+        <div className={styles.aboutContent}>
+          <span className={styles.label}>Nuestra historia</span>
+          <h2>Nacimos para romper el molde.</h2>
+          <p>
+            ShopWave nació de una idea simple: la moda y el streetwear merecen
+            un espacio donde la cultura del drop se encuentre con el estilo
+            cotidiano. Somos un equipo apasionado por las sneakers, la ropa y
+            todo lo que define una generación.
+          </p>
+          <p>
+            Desde nuestros inicios curadamos cada pieza pensando en quienes no
+            siguen tendencias — las crean.
+          </p>
         </div>
+
+        <div className={styles.aboutStats}>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>500+</span>
+            <span className={styles.statLabel}>Productos</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>12k</span>
+            <span className={styles.statLabel}>Clientes</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>5</span>
+            <span className={styles.statLabel}>Años</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className={styles.teamSection}>
+        <div className={styles.teamHeader}>
+          <span className={styles.label}>El equipo</span>
+          <h2>Las personas detrás de ShopWave.</h2>
+        </div>
+
+        <div className={styles.teamGrid}>
+          {team.map((member) => (
+            <TeamCard
+              key={member.name}
+              name={member.name}
+              role={member.role}
+              image={member.image}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className={styles.ctaSection}>
+        <h2>¿Listo para explorar?</h2>
+        <p>Descubre nuestra colección completa de sneakers y moda.</p>
+        <Link href="/products" className={styles.ctaButton}>
+          Ver productos
+        </Link>
       </section>
     </main>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "24px",
-    background: "#f5f5f5",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "520px",
-    padding: "40px",
-    borderRadius: "18px",
-    background: "#ffffff",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
-    textAlign: "center" as const,
-  },
-  title: {
-    fontSize: "36px",
-    marginBottom: "16px",
-    color: "#111827",
-  },
-  description: {
-    fontSize: "16px",
-    color: "#4b5563",
-    marginBottom: "28px",
-  },
-  buttons: {
-    display: "flex",
-    gap: "14px",
-    justifyContent: "center",
-    flexWrap: "wrap" as const,
-  },
-  primaryButton: {
-    padding: "12px 20px",
-    borderRadius: "10px",
-    background: "#111827",
-    color: "#ffffff",
-    textDecoration: "none",
-    fontWeight: 600,
-  },
-  secondaryButton: {
-    padding: "12px 20px",
-    borderRadius: "10px",
-    background: "#e5e7eb",
-    color: "#111827",
-    textDecoration: "none",
-    fontWeight: 600,
-  },
-};

@@ -1,57 +1,102 @@
 @use "../../../components/ui/scss/variables" ;
 
+// ─── Google Fonts ──────
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+ 
 .navbar {
   width: 100%;
-  min-height: 10vh;
-
+  min-height: 4.5rem;
+ 
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  padding: 0 5%;
-
+ 
+  padding: 0 6%;
+ 
   background-color: variables.$color-surface;
-  box-shadow: variables.$shadow-sm;
+  border-bottom: 0.0625rem solid variables.$color-border;
+ 
+  // subtle glass feel on scroll
+  backdrop-filter: blur(0.75rem);
+  -webkit-backdrop-filter: blur(0.75rem);
+ 
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-
+ 
 .logo a {
-  font-size: 1.5rem;
+  font-family: variables.$font-display;
+  font-size: 1.375rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
   color: variables.$color-primary;
   text-decoration: none;
+  transition: color variables.$transition-default;
+ 
+  // accent underline dot
+  &::after {
+    content: '.';
+    color: variables.$color-accent;
+  }
+ 
+  &:hover {
+    color: variables.$color-accent;
+  }
 }
-
+ 
 .links {
   display: flex;
   align-items: center;
-  gap: 2rem;
-
+  gap: 0.25rem;
   list-style: none;
 }
-
+ 
 .links a {
+  font-family: variables.$font-body;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-decoration: none;
   color: variables.$color-text-light;
-  font-size: 1rem;
+ 
+  padding: 0.5rem 0.875rem;
+  border-radius: variables.$border-radius-full;
   transition: variables.$transition-default;
+  transition-property: color, background-color;
+ 
+  &:hover {
+    color: variables.$color-primary;
+    background-color: variables.$color-accent-muted;
+  }
+}
+ 
+
+.activeLink {
+  background-color: variables.$color-primary !important;
+  color: variables.$color-surface !important;
+  padding: 0.5rem 1.125rem;
+
+  &:hover {
+    background-color: variables.$color-accent !important;
+    color: variables.$color-surface !important;
+  }
 }
 
-.links a:hover {
-  color: variables.$color-primary;
-}
 
-@media (max-width: 768px) {
+ 
+@media (max-width: 48rem) {
   .navbar {
     flex-direction: column;
     justify-content: center;
-    gap: 1rem;
-
-    padding: 2vh 5%;
+    gap: 0.75rem;
+    padding: 1rem 5%;
+    min-height: auto;
   }
-
+ 
   .links {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.25rem;
   }
 }

@@ -2,53 +2,91 @@
 
 .hero {
   width: 100%;
-  height: 50vh;
-
+  height: 62vh;
+  min-height: 26rem;
+ 
   background-image: url("https://images.unsplash.com/photo-1441986300917-64674bd600d8");
   background-size: cover;
-  background-position: center;
-
+  background-position: center 35%;
+ 
   display: flex;
   align-items: center;
   justify-content: center;
+ 
+  position: relative;
+  overflow: hidden;
 }
-
+ 
 .overlay {
   width: 100%;
   height: 100%;
-
-  background:variables.$color-primary;
-
+ 
+  // rich gradient instead of solid block — keeps the photo visible
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 15, 0.82) 0%,
+    rgba(10, 10, 15, 0.55) 55%,
+    rgba(232, 65, 10, 0.20) 100%
+  );
+ 
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-
-  text-align: center;
-
-  padding: 0 10%;
+  align-items: flex-start;
+ 
+  padding: 0 8%;
+  text-align: left;
 }
-
+ 
 .overlay h1 {
-  font-size: 3rem;
+  font-family: variables.$font-display;
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   color: variables.$color-surface;
-}
-
-.overlay p {
-  margin-top: 1rem;
-
-  font-size: 1.2rem;
-  color: variables.$color-surface;
-
-  max-width: 40rem;
-}
-
-@media (max-width: 768px) {
-  .overlay h1 {
-    font-size: 2rem;
+ 
+  // accent stroke on last word via a faux underline decoration
+  position: relative;
+ 
+  // animated bottom rule
+  &::after {
+    content: '';
+    display: block;
+    width: 3.5rem;
+    height: 0.22rem;
+    background-color: variables.$color-accent;
+    border-radius: variables.$border-radius-full;
+    margin-top: 1.25rem;
+    animation: ruleIn 0.7s variables.$transition-slow both;
   }
-
-  .overlay p {
-    font-size: 1rem;
+}
+ 
+.overlay p {
+  margin-top: 1.5rem;
+  font-family: variables.$font-body;
+  font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 36rem;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+ 
+@keyframes ruleIn {
+  from { width: 0; opacity: 0; }
+  to   { width: 3.5rem; opacity: 1; }
+}
+ 
+@media (max-width: 48rem) {
+  .overlay {
+    align-items: center;
+    text-align: center;
+    padding: 0 6%;
+  }
+ 
+  .overlay h1::after {
+    margin-left: auto;
+    margin-right: auto;
   }
 }

@@ -3,22 +3,30 @@
 .container {
   width: 100%;
   min-height: 40vh;
-
+ 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+ 
   gap: 1rem;
-
+ 
   text-align: center;
+  padding: 4rem 2rem;
 }
-
+ 
 .container h2 {
-  font-size: 2rem;
-  color:  variables.$color-primary;
+  font-family: variables.$font-display;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: variables.$color-primary;
 }
-
+ 
 .container p {
+  font-family: variables.$font-body;
+  font-size: 1rem;
+  line-height: 1.65;
   color: variables.$color-text-light;
+  max-width: 28rem;
 }

@@ -4,11 +4,8 @@ export default function Hero() {
   return (
     <section className={styles.hero}>
       <div className={styles.overlay}>
-        <h1>Discover New Products</h1>
-
-        <p>
-            Trending products and exclusive collections.
-        </p>
+        <h1>Drop culture meets everyday style.</h1>
+        <p>Shop sneakers, apparel and more.</p>
       </div>
     </section>
   );
