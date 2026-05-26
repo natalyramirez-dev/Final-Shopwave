@@ -8,6 +8,7 @@ import { getToken, removeToken, setToken } from "@/utils/token.util";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
+  isLoading: boolean;
   token: string | null;
   login: (data: LoginRequest) => Promise<void>;
   logout: () => void;
@@ -17,16 +18,36 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
+
   const [token, setCurrentToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setCurrentToken(getToken());
+    const storedToken = getToken();
+    setCurrentToken(storedToken);
+    setIsLoading(false);
   }, []);
 
+  useEffect(() => {
+    const handleAuthError = () => {
+      removeToken();
+      setCurrentToken(null);
+      router.push("/login");
+    };
+
+    window.addEventListener("auth-error", handleAuthError);
+
+    return () => {
+      window.removeEventListener("auth-error", handleAuthError);
+    };
+  }, [router]);
+
   const login = async (data: LoginRequest): Promise<void> => {
-    const jwt = await loginService(data);
-    setToken(jwt);
-    setCurrentToken(jwt);
+    const { token } = await loginService(data);
+
+    setToken(token);
+    setCurrentToken(token);
+
     router.push("/products");
   };
 
@@ -40,6 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         isAuthenticated: Boolean(token),
+        isLoading,
         token,
         login,
         logout,

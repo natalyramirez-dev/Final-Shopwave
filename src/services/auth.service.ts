@@ -3,7 +3,9 @@ import { User } from "@/models/user.model";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-export const login = async (data: LoginRequest): Promise<{ token: string; user: User }> => {
+export const login = async (
+  data: LoginRequest
+): Promise<{ token: string; user: User }> => {
   const basicToken = btoa(`${data.email}:${data.password}`);
 
   const response = await fetch(`${API_URL}/auth/signin`, {
@@ -15,17 +17,26 @@ export const login = async (data: LoginRequest): Promise<{ token: string; user: 
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || errorData.error || "Credenciales inválidas. Intente nuevamente.");
+    throw new Error(
+      errorData.message ||
+        errorData.error ||
+        "Credenciales inválidas. Intente nuevamente."
+    );
   }
 
-  const jwt = response.headers.get("Authorization");
+  const authorizationHeader = response.headers.get("Authorization");
 
-  if (!jwt) {
+  if (!authorizationHeader) {
     throw new Error("El servidor no proporcionó un token válido.");
   }
 
+  const token = authorizationHeader.startsWith("Bearer ")
+    ? authorizationHeader.replace("Bearer ", "")
+    : authorizationHeader;
+
   const user: User = await response.json();
-  return { token: jwt, user };
+
+  return { token, user };
 };
 
 export const register = async (data: RegisterRequest): Promise<User> => {
@@ -39,7 +50,11 @@ export const register = async (data: RegisterRequest): Promise<User> => {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || errorData.error || "No se pudo procesar el registro del usuario.");
+    throw new Error(
+      errorData.message ||
+        errorData.error ||
+        "No se pudo procesar el registro del usuario."
+    );
   }
 
   return await response.json();
