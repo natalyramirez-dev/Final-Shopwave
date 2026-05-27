@@ -7,41 +7,60 @@ export const fetchApi = async <T>(
   options: RequestInit = {}
 ): Promise<T> => {
   const token = getToken();
-  
+
   const headers = new Headers(options.headers || {});
-  
+
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
 
   if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+    const authToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+    headers.set("Authorization", authToken);
   }
 
-  try {
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
 
-    if (response.status === 401 || response.status === 403) {
-      removeToken();
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event('auth-error')); 
-      }
-      throw new Error("No autorizado o token expirado. Por favor, inicie sesión nuevamente.");
-    }
+  console.log("Endpoint:", `${API_URL}${endpoint}`);
+  console.log("Token usado:", token);
+  console.log("Authorization enviado:", headers.get("Authorization"));
+  console.log("Status backend:", response.status);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || errorData.message || "Error procesando la solicitud");
-    }
+  if (response.status === 401) {
+  console.log("TOKEN RECHAZADO POR BACKEND:", token);
+  console.log("AUTHORIZATION ENVIADO:", headers.get("Authorization"));
 
-    const text = await response.text();
-    return text ? JSON.parse(text) : ({} as T);
-    
-  } catch (error: any) {
-    console.error(`[API Error] ${endpoint}:`, error.message);
-    throw error;
+  // removeToken();
+
+  // if (typeof window !== "undefined") {
+  //   window.dispatchEvent(new Event("auth-error"));
+  // }
+
+  throw new Error(
+    "Sesión expirada, token inválido o token no aceptado por el backend."
+  );
+}
+
+  if (response.status === 403) {
+    throw new Error(
+      "Token válido, pero el usuario no tiene permisos para acceder a este recurso."
+    );
   }
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+
+    throw new Error(
+      errorData.error ||
+        errorData.message ||
+        "Error procesando la solicitud"
+    );
+  }
+
+  const text = await response.text();
+
+  return text ? JSON.parse(text) : ({} as T);
 };

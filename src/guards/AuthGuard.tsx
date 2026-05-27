@@ -6,13 +6,17 @@ import { useAuth } from "@/context/AuthContext";
 
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading) {
+    return <p>Cargando sesión...</p>;
+  }
 
   if (!isAuthenticated) {
     return <p>Redirigiendo...</p>;
