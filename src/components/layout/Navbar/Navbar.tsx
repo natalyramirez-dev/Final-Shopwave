@@ -7,7 +7,10 @@ import styles from "@/components/ui/scss/Navbar.module.scss";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
+
+  const role = String(user?.role || "").toUpperCase();
+  const isAdmin = role === "ADMIN" || role === "ROLE_ADMIN";
 
   if (isLoading) {
     return (
@@ -28,48 +31,44 @@ export default function Navbar() {
       <ul className={styles.links}>
         {isAuthenticated && (
           <>
+            {/* Si es administrador, se muestra su botón exclusivo */}
+            {isAdmin && (
+              <li>
+                <Link
+                  href="/admin/products"
+                  className={pathname.startsWith("/admin") ? styles.activeLink : ""}
+                >
+                  Panel Admin
+                </Link>
+              </li>
+            )}
+
             <li>
-              <Link
-                href="/products"
-                className={pathname === "/products" ? styles.activeLink : ""}
-              >
+              <Link href="/products" className={pathname === "/products" ? styles.activeLink : ""}>
                 Products
               </Link>
             </li>
 
             <li>
-              <Link
-                href="/cart"
-                className={pathname === "/cart" ? styles.activeLink : ""}
-              >
+              <Link href="/cart" className={pathname === "/cart" ? styles.activeLink : ""}>
                 Cart
               </Link>
             </li>
 
             <li>
-              <Link
-                href="/orders"
-                className={pathname === "/orders" ? styles.activeLink : ""}
-              >
+              <Link href="/orders" className={pathname === "/orders" ? styles.activeLink : ""}>
                 Orders
               </Link>
             </li>
 
             <li>
-              <Link
-                href="/profile"
-                className={pathname === "/profile" ? styles.activeLink : ""}
-              >
+              <Link href="/profile" className={pathname === "/profile" ? styles.activeLink : ""}>
                 Profile
               </Link>
             </li>
 
             <li>
-              <button
-                type="button"
-                onClick={logout}
-                className={styles.logoutButton}
-              >
+              <button type="button" onClick={logout} className={styles.logoutButton}>
                 Cerrar sesión
               </button>
             </li>
@@ -79,19 +78,12 @@ export default function Navbar() {
         {!isAuthenticated && (
           <>
             <li>
-              <Link
-                href="/login"
-                className={pathname === "/login" ? styles.activeLink : ""}
-              >
+              <Link href="/login" className={pathname === "/login" ? styles.activeLink : ""}>
                 Login
               </Link>
             </li>
-
             <li>
-              <Link
-                href="/register"
-                className={pathname === "/register" ? styles.activeLink : ""}
-              >
+              <Link href="/register" className={pathname === "/register" ? styles.activeLink : ""}>
                 Register
               </Link>
             </li>
