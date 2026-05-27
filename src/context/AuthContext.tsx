@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(token);
     setCurrentToken(token);
 
-    router.push("/products");
+    router.push("/");
   };
 
   const logout = (): void => {
