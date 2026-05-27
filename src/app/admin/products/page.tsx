@@ -91,6 +91,12 @@ export default function AdminProductsList() {
                       <td>{product.quantity}</td>
                       <td>
                         <div className={styles.actions}>
+                          <Link 
+                            href={`/admin/products/${product.id}/edit`} 
+                            className={styles.editBtn}
+                          >
+                            Editar
+                          </Link>
                           <button 
                             className={styles.deleteBtn}
                             onClick={() => handleDelete(product.id)}
