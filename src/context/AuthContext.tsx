@@ -3,13 +3,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoginRequest } from "@/models/auth.model";
+import { User } from "@/models/user.model";
 import { login as loginService } from "@/services/auth.service";
 import { getToken, removeToken, setToken } from "@/utils/token.util";
+import { getUser, removeUser, setUser } from "@/utils/user.util";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   token: string | null;
+  user: User | null;
   login: (data: LoginRequest) => Promise<void>;
   logout: () => void;
 }
@@ -20,18 +23,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   const [token, setCurrentToken] = useState<string | null>(null);
+  const [user, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = getToken();
-    setCurrentToken(storedToken);
+    setCurrentToken(getToken());
+    setCurrentUser(getUser());
     setIsLoading(false);
   }, []);
 
   useEffect(() => {
     const handleAuthError = () => {
       removeToken();
+      removeUser();
       setCurrentToken(null);
+      setCurrentUser(null);
       router.push("/login");
     };
 
@@ -43,18 +49,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [router]);
 
   const login = async (data: LoginRequest): Promise<void> => {
-    const { token } = await loginService(data);
+    const { token, user } = await loginService(data);
 
     setToken(token);
+    setUser(user);
+
     setCurrentToken(token);
+    setCurrentUser(user);
 
     router.push("/");
   };
 
   const logout = (): void => {
     removeToken();
+    removeUser();
+
     setCurrentToken(null);
-    router.push("/login");
+    setCurrentUser(null);
+
+    router.push("/");
   };
 
   return (
@@ -63,6 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAuthenticated: Boolean(token),
         isLoading,
         token,
+        user,
         login,
         logout,
       }}
