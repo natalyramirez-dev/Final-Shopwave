@@ -30,16 +30,19 @@ export const fetchApi = async <T>(
   console.log("Status backend:", response.status);
 
   if (response.status === 401) {
-    removeToken();
+  console.log("TOKEN RECHAZADO POR BACKEND:", token);
+  console.log("AUTHORIZATION ENVIADO:", headers.get("Authorization"));
 
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("auth-error"));
-    }
+  // removeToken();
 
-    throw new Error(
-      "Sesión expirada, token inválido o token no aceptado por el backend."
-    );
-  }
+  // if (typeof window !== "undefined") {
+  //   window.dispatchEvent(new Event("auth-error"));
+  // }
+
+  throw new Error(
+    "Sesión expirada, token inválido o token no aceptado por el backend."
+  );
+}
 
   if (response.status === 403) {
     throw new Error(
