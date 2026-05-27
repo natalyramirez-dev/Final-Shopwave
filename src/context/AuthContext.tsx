@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = (): void => {
     removeToken();
     setCurrentToken(null);
-    router.push("/login");
+    router.push("/");
   };
 
   return (
