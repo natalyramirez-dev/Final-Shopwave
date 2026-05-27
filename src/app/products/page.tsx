@@ -10,18 +10,23 @@ import { Product } from "@/models/product.model";
 import { productService } from "@/services/product.service";
 
 import styles from "@/components/ui/scss/products.module.scss";
+import { AuthGuard } from "@/guards/AuthGuard";
 
 const PRODUCTS_PER_PAGE = 8;
 
 export default function ProductsPage() {
+  return (
+    <AuthGuard>
+      <ProductsContent />
+    </AuthGuard>
+  );
+}
+
+function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
-
   const [loading, setLoading] = useState(true);
-
   const [search, setSearch] = useState("");
-
   const [selectedCategory, setSelectedCategory] = useState("All");
-
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -64,17 +69,12 @@ export default function ProductsPage() {
     });
   }, [products, search, selectedCategory]);
 
-  const totalPages = Math.ceil(
-    filteredProducts.length / PRODUCTS_PER_PAGE
-  );
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
 
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
 
-    return filteredProducts.slice(
-      start,
-      start + PRODUCTS_PER_PAGE
-    );
+    return filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
   }, [filteredProducts, currentPage]);
 
   return (
@@ -85,9 +85,7 @@ export default function ProductsPage() {
         <div>
           <h1>Products</h1>
 
-          <p>
-            Explore all available products in the store.
-          </p>
+          <p>Explore all available products in the store.</p>
         </div>
 
         <input
@@ -107,9 +105,7 @@ export default function ProductsPage() {
           <button
             key={category}
             className={`${styles.filterButton} ${
-              selectedCategory === category
-                ? styles.activeFilter
-                : ""
+              selectedCategory === category ? styles.activeFilter : ""
             }`}
             onClick={() => {
               setSelectedCategory(category);
@@ -129,10 +125,7 @@ export default function ProductsPage() {
         ) : paginatedProducts.length > 0 ? (
           <div className={styles.productsGrid}>
             {paginatedProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-              />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (

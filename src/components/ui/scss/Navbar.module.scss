@@ -83,6 +83,24 @@
   }
 }
 
+.logoutButton {
+  font-family: variables.$font-body;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: variables.$color-text-light;
+ 
+  padding: 0.5rem 0.875rem;
+  border-radius: variables.$border-radius-full;
+  transition: variables.$transition-default;
+  transition-property: color, background-color;
+ 
+  &:hover {
+    color: variables.$color-primary;
+    background-color: variables.$color-accent-muted;
+  }
+}
 
  
 @media (max-width: 48rem) {
