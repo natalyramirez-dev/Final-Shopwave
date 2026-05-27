@@ -2,12 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import styles from "@/components/ui/scss/Navbar.module.scss";
 import { useAuth } from "@/context/AuthContext";
+import styles from "@/components/ui/scss/Navbar.module.scss";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
+
+  if (isLoading) {
+    return (
+      <nav className={styles.navbar}>
+        <div className={styles.logo}>
+          <Link href="/">ShopWave</Link>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className={styles.navbar}>
@@ -16,42 +26,57 @@ export default function Navbar() {
       </div>
 
       <ul className={styles.links}>
-        <li>
-          <Link
-            href="/products"
-            className={pathname === "/products" ? styles.activeLink : ""}
-          >
-            Products
-          </Link>
-        </li>
+        {isAuthenticated && (
+          <>
+            <li>
+              <Link
+                href="/products"
+                className={pathname === "/products" ? styles.activeLink : ""}
+              >
+                Products
+              </Link>
+            </li>
 
-        <li>
-          <Link
-            href="/cart"
-            className={pathname === "/cart" ? styles.activeLink : ""}
-          >
-            Cart
-          </Link>
-        </li>
+            <li>
+              <Link
+                href="/cart"
+                className={pathname === "/cart" ? styles.activeLink : ""}
+              >
+                Cart
+              </Link>
+            </li>
 
-        <li>
-          <Link
-            href="/orders"
-            className={pathname === "/orders" ? styles.activeLink : ""}
-          >
-            Orders
-          </Link>
-        </li>
+            <li>
+              <Link
+                href="/orders"
+                className={pathname === "/orders" ? styles.activeLink : ""}
+              >
+                Orders
+              </Link>
+            </li>
 
-        <li>
-          <Link
-            href="/profile"
-            className={pathname === "/profile" ? styles.activeLink : ""}
-          >
-            Profile
-          </Link>
-        </li>
-        {!isAuthenticated &&(
+            <li>
+              <Link
+                href="/profile"
+                className={pathname === "/profile" ? styles.activeLink : ""}
+              >
+                Profile
+              </Link>
+            </li>
+
+            <li>
+              <button
+                type="button"
+                onClick={logout}
+                className={styles.logoutButton}
+              >
+                Cerrar sesión
+              </button>
+            </li>
+          </>
+        )}
+
+        {!isAuthenticated && (
           <>
             <li>
               <Link
@@ -61,6 +86,7 @@ export default function Navbar() {
                 Login
               </Link>
             </li>
+
             <li>
               <Link
                 href="/register"
@@ -71,16 +97,6 @@ export default function Navbar() {
             </li>
           </>
         )}
-
-        {isAuthenticated && (
-          <li>
-            <button onClick={logout} className={styles.logoutButton}>
-              log out
-            </button>
-          </li>
-        )}
-
-
       </ul>
     </nav>
   );

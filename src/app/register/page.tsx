@@ -35,11 +35,11 @@ export default function RegisterPage() {
       await register(form);
       router.push("/login");
     } catch (err) {
-      err instanceof Error
+      const message =
+        err instanceof Error
         ? err.message
         : "No se pudo registrar al usuario. Intenta nuevamente";
-
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
