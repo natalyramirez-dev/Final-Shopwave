@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "@/components/ui/scss/Navbar.module.scss";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <nav className={styles.navbar}>
@@ -49,6 +51,36 @@ export default function Navbar() {
             Profile
           </Link>
         </li>
+        {!isAuthenticated &&(
+          <>
+            <li>
+              <Link
+                href="/login"
+                className={pathname === "/login" ? styles.activeLink : ""}
+              >
+                Login
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/register"
+                className={pathname === "/register" ? styles.activeLink : ""}
+              >
+                Register
+              </Link>
+            </li>
+          </>
+        )}
+
+        {isAuthenticated && (
+          <li>
+            <button onClick={logout} className={styles.logoutButton}>
+              log out
+            </button>
+          </li>
+        )}
+
+
       </ul>
     </nav>
   );
