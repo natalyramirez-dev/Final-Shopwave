@@ -3,6 +3,7 @@
 import { AuthGuard } from "@/guards/AuthGuard";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/components/ui/scss/profile.module.scss";
+import {useRouter} from "next/navigation";
 
 export default function ProfilePage() {
   return (
@@ -14,6 +15,7 @@ export default function ProfilePage() {
 
 function ProfileContent() {
   const { user, logout } = useAuth();
+  const router = useRouter();
 
   if (!user) {
     return (
@@ -32,6 +34,13 @@ function ProfileContent() {
   return (
     <main className={styles.container}>
       <section className={styles.card}>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className={styles.backButton}
+        >
+          ← Volver atrás
+        </button>
         <div className={styles.avatar}>
           {initials || user.email.charAt(0).toUpperCase()}
         </div>
