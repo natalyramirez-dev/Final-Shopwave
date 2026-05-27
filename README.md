@@ -132,3 +132,7 @@ Products are fetched from the backend API using:
 
 ```ts
 GET /products
+
+---
+
+
