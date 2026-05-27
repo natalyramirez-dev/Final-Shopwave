@@ -26,3 +26,19 @@ export interface Product {
   category: Category;
   createdAt: string;
 }
+
+export interface CreateProductRequest {
+  title: string;
+  description: string;
+  price: number;
+  discountedPrice: number;
+  discountPersent: number;
+  quantity: number;
+  brand: string;
+  color: string;
+  imageUrl: string;
+  topLavelCategory: string;
+  secondLavelCategory: string;
+  thirdLavelCategory: string;
+  size: { name: string; quantity: number }[];
+}
