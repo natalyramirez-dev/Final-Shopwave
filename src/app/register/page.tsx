@@ -18,6 +18,7 @@ export default function RegisterPage() {
   });
 
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (field: keyof typeof form, value: string) => {
     setForm((currentForm) => ({
@@ -29,12 +30,18 @@ export default function RegisterPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
-
+    setIsSubmitting(true);
     try {
       await register(form);
       router.push("/login");
     } catch (err) {
-      setError("No se pudo registrar el usuario");
+      err instanceof Error
+        ? err.message
+        : "No se pudo registrar al usuario. Intenta nuevamente";
+
+      setError(err instanceof Error ? err.message : "Error desconocido");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -86,7 +93,9 @@ export default function RegisterPage() {
 
         {error && <p className={styles.error}>{error}</p>}
 
-        <button type="submit">Registrarme</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Registrando..." : "Registrarme"}
+        </button>
       </form>
     </main>
   );
