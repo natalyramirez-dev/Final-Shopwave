@@ -25,28 +25,42 @@ function ProfileContent() {
     );
   }
 
+  const initials = `${user.firstName?.charAt(0) ?? ""}${
+    user.lastName?.charAt(0) ?? ""
+  }`.toUpperCase();
+
   return (
     <main className={styles.container}>
       <section className={styles.card}>
-        <h1>Mi perfil</h1>
+        <div className={styles.avatar}>
+          {initials || user.email.charAt(0).toUpperCase()}
+        </div>
 
-        <div className={styles.formLike}>
-          <div className={styles.field}>
+        <div className={styles.header}>
+          <p className={styles.label}>Mi perfil</p>
+          <h1>
+            {user.firstName} {user.lastName}
+          </h1>
+          <span className={styles.emailBadge}>{user.email}</span>
+        </div>
+
+        <div className={styles.infoGrid}>
+          <div className={styles.infoItem}>
             <span>Nombre</span>
             <strong>{user.firstName}</strong>
           </div>
 
-          <div className={styles.field}>
+          <div className={styles.infoItem}>
             <span>Apellido</span>
             <strong>{user.lastName}</strong>
           </div>
 
-          <div className={styles.field}>
+          <div className={styles.infoItem}>
             <span>Correo electrónico</span>
             <strong>{user.email}</strong>
           </div>
 
-          <div className={styles.field}>
+          <div className={styles.infoItem}>
             <span>Celular</span>
             <strong>{user.mobile}</strong>
           </div>
