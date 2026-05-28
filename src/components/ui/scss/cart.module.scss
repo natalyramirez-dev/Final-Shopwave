@@ -1,0 +1,143 @@
+@use "./variables";
+
+// ─── Base Container ───────────────────────────────────────────────────────
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: variables.$color-background;
+  font-family: variables.$font-body;
+}
+
+.content {
+  width: 100%;
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 4rem 6%;
+  flex-grow: 1;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 3rem;
+
+  h1 {
+    font-family: variables.$font-display;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: variables.$color-text;
+    letter-spacing: -0.03em;
+  }
+
+  .itemCount {
+    font-size: 1rem;
+    color: variables.$color-text-muted;
+    font-weight: 500;
+  }
+}
+
+// ─── Layout Grid ──────────────────────────────────────────────────────────
+.cartGrid {
+  display: grid;
+  grid-template-columns: 1fr 24rem;
+  gap: 3rem;
+  align-items: start;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ─── Order Summary ────────────────────────────────────────────────────────
+.summary {
+  background-color: variables.$color-surface;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius;
+  padding: 2rem;
+  position: sticky;
+  top: 6rem;
+
+  h2 {
+    font-family: variables.$font-display;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: variables.$color-text;
+  }
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: variables.$color-text-light;
+  font-size: 0.9375rem;
+
+  .discount {
+    color: #10b981;
+    font-weight: 500;
+  }
+}
+
+.divider {
+  height: 0.0625rem;
+  background-color: variables.$color-border;
+  margin: 1.5rem 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: variables.$color-text;
+  margin-bottom: 2rem;
+}
+
+.checkoutBtn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+  font-family: variables.$font-body;
+  background-color: variables.$color-text;
+  color: variables.$color-surface;
+  border: none;
+  border-radius: variables.$border-radius-full;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: variables.$transition-default;
+  transition-property: background-color, transform;
+
+  &:hover {
+    background-color: variables.$color-accent;
+    transform: translateY(-0.125rem);
+  }
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────
+.emptyCart {
+  text-align: center;
+  padding: 6rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+
+  .emptyMessage {
+    font-size: 1.125rem;
+    color: variables.$color-text-muted;
+  }
+}
