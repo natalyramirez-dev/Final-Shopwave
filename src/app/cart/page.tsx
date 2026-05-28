@@ -34,7 +34,7 @@ function CartContent() {
           <div className={styles.emptyCart}>
              <p className={styles.emptyMessage}>Cargando carrito...</p>
           </div>
-        ) : !cart || cart.cartItems.length === 0 ? (
+                ) : !cart?.cartItems?.length ? (
           <div className={styles.emptyCart}>
             <EmptyState
               title="Tu carrito está vacío"

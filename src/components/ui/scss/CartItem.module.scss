@@ -1,0 +1,151 @@
+@use "./variables";
+
+// ─── Cart Item Container ──────────────────────────────────────────────────
+.cartItem {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: variables.$color-surface;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius;
+  transition: variables.$transition-default;
+  transition-property: border-color, box-shadow;
+
+  &:hover {
+    border-color: variables.$color-accent;
+    box-shadow: variables.$shadow-sm;
+  }
+  
+  @media (max-width: 48rem) {
+    flex-direction: column;
+  }
+}
+
+// ─── Image ────────────────────────────────────────────────────────────────
+.imageWrapper {
+  position: relative;
+  width: 8rem;
+  height: 8rem;
+  flex-shrink: 0;
+  border-radius: variables.$border-radius;
+  overflow: hidden;
+  background-color: variables.$color-background;
+  border: 0.0625rem solid variables.$color-border;
+
+  @media (max-width: 48rem) {
+    width: 100%;
+    height: 12rem;
+  }
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// ─── Details ──────────────────────────────────────────────────────────────
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  gap: 1rem;
+}
+
+.header {
+  h3 {
+    font-family: variables.$font-body;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: variables.$color-text;
+    margin-bottom: 0.25rem;
+  }
+
+  .brand, .size {
+    font-size: 0.875rem;
+    color: variables.$color-text-muted;
+  }
+}
+
+// ─── Pricing ──────────────────────────────────────────────────────────────
+.priceContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .discountedPrice {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: variables.$color-text;
+  }
+
+  .originalPrice {
+    font-size: 0.875rem;
+    color: variables.$color-text-muted;
+    text-decoration: line-through;
+  }
+}
+
+// ─── Actions ──────────────────────────────────────────────────────────────
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius;
+  padding: 0.25rem 0.5rem;
+
+  button {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: variables.$color-text;
+    cursor: pointer;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: variables.$transition-default;
+    
+    &:disabled {
+      color: rgba(0, 0, 0, 0.3);
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      color: variables.$color-accent;
+    }
+  }
+
+  span {
+    font-family: variables.$font-body;
+    font-weight: 600;
+    min-width: 1rem;
+    text-align: center;
+  }
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-family: variables.$font-body;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: variables.$transition-default;
+
+  &:hover {
+    color: #b91c1c;
+  }
+}
