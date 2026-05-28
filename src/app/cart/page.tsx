@@ -33,7 +33,7 @@ function CartContent() {
           </span>
         </div>
 
-        {loading ? (
+        {!cart && loading ? (
           <div className={styles.emptyCart}>
              <p className={styles.emptyMessage}>Cargando carrito...</p>
           </div>

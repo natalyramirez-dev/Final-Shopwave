@@ -59,6 +59,7 @@
   padding: 3rem;
   border-radius: variables.$border-radius;
   border: 0.0625rem solid variables.$color-border;
+  box-shadow: variables.$shadow-card;
 
   @media (max-width: 64rem) {
     grid-template-columns: 1fr;
@@ -81,6 +82,7 @@
     width: 100%;
     max-width: 25rem;
     object-fit: contain;
+    mix-blend-mode: multiply;
   }
 }
 
@@ -205,37 +207,46 @@
 .quantityControls {
   display: inline-flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
+  background-color: variables.$color-background;
   border: 0.0625rem solid variables.$color-border;
-  border-radius: variables.$border-radius;
-  padding: 0.25rem 0.5rem;
-  background-color: variables.$color-surface;
+  border-radius: variables.$border-radius-full;
+  padding: 0.375rem 0.5rem;
 
   button {
-    background: none;
-    border: none;
-    font-size: 1.25rem;
+    background-color: variables.$color-surface;
+    border: 0.0625rem solid variables.$color-border;
+    border-radius: 50%;
     color: variables.$color-text;
     cursor: pointer;
-    width: 2rem;
-    height: 2rem;
+    width: 2.25rem;
+    height: 2.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: variables.$transition-default;
+    box-shadow: variables.$shadow-sm;
 
     &:disabled {
-      color: variables.$color-border;
+      color: rgba(0, 0, 0, 0.2);
+      background-color: transparent;
+      border-color: transparent;
+      box-shadow: none;
       cursor: not-allowed;
     }
+
     &:not(:disabled):hover {
-      color: variables.$color-accent;
+      color: variables.$color-surface;
+      background-color: variables.$color-text;
+      border-color: variables.$color-text;
+      transform: scale(1.05);
     }
   }
 
   span {
     font-family: variables.$font-body;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.125rem;
     min-width: 1.5rem;
     text-align: center;
     color: variables.$color-text;
@@ -249,7 +260,7 @@
 
   p {
     font-size: 0.9375rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     color: variables.$color-text-light;
   }
 }
@@ -273,21 +284,25 @@
   font-size: 1rem;
   font-weight: 600;
   transition: variables.$transition-default;
-  transition-property: background-color, transform;
+  transition-property: background-color, transform, box-shadow;
 
   &.available {
     background-color: variables.$color-primary;
     color: variables.$color-surface;
     cursor: pointer;
+    box-shadow: variables.$shadow-md;
 
     &:hover:not(:disabled) {
       background-color: variables.$color-accent;
       transform: translateY(-0.125rem);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     }
 
     &:disabled {
       opacity: 0.7;
       cursor: wait;
+      box-shadow: none;
+      transform: none;
     }
   }
 
@@ -295,6 +310,7 @@
     background-color: variables.$color-border;
     color: variables.$color-text-muted;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
