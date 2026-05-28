@@ -25,7 +25,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await cartService.getUserCart();
       setCart(data);
     } catch (error) {
-      console.error("Error al obtener el carrito:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       await cartService.updateCartItem(cartItemId, { quantity });
       await fetchCart();
     } catch (error) {
-      console.error("Error al actualizar cantidad:", error);
+      console.error(error);
     }
   };
 
@@ -46,16 +46,32 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       await cartService.removeCartItem(cartItemId);
       await fetchCart(); 
     } catch (error) {
-      console.error("Error al eliminar item:", error);
+      console.error(error);
     }
   };
 
   const addToCart = async (productId: number, size: string, quantity: number) => {
     try {
-      await cartService.addItemToCart({ productId, size, quantity });
+      const existingItem = (cart?.cartItems || []).find(
+        (item) => item.product.id === productId && item.size === size
+      );
+
+      if (existingItem) {
+        await cartService.updateCartItem(existingItem.id, {
+          quantity: existingItem.quantity + quantity
+        });
+      } else {
+        const newItem = await cartService.addItemToCart({ productId, size, quantity });
+
+        if (quantity > 1 && newItem && newItem.id) {
+          await cartService.updateCartItem(newItem.id, { quantity });
+        }
+      }
+      
       await fetchCart();
     } catch (error) {
-      console.error("Error al agregar item:", error);
+      console.error(error);
+      throw error;
     }
   };
 
