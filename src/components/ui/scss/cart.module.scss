@@ -1,6 +1,5 @@
 @use "./variables";
 
-// ─── Base Container ───────────────────────────────────────────────────────
 .container {
   width: 100%;
   min-height: 100vh;
@@ -11,36 +10,53 @@
 }
 
 .content {
+  flex: 1;
   width: 100%;
   max-width: 90rem;
   margin: 0 auto;
-  padding: 4rem 6%;
-  flex-grow: 1;
+  padding: 0 6% 4rem;
 }
 
-// ─── Header ───────────────────────────────────────────────────────────────
 .header {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
+  width: 100%;
+  padding: 3rem 0 2rem;
   margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  border-bottom: 0.0625rem solid variables.$color-border;
 
   h1 {
     font-family: variables.$font-display;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.625rem, 3vw, 2.375rem);
     font-weight: 700;
-    color: variables.$color-text;
     letter-spacing: -0.03em;
+    color: variables.$color-text;
+    line-height: 1.15;
+  }
+
+  p {
+    font-family: variables.$font-body;
+    font-size: 0.875rem;
+    color: variables.$color-text-light;
+    margin-top: 0.25rem;
   }
 
   .itemCount {
-    font-size: 1rem;
-    color: variables.$color-text-muted;
+    font-family: variables.$font-body;
+    font-size: 0.8125rem;
     font-weight: 500;
+    letter-spacing: 0.01em;
+    color: variables.$color-text-light;
+    padding: 0.45rem 1rem;
+    background-color: transparent;
+    border: 0.0625rem solid variables.$color-border;
+    border-radius: variables.$border-radius-full;
   }
 }
 
-// ─── Layout Grid ──────────────────────────────────────────────────────────
 .cartGrid {
   display: grid;
   grid-template-columns: 1fr 24rem;
@@ -58,7 +74,6 @@
   gap: 1.5rem;
 }
 
-// ─── Order Summary ────────────────────────────────────────────────────────
 .summary {
   background-color: variables.$color-surface;
   border: 0.0625rem solid variables.$color-border;
@@ -105,17 +120,19 @@
 }
 
 .checkoutBtn {
-  display: block;
+  display: inline-block;
   width: 100%;
   text-align: center;
-  padding: 1rem;
   font-family: variables.$font-body;
-  background-color: variables.$color-text;
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: variables.$color-surface;
+  text-decoration: none;
+  padding: 0.875rem 2.25rem;
+  margin-top: 0.5rem;
+  background-color: variables.$color-primary;
   border: none;
   border-radius: variables.$border-radius-full;
-  font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
   transition: variables.$transition-default;
   transition-property: background-color, transform;
@@ -126,18 +143,22 @@
   }
 }
 
-// ─── Empty State ──────────────────────────────────────────────────────────
 .emptyCart {
-  text-align: center;
-  padding: 6rem 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  flex-grow: 1;
+  align-items: center;
+  min-height: 40vh;
 
   .emptyMessage {
-    font-size: 1.125rem;
-    color: variables.$color-text-muted;
+    font-family: variables.$font-body;
+    font-size: 0.9375rem;
+    color: variables.$color-text-light;
+    letter-spacing: 0.02em;
+    animation: pulse 1.4s ease-in-out infinite;
   }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
 }

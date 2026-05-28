@@ -24,7 +24,10 @@ function CartContent() {
       
       <section className={styles.content}>
         <div className={styles.header}>
-          <h1>Tu Carrito</h1>
+          <div>
+            <h1>Tu Carrito</h1>
+            <p>Revisa los artículos antes de proceder al pago.</p>
+          </div>
           <span className={styles.itemCount}>
             {cart?.totalItem || 0} {cart?.totalItem === 1 ? 'artículo' : 'artículos'}
           </span>
@@ -34,7 +37,7 @@ function CartContent() {
           <div className={styles.emptyCart}>
              <p className={styles.emptyMessage}>Cargando carrito...</p>
           </div>
-                ) : !cart?.cartItems?.length ? (
+        ) : !cart?.cartItems?.length ? (
           <div className={styles.emptyCart}>
             <EmptyState
               title="Tu carrito está vacío"
@@ -43,14 +46,12 @@ function CartContent() {
           </div>
         ) : (
           <div className={styles.cartGrid}>
-            {/* Lista de Productos */}
             <div className={styles.itemsList}>
               {cart.cartItems.map((item) => (
                 <CartItem key={item.id} item={item} />
               ))}
             </div>
 
-            {/* Resumen de Compra */}
             <div className={styles.summary}>
               <h2>Resumen del pedido</h2>
               
