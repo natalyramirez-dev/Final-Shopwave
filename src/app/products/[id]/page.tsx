@@ -108,13 +108,13 @@ export default function ProductDetailPage({
                   {formatCurrency(product.discountedPrice || product.price)}
                 </h2>
 
-                {product.discountPersent > 0 && (
+                {product.price > product.discountedPrice && (
                   <>
                     <span className={styles.originalPrice}>
                       {formatCurrency(product.price)}
                     </span>
                     <span className={styles.discountBadge}>
-                      -{product.discountPersent}%
+                      -{Math.round(((product.price - product.discountedPrice) / product.price) * 100)}%
                     </span>
                   </>
                 )}
