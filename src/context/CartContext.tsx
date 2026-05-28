@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Cart, CartItem } from "@/models/cart.model";
+import { Cart } from "@/models/cart.model";
 import { cartService } from "@/services/cart.service";
 
 interface CartContextType {
@@ -10,6 +10,7 @@ interface CartContextType {
   fetchCart: () => Promise<void>;
   updateQuantity: (cartItemId: number, quantity: number) => Promise<void>;
   removeItem: (cartItemId: number) => Promise<void>;
+  addToCart: (productId: number, size: string, quantity: number) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -49,12 +50,21 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const addToCart = async (productId: number, size: string, quantity: number) => {
+    try {
+      await cartService.addItemToCart({ productId, size, quantity });
+      await fetchCart();
+    } catch (error) {
+      console.error("Error al agregar item:", error);
+    }
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
 
   return (
-    <CartContext.Provider value={{ cart, loading, fetchCart, updateQuantity, removeItem }}>
+    <CartContext.Provider value={{ cart, loading, fetchCart, updateQuantity, removeItem, addToCart }}>
       {children}
     </CartContext.Provider>
   );
