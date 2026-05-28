@@ -15,8 +15,9 @@ export default function CreateProductPage() {
 
   const [formData, setFormData] = useState<CreateProductRequest>({
     title: "", description: "", price: 0, discountedPrice: 0, discountPersent: 0,
-    quantity: 0, brand: "", color: "", imageUrl: "", topLavelCategory: "", 
-    secondLavelCategory: "", thirdLavelCategory: "", size: [{ name: "M", quantity: 10 }], 
+    quantity: 0, brand: "", color: "", imageUrl: "", 
+    topLevelCategory: "", secondLevelCategory: "", thirdLevelCategory: "", 
+    size: [{ name: "M", quantity: 10 }], 
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -28,7 +29,9 @@ export default function CreateProductPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true); setError(null);
+    e.preventDefault(); 
+    setLoading(true); 
+    setError(null);
     try {
       await adminProductService.createProduct(formData);
       router.push("/admin/products"); 
@@ -60,8 +63,11 @@ export default function CreateProductPage() {
               <div className={styles.formGroup}><label>Stock Inicial (Cantidad)</label><input type="number" name="quantity" value={formData.quantity} onChange={handleChange} min="0" required /></div>
               <div className={styles.formGroup}><label>Color</label><input type="text" name="color" value={formData.color} onChange={handleChange} required /></div>
               <div className={styles.formGroup}><label>URL de la Imagen</label><input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required /></div>
-              <div className={styles.formGroup}><label>Categoría Principal (Ej: Men)</label><input type="text" name="topLavelCategory" value={formData.topLavelCategory} onChange={handleChange} required /></div>
-              <div className={styles.formGroup}><label>Sub Categoría (Ej: Clothing)</label><input type="text" name="secondLavelCategory" value={formData.secondLavelCategory} onChange={handleChange} required /></div>
+              
+              <div className={styles.formGroup}><label>Categoría Principal (Ej: Hombre)</label><input type="text" name="topLevelCategory" value={formData.topLevelCategory} onChange={handleChange} required /></div>
+              <div className={styles.formGroup}><label>Sub Categoría (Ej: Ropa)</label><input type="text" name="secondLevelCategory" value={formData.secondLevelCategory} onChange={handleChange} required /></div>
+              <div className={styles.formGroup}><label>Categoría Específica (Ej: Poleras)</label><input type="text" name="thirdLevelCategory" value={formData.thirdLevelCategory} onChange={handleChange} required /></div>
+              
               <div className={`${styles.formGroup} ${styles.fullWidth}`}><label>Descripción</label><textarea name="description" value={formData.description} onChange={handleChange} rows={4} required /></div>
               
               <button type="submit" className={styles.submitBtn} disabled={loading}>

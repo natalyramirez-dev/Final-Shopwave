@@ -1,4 +1,4 @@
-import { getToken, removeToken } from "@/utils/token.util";
+import { getToken } from "@/utils/token.util";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -15,52 +15,46 @@ export const fetchApi = async <T>(
   }
 
   if (token) {
-    const authToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
-    headers.set("Authorization", authToken);
+    // 1. Limpiamos cualquier comilla rara
+    let cleanToken = token.replace(/['"]+/g, '').trim();
+    
+    // 2. Si por algún motivo el token guardado dice "Bearer", se lo arrancamos
+    if (cleanToken.toLowerCase().startsWith("bearer")) {
+      cleanToken = cleanToken.substring(6).trim();
+    }
+    
+    // 3. ¡ENVIAMOS EL TOKEN DESNUDO! Esto evita que el backend explote por el espacio
+    headers.set("Authorization", cleanToken);
   }
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
+    cache: "no-store", // Seguimos evitando el caché fantasma de Next.js
   });
 
-  console.log("Endpoint:", `${API_URL}${endpoint}`);
-  console.log("Token usado:", token);
-  console.log("Authorization enviado:", headers.get("Authorization"));
-  console.log("Status backend:", response.status);
+  const text = await response.text();
+  let data: any = {};
+
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (e) {
+    data = {};
+  }
+
+  if (!response.ok || data.error) {
+    throw new Error(
+      data.error || data.message || "Error procesando la solicitud en el servidor"
+    );
+  }
 
   if (response.status === 401) {
-  console.log("TOKEN RECHAZADO POR BACKEND:", token);
-  console.log("AUTHORIZATION ENVIADO:", headers.get("Authorization"));
-
-  // removeToken();
-
-  // if (typeof window !== "undefined") {
-  //   window.dispatchEvent(new Event("auth-error"));
-  // }
-
-  throw new Error(
-    "Sesión expirada, token inválido o token no aceptado por el backend."
-  );
-}
+    throw new Error("Sesión expirada o token inválido.");
+  }
 
   if (response.status === 403) {
-    throw new Error(
-      "Token válido, pero el usuario no tiene permisos para acceder a este recurso."
-    );
+    throw new Error("No tienes permisos para acceder a este recurso.");
   }
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-
-    throw new Error(
-      errorData.error ||
-        errorData.message ||
-        "Error procesando la solicitud"
-    );
-  }
-
-  const text = await response.text();
-
-  return text ? JSON.parse(text) : ({} as T);
+  return data as T;
 };

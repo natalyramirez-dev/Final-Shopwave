@@ -1,0 +1,164 @@
+@use "./variables";
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: variables.$color-background;
+  font-family: variables.$font-body;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 0 6% 4rem;
+}
+
+.header {
+  width: 100%;
+  padding: 3rem 0 2rem;
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  border-bottom: 0.0625rem solid variables.$color-border;
+
+  h1 {
+    font-family: variables.$font-display;
+    font-size: clamp(1.625rem, 3vw, 2.375rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: variables.$color-text;
+    line-height: 1.15;
+  }
+
+  p {
+    font-family: variables.$font-body;
+    font-size: 0.875rem;
+    color: variables.$color-text-light;
+    margin-top: 0.25rem;
+  }
+
+  .itemCount {
+    font-family: variables.$font-body;
+    font-size: 0.875rem;
+    font-weight: 600; 
+    color: variables.$color-text; 
+    padding: 0.5rem 1.25rem;
+    background-color: variables.$color-surface;
+    border: 0.0625rem solid variables.$color-border;
+    border-radius: variables.$border-radius-full;
+  }
+}
+
+.cartGrid {
+  display: grid;
+  grid-template-columns: 1fr 24rem;
+  gap: 3rem;
+  align-items: start;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.summary {
+  background-color: variables.$color-surface;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius;
+  padding: 2rem;
+  position: sticky;
+  top: 6rem;
+  box-shadow: variables.$shadow-md;
+
+  h2 {
+    font-family: variables.$font-display;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: variables.$color-text;
+  }
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: variables.$color-text-light;
+  font-size: 0.9375rem;
+
+  .discount {
+    color: #10b981;
+    font-weight: 600;
+  }
+}
+
+.divider {
+  height: 0.0625rem;
+  background-color: variables.$color-border;
+  margin: 1.5rem 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: variables.$color-text;
+  margin-bottom: 2rem;
+}
+
+.checkoutBtn {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-family: variables.$font-body;
+  font-size: 1rem;
+  font-weight: 600;
+  color: variables.$color-surface;
+  text-decoration: none;
+  padding: 1rem 2.25rem;
+  margin-top: 0.5rem;
+  background-color: variables.$color-primary;
+  border: none;
+  border-radius: variables.$border-radius-full;
+  cursor: pointer;
+  transition: variables.$transition-default;
+  transition-property: background-color, transform;
+
+  &:hover {
+    background-color: variables.$color-accent;
+    transform: translateY(-0.125rem);
+  }
+}
+
+.emptyCart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40vh;
+
+  .emptyMessage {
+    font-family: variables.$font-body;
+    font-size: 0.9375rem;
+    color: variables.$color-text-light;
+    letter-spacing: 0.02em;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}

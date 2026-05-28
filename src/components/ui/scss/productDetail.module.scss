@@ -1,217 +1,338 @@
-.mainContainer {
-  padding: 40px 24px;
-  max-width: 1100px;
-  margin: 0 auto;
-  background: #f9fafb;
+@use "./variables";
+
+.container {
+  width: 100%;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: variables.$color-background;
+  font-family: variables.$font-body;
+}
+
+.content {
+  width: 100%;
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 4rem 6%;
+  flex-grow: 1;
 }
 
 .centered {
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
+  color: variables.$color-text-light;
 }
 
 .errorContainer {
-  padding: 24px;
+  padding: 4rem 6%;
   text-align: center;
+  color: variables.$color-text;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    font-family: variables.$font-display;
+  }
 }
 
 .backLink {
-  color: #4b5563;
+  font-family: variables.$font-body;
+  color: variables.$color-text-light;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 0.9375rem;
   display: inline-block;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
+  transition: variables.$transition-default;
 
   &:hover {
-    text-decoration: underline;
+    color: variables.$color-accent;
   }
 }
 
 .card {
-  display: flex;
-  gap: 48px;
-  flex-wrap: wrap;
-  background: #ffffff;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  border: 1px solid #f3f4f6;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  background-color: variables.$color-surface;
+  padding: 3rem;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid variables.$color-border;
+  box-shadow: variables.$shadow-card;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding: 2rem;
+  }
 }
 
 .imageContainer {
-  flex: 1 1 400px;
   display: flex;
   justify-content: center;
-  background: #f9fafb;
-  border-radius: 12px;
-  padding: 20px;
+  align-items: center;
+  background-color: variables.$color-background;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid variables.$color-border;
+  padding: 2rem;
+  min-height: 25rem;
 
   img {
     width: 100%;
-    max-width: 400px;
+    max-width: 25rem;
     object-fit: contain;
     mix-blend-mode: multiply;
   }
 }
 
 .detailsContainer {
-  flex: 1 1 400px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.5rem;
 }
 
 .brandCategory {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 0.8125rem;
+  color: variables.$color-text-muted;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
   font-weight: 600;
 }
 
 .title {
-  font-size: 32px;
-  margin: 8px 0;
-  color: #111827;
+  font-family: variables.$font-display;
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  margin-top: 0.5rem;
+  color: variables.$color-text;
   font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
 .priceContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .currentPrice {
-  font-size: 28px;
-  color: #111827;
-  margin: 0;
-  font-weight: 800;
+  font-family: variables.$font-display;
+  font-size: 2rem;
+  color: variables.$color-text;
+  font-weight: 700;
 }
 
 .originalPrice {
   text-decoration: line-through;
-  color: #9ca3af;
-  font-size: 18px;
+  color: variables.$color-text-muted;
+  font-size: 1.125rem;
 }
 
 .discountBadge {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 700;
+  background-color: variables.$color-accent-muted;
+  color: variables.$color-primary;
+  padding: 0.25rem 0.75rem;
+  border-radius: variables.$border-radius-full;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
 .description {
-  color: #4b5563;
-  line-height: 1.6;
-  font-size: 15px;
+  color: variables.$color-text-light;
+  line-height: 1.75;
+  font-size: 0.9375rem;
 }
 
 .sizesSection {
-  margin-top: 8px;
-
   p {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
-    margin-bottom: 8px;
-    color: #374151;
+    margin-bottom: 0.75rem;
+    color: variables.$color-text;
   }
 }
 
 .sizesList {
   display: flex;
-  gap: 8px;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
 .sizeBadge {
-  border: 1px solid #e5e7eb;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 14px;
+  border: 0.0625rem solid variables.$color-border;
+  padding: 0.5rem 1rem;
+  border-radius: variables.$border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: variables.$font-body;
+  cursor: pointer;
+  transition: variables.$transition-default;
+  transition-property: background-color, border-color, color;
 
   &.available {
-    color: #111827;
-    background: white;
+    color: variables.$color-text;
+    background-color: variables.$color-surface;
+
+    &:hover {
+      border-color: variables.$color-text;
+    }
   }
 
   &.unavailable {
-    color: #9ca3af;
-    background: #f3f4f6;
+    color: variables.$color-text-muted;
+    background-color: variables.$color-background;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.selected {
+    background-color: variables.$color-text;
+    color: variables.$color-surface;
+    border-color: variables.$color-text;
+  }
+}
+
+.quantitySelector {
+  margin-top: 0.5rem;
+
+  p {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: variables.$color-text;
+  }
+}
+
+.quantityControls {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  background-color: variables.$color-background;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius-full;
+  padding: 0.375rem 0.5rem;
+
+  button {
+    background-color: variables.$color-surface;
+    border: 0.0625rem solid variables.$color-border;
+    border-radius: 50%;
+    color: variables.$color-text;
+    cursor: pointer;
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: variables.$transition-default;
+    box-shadow: variables.$shadow-sm;
+
+    &:disabled {
+      color: rgba(0, 0, 0, 0.2);
+      background-color: transparent;
+      border-color: transparent;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      color: variables.$color-surface;
+      background-color: variables.$color-text;
+      border-color: variables.$color-text;
+      transform: scale(1.05);
+    }
+  }
+
+  span {
+    font-family: variables.$font-body;
+    font-weight: 700;
+    font-size: 1.125rem;
+    min-width: 1.5rem;
+    text-align: center;
+    color: variables.$color-text;
   }
 }
 
 .actionSection {
   margin-top: auto;
-  padding-top: 24px;
-  border-top: 1px solid #f3f4f6;
+  padding-top: 2rem;
+  border-top: 0.0625rem solid variables.$color-border;
 
   p {
-    font-size: 14px;
-    margin-bottom: 16px;
-    color: #4b5563;
+    font-size: 0.9375rem;
+    margin-bottom: 1.5rem;
+    color: variables.$color-text-light;
   }
 }
 
 .inStock {
-  color: #16a34a;
-  font-weight: bold;
+  color: #10b981;
+  font-weight: 600;
 }
 
 .outOfStock {
-  color: #dc2626;
-  font-weight: bold;
+  color: #ef4444;
+  font-weight: 600;
 }
 
 .addToCartBtn {
   width: 100%;
-  padding: 16px;
+  padding: 1rem;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: variables.$border-radius-full;
+  font-family: variables.$font-body;
+  font-size: 1rem;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: variables.$transition-default;
+  transition-property: background-color, transform, box-shadow;
 
   &.available {
-    background: #111827;
-    color: white;
+    background-color: variables.$color-primary;
+    color: variables.$color-surface;
     cursor: pointer;
+    box-shadow: variables.$shadow-md;
 
-    &:hover {
-      background: #1f2937;
+    &:hover:not(:disabled) {
+      background-color: variables.$color-accent;
+      transform: translateY(-0.125rem);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: wait;
+      box-shadow: none;
+      transform: none;
     }
   }
 
   &.unavailable {
-    background: #e5e7eb;
-    color: #9ca3af;
+    background-color: variables.$color-border;
+    color: variables.$color-text-muted;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
-/* Responsividad para móviles */
-@media (max-width: 768px) {
-  .mainContainer {
-    padding: 20px 16px;
-  }
+.successMessage {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #d1fae5;
+  color: #065f46;
+  border-radius: variables.$border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
 
-  .card {
-    gap: 24px;
-    padding: 20px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
   }
-  
-  .title {
-    font-size: 24px;
-  }
-
-  .currentPrice {
-    font-size: 24px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

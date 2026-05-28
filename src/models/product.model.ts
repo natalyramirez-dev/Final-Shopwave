@@ -37,8 +37,8 @@ export interface CreateProductRequest {
   brand: string;
   color: string;
   imageUrl: string;
-  topLavelCategory: string;
-  secondLavelCategory: string;
-  thirdLavelCategory: string;
+  topLevelCategory: string;
+  secondLevelCategory: string;
+  thirdLevelCategory: string;
   size: { name: string; quantity: number }[];
 }
