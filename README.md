@@ -468,4 +468,69 @@ Wait until the authentication state finishes loading.
 Render the private content only when the user is authenticated.
 Redirect unauthenticated users to /login.
 ```
+---
+
+## HTTP Services Layer, Models, and Testing
+**Date:** 22/05/2026
+**Responsible Developer:** Camilo
+
+The backend connection module acts as the main bridge between the Next.js interface and the Spring Boot REST API. A highly decoupled service architecture has been implemented using the native Fetch API, ensuring security, strict typing, and global exception handling.
+
+### 1. Core Architecture: Global Interceptor (`api.service.ts`)
+Every HTTP request to the server passes through a centralized wrapper (`fetchApi`). This pattern ensures compliance with the following business rules:
+* **Automatic JWT Injection:** The service extracts the token from local storage and silently attaches it to the `Authorization` header for protected routes.
+* **Dynamic Error Handling:** Generic error responses are prohibited. The interceptor catches `4xx` and `5xx` codes, extracting the exact message emitted by the backend's `ErrorDetails` to provide precise feedback to the UI.
+* **Session Management:** Upon receiving `401 Unauthorized` or `403 Forbidden` responses, the service destroys the expired token and emits a global event (`auth-error`) to force a redirection to the login page.
+
+### 2. Decoupled Domain Services
+Network logic is strictly separated from React components. The following services have been modularized:
+* `auth.service.ts`: Handles the registration flow and login via *Basic Auth*, returning both the JWT and the user profile to synchronize the global state.
+* `product.service.ts`: Exposes the catalog, integrating dynamic search parameters (`URLSearchParams`) for complex filtering and pagination.
+* `cart.service.ts`: Manages the remote state of the shopping cart, adapting to specific backend HTTP verbs (`PUT` for addition/update, `DELETE` for removal).
+* `order.service.ts`: Processes checkout and retrieves the authenticated user's purchase history.
+* `user.service.ts`: Retrieves persistent user profile information.
+
+### 3. Strict Typing (Models and Interfaces)
+To ensure data integrity between Java and TypeScript, interfaces were defined to act as exact mirrors of the Spring Boot entities.
+* **Generic Types:** Use of `ApiResponse<T>` and `PaginatedResponse<T>` to safely handle data collections and operation confirmations.
+* **Business Models:** Robust structuring of `Product`, `User`, `Cart`, `CartItem`, `Order`, and `OrderItem` in the `src/models/` directory.
+
+### 4. Automated Testing (Postman)
+An exhaustive Postman collection has been configured to validate API resilience prior to UI consumption.
+* **Dynamic JWT Capture:** The collection includes JavaScript *Test Scripts* that intercept the token after a successful login and automatically inject it into environment variables for subsequent requests.
+* **Assertions (Tests):** Automated validation of HTTP status codes (200, 202, 400) and the structures of JSON objects returned by the server.
+
+---
+
+## Supervisor Module (Administration Panel)
+**Date:** 27/05/2026
+**Responsible Developer:** Camilo
+
+This module centralizes the store's inventory management (ShopWave Fusion) through an exclusive control panel for users with high privileges. A complete and secure CRUD (Create, Read, Update, Delete) has been implemented, strictly respecting the separation of concerns and the HTTP service-based architecture.
+
+### Implemented Routes
+* `app/admin/products/page.tsx`: Inventory management table and general listing.
+* `app/admin/products/create/page.tsx`: Registration form for new products.
+* `app/admin/products/[id]/edit/page.tsx`: Dynamic form for updating existing products.
+
+### Key Features
+1. **Complete Product Management (CRUD):**
+   * **List:** Responsive table that consumes the general catalog, displaying vital information such as stock, price, and images. Includes a custom touch-scroll wrapper for seamless mobile device navigation.
+   * **Create & Edit:** Robust forms strictly mapped to the `CreateProductRequest` model expected by Spring Boot. They include dynamic type validation (preventing string submissions in numeric fields) and loading state control (`loading`, `fetching`) to prevent accidental multiple submissions.
+   * **Delete:** Deletion button with native confirmation interceptor to prevent data loss from accidental clicks.
+
+2. **Security and Route Protection (`AdminGuard`):**
+   * Developed a wrapper component (Guard) that not only validates the existence of a valid JWT but also intercepts the session to verify the user's role (`ADMIN` or `ROLE_ADMIN`).
+   * Implemented a Zero-State architecture to completely eliminate infinite rendering loops caused by Context API re-renders.
+   * If an unauthenticated user or one with a `CUSTOMER` role attempts to access any `/admin/...` route, they are blocked from rendering and immediately expelled to the home or login page silently.
+
+3. **Architecture and Clean Code:**
+   * **Decoupled Service:** All data mutation logic is isolated in `src/services/admin-product.service.ts`, keeping React components clean and focused solely on the UI.
+   * **Modular Styles:** Total elimination of inline styles. The panel uses 100% SCSS Modules (`admin.module.scss`) mapped to the global design system (variables, borders, shadows), ensuring a premium, responsive layout that matches the rest of the application without style collisions.
+   * **Global Error Handling:** Requests catch errors generated by the backend and display dynamic UI notifications, complying with the strict rule of not hiding failures in the console.
+
+### Future Scalability
+The architecture of this administrative section has been designed to scale seamlessly. In the future (for post-MVP versions), this panel will serve as the foundation for the integration of **interactive dashboards**, performance charts, and **sales KPI** calculators (e.g., top-selling products, low stock alerts, ROI), elevating the platform's managerial and professional level.
+
+---
 
