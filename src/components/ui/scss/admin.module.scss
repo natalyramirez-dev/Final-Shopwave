@@ -1,190 +1,254 @@
+@use "variables";
+
 .adminContainer {
+  min-height: 100vh;
+  background-color: variables.$color-background;
+  font-family: variables.$font-body;
+  display: flex;
+  flex-direction: column;
+}
+
+.adminContent {
+  flex: 1;
+  width: 100%;
   max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 48px 24px;
 
-  .adminLoading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 3rem;
-    font-size: 1.1rem;
-    color: #555;
-    font-weight: 500;
+  /* RESPONSIVE: Menos padding en móviles */
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  /* RESPONSIVE: Apilar título y botón en móviles */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
 
-  .errorMessage {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1.5rem;
-    font-weight: 500;
+  h1 {
+    font-family: variables.$font-display;
+    font-size: clamp(2rem, 4vw, 36px);
+    font-weight: 700;
+    color: variables.$color-primary;
+    margin: 0;
   }
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+  .createBtn {
+    background-color: variables.$color-primary;
+    color: variables.$color-surface;
+    padding: 12px 24px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    text-align: center;
 
-    h1 {
-      font-size: 1.8rem;
-      color: #333;
+    @media (max-width: 768px) {
+      width: 100%; /* Botón ancho completo en celular */
     }
 
-    .createBtn {
-      background-color: #000;
-      color: #fff;
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: background 0.2s;
-
-      &:hover {
-        background-color: #333;
-      }
+    &:hover {
+      background-color: variables.$color-accent;
+      transform: translateY(-2px);
     }
   }
+}
 
-  .tableWrapper {
-    overflow-x: auto;
-    background: #fff;
+.card {
+  background: variables.$color-surface;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  width: 100%;
+
+  /* RESPONSIVE: Reducir bordes y padding de la tarjeta */
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    border-radius: 16px;
+  }
+}
+
+/* RESPONSIVE: Wrapper para la tabla con scroll táctil suave */
+.tableResponsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px; /* Espacio para la barra */
+
+  /* Scrollbar estilizada */
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 800px;
-
-      th, td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-      }
-
-      th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        color: #555;
-      }
-
-      .emptyTable {
-        text-align: center;
-        padding: 2rem;
-        color: #777;
-      }
-
-      .productImage {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 4px;
-      }
-
-      .actions {
-        display: flex;
-        gap: 0.5rem;
-
-        /* Añadido 'a' para que los Links de Next.js tomen estos estilos */
-        button, a {
-          padding: 0.4rem 0.8rem;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 0.9rem;
-          text-decoration: none;
-          display: inline-block;
-          text-align: center;
-
-          &.editBtn {
-            background-color: #ffc107;
-            color: #000;
-            transition: background 0.2s;
-            &:hover { background-color: #e0a800; }
-          }
-
-          &.deleteBtn {
-            background-color: #dc3545;
-            color: white;
-            transition: background 0.2s;
-            &:hover { background-color: #c82333; }
-          }
-        }
-      }
-    }
   }
-
-  .formCard {
-    background: #fff;
-    padding: 2rem;
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    max-width: 800px;
-    margin: 0 auto;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
 
-    .formGrid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* Evita que las columnas se aplasten */
 
-      @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-      }
+    th {
+      text-align: left;
+      padding: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      color: variables.$color-text-light;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-bottom: 1px solid #eeeeee;
     }
 
-    .formGroup {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-
-      label {
-        font-weight: 500;
-        color: #444;
-      }
-
-      input, select, textarea {
-        padding: 0.75rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-family: inherit;
-        &:focus {
-          outline: none;
-          border-color: #000;
-        }
-      }
-      
-      &.fullWidth {
-        grid-column: 1 / -1;
-      }
+    td {
+      padding: 16px;
+      font-size: 15px;
+      color: variables.$color-primary;
+      border-bottom: 1px solid #fafafa;
+      vertical-align: middle;
     }
 
-    .submitBtn {
-      grid-column: 1 / -1;
-      background: #000;
-      color: white;
-      padding: 1rem;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: background 0.2s;
-
-      &:hover:not(:disabled) {
-        background: #333;
-      }
-
-      &:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-      }
+    .productImage {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid #eeeeee;
     }
   }
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+
+  a, button {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    border: none;
+
+    &.editBtn {
+      background-color: #f0e7df;
+      color: #7a4b35;
+      &:hover { background-color: #e6d8cd; }
+    }
+
+    &.deleteBtn {
+      background-color: #fee2e2;
+      color: #dc2626;
+      &:hover { background-color: #fca5a5; }
+    }
+  }
+}
+
+/* Formularios */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 13px;
+    font-weight: 700;
+    color: variables.$color-primary;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 16px 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    color: variables.$color-primary;
+    background: variables.$color-surface;
+    font-size: 16px;
+    outline: none;
+    font-family: inherit;
+
+    &::placeholder { color: #9da4b2; }
+    &:focus { border-color: variables.$color-primary; }
+  }
+
+  &.fullWidth {
+    grid-column: 1 / -1;
+  }
+}
+
+.submitBtn {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: variables.$color-primary;
+  color: variables.$color-surface;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: variables.$color-accent;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.adminLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  font-size: 16px;
+  color: variables.$color-text-light;
+}
+
+.errorMessage {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-weight: 600;
 }

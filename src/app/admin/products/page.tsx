@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import AdminGuard from "@/guards/AdminGuard";
 import { productService } from "@/services/product.service";
 import { adminProductService } from "@/services/admin-product.service";
@@ -13,25 +14,23 @@ export default function AdminProductsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const data = await productService.getAllProducts();
-      setProducts(data);
-    } catch (err: any) {
-      setError(err.message || "Error al cargar los productos");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await productService.getAllProducts();
+        setProducts(data);
+      } catch (err: any) {
+        setError(err.message || "Error al cargar los productos");
+      } finally {
+        setLoading(false);
+      }
+    };
     loadProducts();
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.")) return;
-    
+    if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
     try {
       await adminProductService.deleteProduct(id);
       setProducts((prev) => prev.filter((p) => p.id !== id));
@@ -44,74 +43,69 @@ export default function AdminProductsList() {
   return (
     <AdminGuard>
       <div className={styles.adminContainer}>
-        <div className={styles.header}>
-          <h1>Gestión de Productos</h1>
-          <Link href="/admin/products/create" className={styles.createBtn}>
-            + Nuevo Producto
-          </Link>
-        </div>
-
-        {error && <div className={styles.errorMessage}>{error}</div>}
-
-        {loading ? (
-          <div className={styles.adminLoading}>Cargando catálogo...</div>
-        ) : (
-          <div className={styles.tableWrapper}>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Imagen</th>
-                  <th>Título</th>
-                  <th>Marca</th>
-                  <th>Precio</th>
-                  <th>Stock</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className={styles.emptyTable}>No hay productos registrados.</td>
-                  </tr>
-                ) : (
-                  products.map((product) => (
-                    <tr key={product.id}>
-                      <td>{product.id}</td>
-                      <td>
-                        <img 
-                          src={product.imageUrl} 
-                          alt={product.title} 
-                          className={styles.productImage} 
-                        />
-                      </td>
-                      <td>{product.title}</td>
-                      <td>{product.brand}</td>
-                      <td>${product.price}</td>
-                      <td>{product.quantity}</td>
-                      <td>
-                        <div className={styles.actions}>
-                          <Link 
-                            href={`/admin/products/${product.id}/edit`} 
-                            className={styles.editBtn}
-                          >
-                            Editar
-                          </Link>
-                          <button 
-                            className={styles.deleteBtn}
-                            onClick={() => handleDelete(product.id)}
-                          >
-                            Eliminar
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+        <Navbar />
+        <div className={styles.adminContent}>
+          <div className={styles.header}>
+            <h1>Gestión de Productos</h1>
+            <Link href="/admin/products/create" className={styles.createBtn}>
+              + Nuevo Producto
+            </Link>
           </div>
-        )}
+
+          {error && <div className={styles.errorMessage}>{error}</div>}
+
+          <div className={styles.card}>
+            {loading ? (
+              <div className={styles.adminLoading}>Cargando catálogo...</div>
+            ) : (
+              <div className={styles.tableResponsive}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Imagen</th>
+                      <th>Título</th>
+                      <th>Marca</th>
+                      <th>Precio</th>
+                      <th>Stock</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} style={{ textAlign: "center", color: "#777" }}>No hay productos registrados.</td>
+                      </tr>
+                    ) : (
+                      products.map((product) => (
+                        <tr key={product.id}>
+                          <td>{product.id}</td>
+                          <td>
+                            <img src={product.imageUrl} alt={product.title} className={styles.productImage} />
+                          </td>
+                          <td>{product.title}</td>
+                          <td>{product.brand}</td>
+                          <td>${product.price}</td>
+                          <td>{product.quantity}</td>
+                          <td>
+                            <div className={styles.actions}>
+                              <Link href={`/admin/products/${product.id}/edit`} className={styles.editBtn}>
+                                Editar
+                              </Link>
+                              <button className={styles.deleteBtn} onClick={() => handleDelete(product.id)}>
+                                Eliminar
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </AdminGuard>
   );
