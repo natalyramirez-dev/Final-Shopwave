@@ -90,7 +90,7 @@ export default function ProductDetailPage({
             ← Volver al catálogo
           </Link>
 
-          {/* CONTENEDOR PRINCIPAL DE LA TARJETA */}
+          {/*principal */}
           <div className={styles.card}>
             <div className={styles.flipCardInner}>
               
