@@ -89,7 +89,7 @@ function ProductsContent() {
         </div>
 
         <input
-          type="text"
+          type="text" 
           placeholder="Search products..."
           value={search}
           onChange={(event) => {
