@@ -512,6 +512,7 @@ This module centralizes the store's inventory management (ShopWave Fusion) throu
 * `app/admin/products/page.tsx`: Inventory management table and general listing.
 * `app/admin/products/create/page.tsx`: Registration form for new products.
 * `app/admin/products/[id]/edit/page.tsx`: Dynamic form for updating existing products.
+* `app/admin/cart/page.tsx`: Dynamic form for check products that have been added on the cart.
 
 ### Key Features
 1. **Complete Product Management (CRUD):**
@@ -534,3 +535,27 @@ The architecture of this administrative section has been designed to scale seaml
 
 ---
 
+## Shopping Cart Module & Product Integration
+**Date:** 28/05/2026
+**Responsible Developer:** Dabner Orozco
+
+This module handles the complete shopping cart lifecycle, bridging the gap between the product catalog and the checkout process. The implementation involved building a global state, modernizing the user interface, and solving complex synchronization and caching issues between the Next.js frontend and the Spring Boot backend.
+
+### 1. Global Cart State Management (`CartContext.tsx`)
+A React Context was implemented to manage cart operations globally across the application without prop-drilling.
+* **Dynamic Operations:** Handled adding new products, updating quantities (increment/decrement), and removing items through decoupled services.
+* **Real-time Math Calculation:** To ensure data accuracy regardless of backend input errors, the frontend dynamically recalculates real discount percentages (e.g., displaying exactly 30% instead of 27%) and automatically updates totals and subtotals.
+* **Flicker-Free UI:** Implemented local state loaders (`isUpdating`) within individual cart items to prevent the entire page from re-rendering and flickering during API calls.
+
+### 2. Product Details & Admin Integration
+* **Product Page Refactoring (`products/[id]/page.tsx`):** Completely redesigned the product details view to be fully responsive. Added dynamic size selection, quantity controls, and strict stock validation before allowing a user to add an item to the cart.
+* **Admin Panel Request Corrections:** Fixed severe parameter mismatches in the `CreateProductRequest` model. Corrected the nested category hierarchy (`topLevelCategory`, `secondLevelCategory`, `thirdLevelCategory`) and size arrays, enabling the admin panel to successfully persist new products in the database.
+
+### 3. Advanced API Synchronization & Bug Fixes
+* **JWT Token Sanitization:** Discovered and fixed a critical backend crash (`Illegal base64url character`) caused by Spring Boot's inability to parse the space in the "Bearer " header. The frontend interceptor was modified to sanitize and send a raw token format, preventing 202 false-positive errors.
+* **Next.js Cache Invalidation:** Resolved the "Phantom Cart" issue where Next.js aggressively cached empty cart `GET` responses. Applied `cache: 'no-store'` to the Fetch API options, forcing the browser to retrieve fresh data after every mutation.
+* **Hydration Mismatch Fix:** Eliminated Next.js hydration errors caused by third-party browser extensions by applying `suppressHydrationWarning` to the application's root layout.
+
+### 4. UX/UI and Styling Improvements
+* **Modern SCSS Modules:** Complete UI overhaul of `ProductCard`, `CartItem`, and the Cart Page using strictly SCSS modules to match the overarching design system.
+* **Micro-interactions:** Replaced generic text buttons with optimized SVG icons (e.g., a dynamic trash can for item removal). Implemented disabled states, smooth hover transitions, and elegant box shadows (`variables.$shadow-md`) to enhance the premium feel of the e-commerce platform.

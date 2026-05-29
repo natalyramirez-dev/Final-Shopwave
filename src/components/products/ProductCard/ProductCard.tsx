@@ -48,10 +48,6 @@ export default function ProductCard({
             </span>
           )}
         </div>
-
-        <button onClick={handleAddToCart} className={styles.addToCartBtn}>
-          Agregar al carrito
-        </button>
       </div>
     </article>
   );
