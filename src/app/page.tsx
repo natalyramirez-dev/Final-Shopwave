@@ -5,15 +5,15 @@ import styles from "@/components/ui/scss/home.module.scss";
 import TeamCard from "@/components/ui/TeamCard/TeamCard";
 
 const team = [
-  { name: "Camilo", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
-  { name: "Nataly", role: "Full Stack Developer", image: "/team/nataly.webp" },
-  { name: "Orozco", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
-  { name: "Aguilar", role: "Full Stack Developer", image: "/team/nataly.webp" },
-  { name: "Sandoval", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
+  { name: "Camilo Rodriguez", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
+  { name: "Nataly Ramirez", role: "Full Stack Developer", image: "/team/nataly.webp" },
+  { name: "Dabner Orozco", role: "Full Stack Developer", image: "/team/dabner.jpeg" },
+  { name: "Luis Aguilar", role: "Full Stack Developer", image: "/team/luis.jpg" },
+  { name: "Maria Jose Sandoval", role: "Full Stack Developer", image: "/team/Majo.jpeg" },
 ];
 
 export default function HomePage() {
-  return (
+  return ( 
     <main className={styles.container}>
       <Navbar />
       <Hero />
