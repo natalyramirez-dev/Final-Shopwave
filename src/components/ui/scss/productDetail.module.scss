@@ -60,11 +60,25 @@
   border-radius: variables.$border-radius;
   border: 0.0625rem solid variables.$color-border;
   box-shadow: variables.$shadow-card;
+  /* MODIFICACIÓN: Añadimos transición para que el hover sea suave en la tarjeta general */
+  transition: all 0.3s ease-in-out;
 
   @media (max-width: 64rem) {
     grid-template-columns: 1fr;
     gap: 2.5rem;
     padding: 2rem;
+  }
+
+  /* MODIFICACIÓN: Lógica del hover. Cuando el ratón pasa por .card, afecta a .hoverDetails */
+  &:hover {
+    .hoverDetails {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      /* Usamos un max-height lo suficientemente grande para contener todo, pero necesario para animar desde 0 */
+      max-height: 50rem; 
+      margin-top: 1.5rem;
+    }
   }
 }
 
@@ -89,7 +103,40 @@
 .detailsContainer {
   display: flex;
   flex-direction: column;
+  /* MODIFICACIÓN: Reducimos un poco el gap inicial, ya que el espacio principal ahora lo maneja .hoverDetails */
+  gap: 1rem; 
+}
+
+/* =========================================
+   NUEVA CLASE: Contenedor de detalles ocultos
+   ========================================= */
+.hoverDetails {
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
+  
+  /* ESTADO INICIAL: Oculto y colapsado */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(1rem); /* Desplazado ligeramente hacia abajo */
+  max-height: 0; /* Colapsado completamente */
+  margin-top: 0;
+  overflow: hidden; /* Evita desbordamientos mientras se anima */
+  
+  /* Animación suave para la aparición */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* MODIFICACIÓN RESPONSIVE: En móviles, es mejor no depender del hover 
+     porque las pantallas táctiles no tienen un "hover" real.
+     Hacemos que siempre sea visible en pantallas pequeñas. */
+  @media (max-width: 64rem) {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    max-height: none;
+    margin-top: 1.5rem;
+    overflow: visible;
+  }
 }
 
 .brandCategory {
@@ -255,13 +302,16 @@
 
 .actionSection {
   margin-top: auto;
-  padding-top: 2rem;
+  /* MODIFICACIÓN: Ya no necesitamos tanto padding-top si el margen lo maneja .hoverDetails */
+  padding-top: 1rem; 
   border-top: 0.0625rem solid variables.$color-border;
 
   p {
     font-size: 0.9375rem;
     margin-bottom: 1.5rem;
     color: variables.$color-text-light;
+    /* Para que el texto de disponibilidad no quede tan pegado al borde en móviles */
+    margin-top: 1rem; 
   }
 }
 
