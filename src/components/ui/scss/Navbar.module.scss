@@ -102,19 +102,71 @@
   }
 }
 
- 
+// ─── Burger button ──────────────────────────────
+.burger {
+  display: none; 
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 200;
+
+  span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: variables.$color-primary;
+    border-radius: 2px;
+    transition: variables.$transition-default;
+  }
+
+  // Animación X al abrir
+  .burgerLineTop    { transform: translateY(7px) rotate(45deg); }
+  .burgerLineMid    { opacity: 0; }
+  .burgerLineBottom { transform: translateY(-7px) rotate(-45deg); }
+}
+
+// ─── Mobile ─────────────────────────────────────
 @media (max-width: 48rem) {
   .navbar {
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 1rem 5%;
-    min-height: auto;
-  }
- 
-  .links {
     flex-wrap: wrap;
-    justify-content: center;
+    padding: 0 5%;
+    min-height: 4rem;
+    position: relative;
+  }
+
+  .burger {
+    display: flex; // visible en móvil
+  }
+
+  // Menú cerrado — oculto
+  .links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 0.25rem;
+    padding: 0.75rem 0 1rem;
+    border-top: 0.0625rem solid variables.$color-border;
+  }
+
+  // Menú abierto
+  .links.open {
+    display: flex;
+  }
+
+  .links li {
+    width: 100%;
+  }
+
+  .links a,
+  .logoutButton {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: variables.$border-radius;
   }
 }
