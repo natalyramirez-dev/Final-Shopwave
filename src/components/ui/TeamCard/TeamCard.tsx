@@ -17,8 +17,7 @@ export default function TeamCard({ name, role, image }: TeamCardProps) {
           alt={name}
           className={styles.teamImage}
           onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              `https://api.dicebear.com/7.x/initials/svg?seed=${name}&backgroundColor=0a0a0f&textColor=ffffff`;
+            (e.target as HTMLImageElement).src = "/assets/camilo.jpg";
           }}
         />
       </div>

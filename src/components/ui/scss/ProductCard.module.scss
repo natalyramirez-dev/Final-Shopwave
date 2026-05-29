@@ -30,7 +30,6 @@
   height: 17rem;
   object-fit: cover;
  
-  // subtle warm desaturate on rest, saturate on hover
   filter: saturate(0.9);
   transition: filter variables.$transition-slow,
               transform variables.$transition-slow;

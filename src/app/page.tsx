@@ -5,11 +5,11 @@ import styles from "@/components/ui/scss/home.module.scss";
 import TeamCard from "@/components/ui/TeamCard/TeamCard";
 
 const team = [
-  { name: "Ramírez", role: "Frontend Developer", image: "/team/ramirez.jpg" },
-  { name: "Rodríguez", role: "Backend Developer", image: "/team/rodriguez.jpg" },
-  { name: "Orozco", role: "UI/UX Designer", image: "/team/orozco.jpg" },
-  { name: "Aguilar", role: "Full Stack Developer", image: "/team/aguilar.jpg" },
-  { name: "Sandoval", role: "Product Manager", image: "/team/sandoval.jpg" },
+  { name: "Camilo", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
+  { name: "Nataly", role: "Full Stack Developer", image: "/team/nataly.webp" },
+  { name: "Orozco", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
+  { name: "Aguilar", role: "Full Stack Developer", image: "/team/nataly.webp" },
+  { name: "Sandoval", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
 ];
 
 export default function HomePage() {

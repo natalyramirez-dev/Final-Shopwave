@@ -48,16 +48,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [router]);
 
+  /*LOGIN EXITOSO*/
   const login = async (data: LoginRequest): Promise<void> => {
     const { token, user } = await loginService(data);
 
-    setToken(token);
-    setUser(user);
+    setToken(token);   // guarda en localStorage
+    setUser(user);     // guarda el usuario en localStorage
 
-    setCurrentToken(token);
-    setCurrentUser(user);
+    setCurrentToken(token);  // actualiza el estado de React
+    setCurrentUser(user);    // actualiza el estado de React
 
-    router.push("/");
+    router.push("/");  // redirige al inicio
   };
 
   const logout = (): void => {

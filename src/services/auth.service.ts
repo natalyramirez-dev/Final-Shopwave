@@ -3,9 +3,9 @@ import { User } from "@/models/user.model";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-export const login = async (
-  data: LoginRequest
-): Promise<{ token: string; user: User }> => {
+/*LOGICA LOGIN*/
+export const login = async ( data: LoginRequest ): Promise<{ token: string; user: User }> => 
+{
   const basicToken = btoa(`${data.email}:${data.password}`);
 
   const response = await fetch(`${API_URL}/auth/signin`, {
@@ -38,6 +38,7 @@ export const login = async (
 
   return { token, user };
 };
+
 
 export const register = async (data: RegisterRequest): Promise<User> => {
   const response = await fetch(`${API_URL}/auth/signup`, {

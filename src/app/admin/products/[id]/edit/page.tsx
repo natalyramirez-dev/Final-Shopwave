@@ -20,8 +20,8 @@ export default function EditProductPage() {
 
   const [formData, setFormData] = useState<CreateProductRequest>({
     title: "", description: "", price: 0, discountedPrice: 0, discountPersent: 0,
-    quantity: 0, brand: "", color: "", imageUrl: "", topLavelCategory: "", 
-    secondLavelCategory: "", thirdLavelCategory: "", size: [{ name: "M", quantity: 10 }], 
+    quantity: 0, brand: "", color: "", imageUrl: "", topLevelCategory: "", 
+    secondLevelCategory: "", thirdLevelCategory: "", size: [{ name: "M", quantity: 10 }], 
   });
 
   useEffect(() => {
@@ -33,9 +33,9 @@ export default function EditProductPage() {
           discountedPrice: product.discountedPrice || 0, discountPersent: product.discountPersent || 0,
           quantity: product.quantity || 0, brand: product.brand || "", color: product.color || "",
           imageUrl: product.imageUrl || "",
-          topLavelCategory: product.category?.parentCategory?.parentCategory?.name || "",
-          secondLavelCategory: product.category?.parentCategory?.name || "",
-          thirdLavelCategory: product.category?.name || "",
+          topLevelCategory: product.category?.parentCategory?.parentCategory?.name || "",
+          secondLevelCategory: product.category?.parentCategory?.name || "",
+          thirdLevelCategory: product.category?.name || "",
           size: product.sizes || [{ name: "M", quantity: 10 }],
         });
       } catch (err: any) {
@@ -91,8 +91,8 @@ export default function EditProductPage() {
                   <div className={styles.formGroup}><label>Stock Inicial (Cantidad)</label><input type="number" name="quantity" value={formData.quantity} onChange={handleChange} min="0" required /></div>
                   <div className={styles.formGroup}><label>Color</label><input type="text" name="color" value={formData.color} onChange={handleChange} required /></div>
                   <div className={styles.formGroup}><label>URL de la Imagen</label><input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required /></div>
-                  <div className={styles.formGroup}><label>Categoría Principal (Ej: Men)</label><input type="text" name="topLavelCategory" value={formData.topLavelCategory} onChange={handleChange} required /></div>
-                  <div className={styles.formGroup}><label>Sub Categoría (Ej: Clothing)</label><input type="text" name="secondLavelCategory" value={formData.secondLavelCategory} onChange={handleChange} required /></div>
+                  <div className={styles.formGroup}><label>Categoría Principal (Ej: Men)</label><input type="text" name="topLevelCategory" value={formData.topLevelCategory} onChange={handleChange} required /></div>
+                  <div className={styles.formGroup}><label>Sub Categoría (Ej: Clothing)</label><input type="text" name="secondLevelCategory" value={formData.secondLevelCategory} onChange={handleChange} required /></div>
                   <div className={`${styles.formGroup} ${styles.fullWidth}`}><label>Descripción</label><textarea name="description" value={formData.description} onChange={handleChange} rows={4} required /></div>
                   
                   <button type="submit" className={styles.submitBtn} disabled={loading}>

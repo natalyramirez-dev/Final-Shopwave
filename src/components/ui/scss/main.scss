@@ -4,14 +4,25 @@
 // ─── Partials ─────
 @use './login.module.scss';
 @use './register.module.scss';
+
 @use './Navbar.module.scss';
 @use './ProductCard.module.scss';
+@use './productDetail.module.scss';
+@use './products.module.scss';
 @use './Hero.module.scss';
 @use './home.module.scss';
+
 @use './EmptyState.module.scss';
-@use './products.module.scss';
+
+
+@use './admin.module.scss';
+@use './profile.module.scss';
+
+@use './cart.module.scss';
+@use './CartItem.module.scss';
+
  
-// ─── Reset ─────
+// Reset CSS — elimina márgenes y paddings por defecto del navegador
 *, *::before, *::after {
   margin: 0;
   padding: 0;

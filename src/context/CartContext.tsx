@@ -24,8 +24,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       const data = await cartService.getUserCart();
       setCart(data);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      // Si el backend devuelve error de carrito nulo, simplemente dejamos el carrito vacío
+      // en vez de romper la app — el carrito se creará cuando el usuario agregue su primer producto
+      const isCartNull = error?.message?.toLowerCase().includes("null");
+      if (!isCartNull) console.error(error);
+      setCart(null);
     } finally {
       setLoading(false);
     }

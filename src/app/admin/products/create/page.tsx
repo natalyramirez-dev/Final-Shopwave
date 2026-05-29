@@ -22,10 +22,27 @@ export default function CreateProductPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: ["price", "discountedPrice", "discountPersent", "quantity"].includes(name) ? Number(value) : value,
-    }));
+    const parsedValue = ["price", "discountedPrice", "discountPersent", "quantity"].includes(name)
+      ? Number(value)
+      : value;
+
+    setFormData((prev) => {
+      const nextFormData = {
+        ...prev,
+        [name]: parsedValue,
+      };
+
+      // Cálculo automático del precio con descuento
+      if (name === "price" || name === "discountPersent") {
+        const price = name === "price" ? Number(value) : prev.price;
+        const discount = name === "discountPersent" ? Number(value) : prev.discountPersent;
+        if (price > 0 && discount >= 0) {
+          nextFormData.discountedPrice = Math.round(price * (1 - discount / 100));
+        }
+      }
+
+      return nextFormData;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,7 +53,12 @@ export default function CreateProductPage() {
       await adminProductService.createProduct(formData);
       router.push("/admin/products"); 
     } catch (err: any) {
-      setError(err.message || "Error al crear el producto");
+      // Mensajes de error amigables según el tipo de error
+      if (err.message?.toLowerCase().includes("data too long")) {
+        setError("La descripción es demasiado larga. Por favor acórtala.");
+      } else {
+        setError(err.message || "Error al crear el producto");
+      }
     } finally {
       setLoading(false);
     }
@@ -55,20 +77,63 @@ export default function CreateProductPage() {
             {error && <div className={styles.errorMessage}>{error}</div>}
             
             <form onSubmit={handleSubmit} className={styles.formGrid}>
-              <div className={styles.formGroup}><label>Título del Producto</label><input type="text" name="title" value={formData.title} onChange={handleChange} required /></div>
-              <div className={styles.formGroup}><label>Marca</label><input type="text" name="brand" value={formData.brand} onChange={handleChange} required /></div>
-              <div className={styles.formGroup}><label>Precio Regular ($)</label><input type="number" name="price" value={formData.price} onChange={handleChange} min="0" required /></div>
-              <div className={styles.formGroup}><label>Precio con Descuento ($)</label><input type="number" name="discountedPrice" value={formData.discountedPrice} onChange={handleChange} min="0" required /></div>
-              <div className={styles.formGroup}><label>% de Descuento</label><input type="number" name="discountPersent" value={formData.discountPersent} onChange={handleChange} min="0" max="100" /></div>
-              <div className={styles.formGroup}><label>Stock Inicial (Cantidad)</label><input type="number" name="quantity" value={formData.quantity} onChange={handleChange} min="0" required /></div>
-              <div className={styles.formGroup}><label>Color</label><input type="text" name="color" value={formData.color} onChange={handleChange} required /></div>
-              <div className={styles.formGroup}><label>URL de la Imagen</label><input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required /></div>
+              <div className={styles.formGroup}>
+                <label>Título del Producto</label><input type="text" name="title" value={formData.title} onChange={handleChange} required />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Marca</label><input type="text" name="brand" value={formData.brand} onChange={handleChange} required />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Precio Regular ($)</label><input type="number" name="price" value={formData.price} onChange={handleChange} min="0" required />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>% de Descuento</label><input type="number" name="discountPersent" value={formData.discountPersent} onChange={handleChange} min="0" max="100" />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Precio con Descuento ($)</label><input type="number" name="discountedPrice" value={formData.discountedPrice} onChange={handleChange} min="0" required />
+              </div>              
               
-              <div className={styles.formGroup}><label>Categoría Principal (Ej: Hombre)</label><input type="text" name="topLevelCategory" value={formData.topLevelCategory} onChange={handleChange} required /></div>
-              <div className={styles.formGroup}><label>Sub Categoría (Ej: Ropa)</label><input type="text" name="secondLevelCategory" value={formData.secondLevelCategory} onChange={handleChange} required /></div>
-              <div className={styles.formGroup}><label>Categoría Específica (Ej: Poleras)</label><input type="text" name="thirdLevelCategory" value={formData.thirdLevelCategory} onChange={handleChange} required /></div>
+              <div className={styles.formGroup}>
+                <label>Stock Inicial (Cantidad)</label><input type="number" name="quantity" value={formData.quantity} onChange={handleChange} min="0" required />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Color</label><input type="text" name="color" value={formData.color} onChange={handleChange} required />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>URL de la Imagen</label><input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required /></div>
               
-              <div className={`${styles.formGroup} ${styles.fullWidth}`}><label>Descripción</label><textarea name="description" value={formData.description} onChange={handleChange} rows={4} required /></div>
+              <div className={styles.formGroup}>
+                <label>Categoría Principal (Ej: Hombre)</label><input type="text" name="topLevelCategory" value={formData.topLevelCategory} onChange={handleChange} required />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Sub Categoría (Ej: Ropa)</label><input type="text" name="secondLevelCategory" value={formData.secondLevelCategory} onChange={handleChange} required />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Categoría Específica (Ej: Poleras)</label><input type="text" name="thirdLevelCategory" value={formData.thirdLevelCategory} onChange={handleChange} required />
+              </div>
+              
+              <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                <label>Descripción (máx. 250 caracteres)</label>
+                <textarea 
+                  name="description" 
+                  value={formData.description} 
+                  onChange={handleChange} 
+                  rows={4} 
+                  maxLength={250}
+                  required 
+                />
+                <small style={{ color: '#9da4b2', fontSize: '12px', textAlign: 'right' }}>
+                  {formData.description.length}/250
+                </small>
+              </div>
               
               <button type="submit" className={styles.submitBtn} disabled={loading}>
                 {loading ? "Creando..." : "Crear Producto"}

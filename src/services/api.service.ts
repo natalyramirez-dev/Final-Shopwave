@@ -3,11 +3,12 @@ import { getToken } from "@/utils/token.util";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export const fetchApi = async <T>(
-  endpoint: string,
-  options: RequestInit = {}
+  endpoint: string, // ruta 
+  options: RequestInit = {} // peticiones
 ): Promise<T> => {
   const token = getToken();
 
+  /*Armado de los headers*/
   const headers = new Headers(options.headers || {});
 
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
@@ -27,12 +28,15 @@ export const fetchApi = async <T>(
     headers.set("Authorization", cleanToken);
   }
 
+  /*nunca guarde en caché esta respuesta. Sin esto Next.js podría mostrarte datos viejos.*/
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
     cache: "no-store", // Seguimos evitando el caché fantasma de Next.js
   });
 
+  /*ee la respuesta como texto, luego intenta convertirla a JSON*/
+  /*Si hay error lanza una excepción con el mensaje del servidor*/
   const text = await response.text();
   let data: any = {};
 

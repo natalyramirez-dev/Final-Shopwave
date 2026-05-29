@@ -9,6 +9,7 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
+    // Si no está autenticado → manda al login
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
