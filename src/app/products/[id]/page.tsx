@@ -90,108 +90,123 @@ export default function ProductDetailPage({
             ← Volver al catálogo
           </Link>
 
+          {/* CONTENEDOR PRINCIPAL DE LA TARJETA */}
           <div className={styles.card}>
-            <div className={styles.imageContainer}>
-              <img src={product.imageUrl} alt={product.title} />
-            </div>
-
-            <div className={styles.detailsContainer}>
-              <div>
-                <span className={styles.brandCategory}>
-                  {product.brand} • {product.category?.name}
-                </span>
-                <h1 className={styles.title}>{product.title}</h1>
-              </div>
-              <p className={styles.description}>{product.description}</p>
-              <div className={styles.hoverDetails}>
-                <div className={styles.priceContainer}>
-                  <h2 className={styles.currentPrice}>
-                    {formatCurrency(product.discountedPrice || product.price)}
-                  </h2>
-
-                  {product.price > product.discountedPrice && (
-                    <>
-                      <span className={styles.originalPrice}>
-                        {formatCurrency(product.price)}
-                      </span>
-                      <span className={styles.discountBadge}>
-                        -{Math.round(((product.price - product.discountedPrice) / product.price) * 100)}%
-                      </span>
-                    </>
-                  )}
+            <div className={styles.flipCardInner}>
+              
+              {/*frontal*/}
+              <div className={styles.flipCardFront}>
+                <div className={styles.imageContainer}>
+                  <img src={product.imageUrl} alt={product.title} />
                 </div>
-
-                {product.sizes && product.sizes.length > 0 && (
-                  <div className={styles.sizesSection}>
-                    <p>Tallas disponibles:</p>
-                    <div className={styles.sizesList}>
-                      {product.sizes.map((size) => {
-                        const isSizeAvailable = size.quantity > 0;
-                        return (
-                          <button
-                            key={size.name}
-                            disabled={!isSizeAvailable}
-                            onClick={() => setSelectedSize(size.name)}
-                            className={`${styles.sizeBadge} ${
-                              isSizeAvailable ? styles.available : styles.unavailable
-                            } ${selectedSize === size.name ? styles.selected : ""}`}
-                          >
-                            {size.name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {isAvailable && (
-                  <div className={styles.quantitySelector}>
-                    <p>Cantidad:</p>
-                    <div className={styles.quantityControls}>
-                      <button 
-                        onClick={() => setQuantity(q => Math.max(1, q - 1))} 
-                        disabled={quantity <= 1}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                      </button>
-                      <span>{quantity}</span>
-                      <button 
-                        onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))} 
-                        disabled={quantity >= product.quantity}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                <div className={styles.actionSection}>
-                  <p>
-                    Disponibilidad:{" "}
-                    <span className={isAvailable ? styles.inStock : styles.outOfStock}>
-                      {isAvailable ? `${product.quantity} en stock` : "Agotado"}
+                
+                <div className={styles.frontDetails}>
+                  <div>
+                    <span className={styles.brandCategory}>
+                      {product.brand} • {product.category?.name}
                     </span>
-                  </p>
+                    <h1 className={styles.title}>{product.title}</h1>
+                  </div>
+                  <p className={styles.description}>{product.description}</p>
+                </div>
+              </div>
 
-                  <button
-                    disabled={!isAvailable || isAdding || !selectedSize}
-                    onClick={handleAddToCart}
-                    className={`${styles.addToCartBtn} ${
-                      isAvailable && selectedSize ? styles.available : styles.unavailable
-                    }`}
-                  >
-                    {isAdding ? "Añadiendo..." : isAvailable ? "Añadir al carrito" : "Sin stock"}
-                  </button>
+              {/* vuelta*/}
+              <div className={styles.flipCardBack}>
+                <div className={styles.backDetails}>
+                  
+                  <div className={styles.priceContainer}>
+                    <h2 className={styles.currentPrice}>
+                      {formatCurrency(product.discountedPrice || product.price)}
+                    </h2>
 
-                  {showSuccess && (
-                    <div className={styles.successMessage}>
-                      Producto añadido al carrito exitosamente
+                    {product.price > product.discountedPrice && (
+                      <>
+                        <span className={styles.originalPrice}>
+                          {formatCurrency(product.price)}
+                        </span>
+                        <span className={styles.discountBadge}>
+                          -{Math.round(((product.price - product.discountedPrice) / product.price) * 100)}%
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  {product.sizes && product.sizes.length > 0 && (
+                    <div className={styles.sizesSection}>
+                      <p>Tallas disponibles:</p>
+                      <div className={styles.sizesList}>
+                        {product.sizes.map((size) => {
+                          const isSizeAvailable = size.quantity > 0;
+                          return (
+                            <button
+                              key={size.name}
+                              disabled={!isSizeAvailable}
+                              onClick={() => setSelectedSize(size.name)}
+                              className={`${styles.sizeBadge} ${
+                                isSizeAvailable ? styles.available : styles.unavailable
+                              } ${selectedSize === size.name ? styles.selected : ""}`}
+                            >
+                              {size.name}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
+
+                  {isAvailable && (
+                    <div className={styles.quantitySelector}>
+                      <p>Cantidad:</p>
+                      <div className={styles.quantityControls}>
+                        <button 
+                          onClick={() => setQuantity(q => Math.max(1, q - 1))} 
+                          disabled={quantity <= 1}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                        <span>{quantity}</span>
+                        <button 
+                          onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))} 
+                          disabled={quantity >= product.quantity}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={styles.actionSection}>
+                    <p>
+                      Disponibilidad:{" "}
+                      <span className={isAvailable ? styles.inStock : styles.outOfStock}>
+                        {isAvailable ? `${product.quantity} en stock` : "Agotado"}
+                      </span>
+                    </p>
+
+                    <button
+                      disabled={!isAvailable || isAdding || !selectedSize}
+                      onClick={handleAddToCart}
+                      className={`${styles.addToCartBtn} ${
+                        isAvailable && selectedSize ? styles.available : styles.unavailable
+                      }`}
+                    >
+                      {isAdding ? "Añadiendo..." : isAvailable ? "Añadir al carrito" : "Sin stock"}
+                    </button>
+
+                    {showSuccess && (
+                      <div className={styles.successMessage}>
+                        Producto añadido al carrito exitosamente
+                      </div>
+                    )}
+                  </div>
+
                 </div>
-              </div> 
+              </div>
+
             </div>
           </div>
+
         </div>
       </main>
     </AuthGuard>

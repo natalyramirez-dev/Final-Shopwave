@@ -51,92 +51,92 @@
   }
 }
 
+/* =========================================
+   NUEVA LÓGICA DE TARJETA 3D (FLIP CARD)
+   ========================================= */
 .card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  background-color: variables.$color-surface;
-  padding: 3rem;
-  border-radius: variables.$border-radius;
-  border: 0.0625rem solid variables.$color-border;
-  box-shadow: variables.$shadow-card;
-  /* MODIFICACIÓN: Añadimos transición para que el hover sea suave en la tarjeta general */
-  transition: all 0.3s ease-in-out;
+  background-color: transparent;
+  perspective: 1000px; /* Necesario para dar el efecto 3D de profundidad */
+  max-width: 28rem; /* Como ahora es una sola columna, limitamos el ancho */
+  margin: 0 auto; /* Centramos la tarjeta en la pantalla */
+  width: 100%;
 
-  @media (max-width: 64rem) {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-    padding: 2rem;
-  }
-
-  /* MODIFICACIÓN: Lógica del hover. Cuando el ratón pasa por .card, afecta a .hoverDetails */
-  &:hover {
-    .hoverDetails {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-      /* Usamos un max-height lo suficientemente grande para contener todo, pero necesario para animar desde 0 */
-      max-height: 50rem; 
-      margin-top: 1.5rem;
-    }
+  /* Cuando pasamos el ratón por la tarjeta, el contenedor interno gira */
+  &:hover .flipCardInner {
+    transform: rotateY(180deg);
   }
 }
 
+.flipCardInner {
+  position: relative;
+  width: 100%;
+  /* Usamos grid para apilar la cara frontal y trasera una encima de la otra */
+  display: grid; 
+  transition: transform 0.7s variables.$transition-slow;
+  transform-style: preserve-3d;
+}
+
+.flipCardFront, .flipCardBack {
+  /* Al asignar ambas caras a la misma celda de grid, la tarjeta toma 
+     automáticamente la altura de la cara que tenga más contenido */
+  grid-area: 1 / 1; 
+  -webkit-backface-visibility: hidden; /* Oculta la parte trasera cuando se da la vuelta */
+  backface-visibility: hidden;
+  
+  background-color: variables.$color-surface;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid variables.$color-border;
+  box-shadow: variables.$shadow-card;
+  padding: 2.5rem;
+  
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.flipCardBack {
+  /* La cara trasera empieza dada la vuelta por defecto */
+  transform: rotateY(180deg);
+  justify-content: space-between;
+}
+
+/* =========================================
+   ELEMENTOS DE LA CARA FRONTAL
+   ========================================= */
 .imageContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: variables.$color-background;
-  border-radius: variables.$border-radius;
-  border: 0.0625rem solid variables.$color-border;
-  padding: 2rem;
-  min-height: 25rem;
+  border-radius: variables.$border-radius-sm;
+  padding: 1.5rem;
+  
+  /* Reducimos considerablemente el alto como pediste */
+  height: 16rem; 
 
   img {
     width: 100%;
-    max-width: 25rem;
+    max-height: 100%;
     object-fit: contain;
     mix-blend-mode: multiply;
   }
 }
 
-.detailsContainer {
+.frontDetails {
   display: flex;
   flex-direction: column;
-  /* MODIFICACIÓN: Reducimos un poco el gap inicial, ya que el espacio principal ahora lo maneja .hoverDetails */
-  gap: 1rem; 
+  gap: 1rem;
+  text-align: center; /* Centramos el texto para que luzca mejor bajo la imagen */
 }
 
 /* =========================================
-   NUEVA CLASE: Contenedor de detalles ocultos
+   ELEMENTOS DE LA CARA TRASERA Y GENERALES
    ========================================= */
-.hoverDetails {
+.backDetails {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  
-  /* ESTADO INICIAL: Oculto y colapsado */
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(1rem); /* Desplazado ligeramente hacia abajo */
-  max-height: 0; /* Colapsado completamente */
-  margin-top: 0;
-  overflow: hidden; /* Evita desbordamientos mientras se anima */
-  
-  /* Animación suave para la aparición */
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* MODIFICACIÓN RESPONSIVE: En móviles, es mejor no depender del hover 
-     porque las pantallas táctiles no tienen un "hover" real.
-     Hacemos que siempre sea visible en pantallas pequeñas. */
-  @media (max-width: 64rem) {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    max-height: none;
-    margin-top: 1.5rem;
-    overflow: visible;
-  }
+  height: 100%;
 }
 
 .brandCategory {
@@ -145,12 +145,13 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 .title {
   font-family: variables.$font-display;
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
-  margin-top: 0.5rem;
+  font-size: clamp(1.75rem, 3vw, 2.25rem); /* Título ligeramente más pequeño para adaptarse a la nueva tarjeta */
   color: variables.$color-text;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -161,6 +162,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .currentPrice {
@@ -178,7 +180,7 @@
 
 .discountBadge {
   background-color: variables.$color-accent-muted;
-  color: variables.$color-primary;
+  color: variables.$color-accent;
   padding: 0.25rem 0.75rem;
   border-radius: variables.$border-radius-full;
   font-size: 0.875rem;
@@ -209,7 +211,7 @@
 .sizeBadge {
   border: 0.0625rem solid variables.$color-border;
   padding: 0.5rem 1rem;
-  border-radius: variables.$border-radius;
+  border-radius: variables.$border-radius-sm;
   font-size: 0.875rem;
   font-weight: 500;
   font-family: variables.$font-body;
@@ -228,7 +230,7 @@
 
   &.unavailable {
     color: variables.$color-text-muted;
-    background-color: variables.$color-background;
+    background-color: variables.$color-surface-alt;
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -255,7 +257,7 @@
   display: inline-flex;
   align-items: center;
   gap: 1.25rem;
-  background-color: variables.$color-background;
+  background-color: variables.$color-surface-alt;
   border: 0.0625rem solid variables.$color-border;
   border-radius: variables.$border-radius-full;
   padding: 0.375rem 0.5rem;
@@ -275,7 +277,7 @@
     box-shadow: variables.$shadow-sm;
 
     &:disabled {
-      color: rgba(0, 0, 0, 0.2);
+      color: variables.$color-text-muted;
       background-color: transparent;
       border-color: transparent;
       box-shadow: none;
@@ -302,16 +304,13 @@
 
 .actionSection {
   margin-top: auto;
-  /* MODIFICACIÓN: Ya no necesitamos tanto padding-top si el margen lo maneja .hoverDetails */
-  padding-top: 1rem; 
+  padding-top: 1.5rem; 
   border-top: 0.0625rem solid variables.$color-border;
 
   p {
     font-size: 0.9375rem;
     margin-bottom: 1.5rem;
     color: variables.$color-text-light;
-    /* Para que el texto de disponibilidad no quede tan pegado al borde en móviles */
-    margin-top: 1rem; 
   }
 }
 
@@ -321,7 +320,7 @@
 }
 
 .outOfStock {
-  color: #ef4444;
+  color: variables.$color-accent;
   font-weight: 600;
 }
 
@@ -340,12 +339,12 @@
     background-color: variables.$color-primary;
     color: variables.$color-surface;
     cursor: pointer;
-    box-shadow: variables.$shadow-md;
+    box-shadow: variables.$shadow-sm;
 
     &:hover:not(:disabled) {
       background-color: variables.$color-accent;
       transform: translateY(-0.125rem);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      box-shadow: variables.$shadow-md;
     }
 
     &:disabled {
@@ -357,8 +356,9 @@
   }
 
   &.unavailable {
-    background-color: variables.$color-border;
+    background-color: variables.$color-background;
     color: variables.$color-text-muted;
+    border: 0.0625rem solid variables.$color-border;
     cursor: not-allowed;
     box-shadow: none;
   }
@@ -367,13 +367,14 @@
 .successMessage {
   margin-top: 1rem;
   padding: 0.75rem;
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: variables.$color-surface-alt;
+  border: 0.0625rem solid variables.$color-border;
+  color: #10b981; 
   border-radius: variables.$border-radius;
   font-size: 0.875rem;
   font-weight: 500;
   text-align: center;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn variables.$transition-default;
 }
 
 @keyframes fadeIn {
