@@ -16,10 +16,10 @@ interface ProductFormProps {
 const defaultFormData: CreateProductRequest = {
   title: "",
   description: "",
-  price: 0,
-  discountedPrice: 0,
-  discountPersent: 0,
-  quantity: 0,
+  price: "" as unknown as number,
+  discountedPrice: "" as unknown as number,
+  discountPersent: "" as unknown as number,
+  quantity: "" as unknown as number,
   brand: "",
   color: "",
   imageUrl: "",
@@ -55,7 +55,6 @@ export default function ProductForm({
     }
   }, [isOpen, mode, initialData]);
 
-  // Bloquear scroll del body cuando el modal está abierto
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -74,17 +73,21 @@ export default function ProductForm({
 
     setFormData((prev) => {
       const parsedValue = ["price", "discountedPrice", "discountPersent", "quantity"].includes(name)
-        ? Number(value)
+        ? (value === "" ? ("" as unknown as number) : Number(value))
         : value;
 
       const nextFormData = { ...prev, [name]: parsedValue };
 
-      // Cálculo automático del precio con descuento
       if (name === "price" || name === "discountPersent") {
-        const price = name === "price" ? Number(value) : prev.price;
-        const discount = name === "discountPersent" ? Number(value) : prev.discountPersent;
-        if (price > 0 && discount >= 0) {
-          nextFormData.discountedPrice = Math.round(price * (1 - discount / 100));
+        const price = name === "price" ? parsedValue : prev.price;
+        const discount = name === "discountPersent" ? parsedValue : prev.discountPersent;
+        
+        if (price !== "" && discount !== "") {
+          if (Number(price) > 0 && Number(discount) >= 0) {
+            nextFormData.discountedPrice = Math.round(Number(price) * (1 - Number(discount) / 100));
+          }
+        } else {
+          nextFormData.discountedPrice = "" as unknown as number;
         }
       }
 
@@ -110,7 +113,6 @@ export default function ProductForm({
     }
   };
 
-  // Cerrar al hacer clic en el overlay (fuera del modal)
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === overlayRef.current) {
       onClose();
