@@ -258,3 +258,30 @@
   color: variables.$color-accent;
   font-weight: 700;
 }
+
+.skeletonBox {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid variables.$color-border;
+}
+
+.skeletonItem {
+  height: 8rem;
+  width: 100%;
+}
+
+.skeletonSummary {
+  height: 22rem;
+  width: 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

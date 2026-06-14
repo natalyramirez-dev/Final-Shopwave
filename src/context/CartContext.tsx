@@ -28,14 +28,13 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const VALID_COUPONS: Record<string, number> = {
   "SHOPWAVE": 5,
-  "10DELMES": 10,
-  "QUEZADA": 15
+  "DAHBNER": 10,
+  "QUEZADA": 20
 };
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
-  
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
 
   const fetchCart = async () => {
@@ -44,7 +43,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await cartService.getUserCart();
       setCart(data);
     } catch (error) {
-      console.error(error);
+      setCart(null);
     } finally {
       setLoading(false);
     }
@@ -109,6 +108,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const baseTotal = cart?.totalDiscountedPrice || 0;
   const extraDiscountAmount = appliedCoupon ? (baseTotal * (appliedCoupon.discount / 100)) : 0;
   const finalCalculatedTotal = baseTotal - extraDiscountAmount;
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
   return (
     <CartContext.Provider 
