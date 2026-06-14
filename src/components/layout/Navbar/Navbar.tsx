@@ -88,25 +88,25 @@ export default function Navbar() {
             <li>
               <Link href="/products" onClick={closeMenu}
                 className={pathname === "/products" ? styles.activeLink : ""}>
-                Products
+                Productos
               </Link>
             </li>
             <li>
               <Link href="/cart" onClick={closeMenu}
                 className={pathname === "/cart" ? styles.activeLink : ""}>
-                Cart
+                Carrito
               </Link>
             </li>
             <li>
               <Link href="/orders" onClick={closeMenu}
                 className={pathname === "/orders" ? styles.activeLink : ""}>
-                Orders
+                Ordenes
               </Link>
             </li>
             <li>
               <Link href="/profile" onClick={closeMenu}
                 className={pathname === "/profile" ? styles.activeLink : ""}>
-                Profile
+                Mi Perfil
               </Link>
             </li>
             <li>
