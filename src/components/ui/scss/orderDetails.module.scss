@@ -11,12 +11,12 @@
 .content {
   flex: 1;
   width: 100%;
-  max-width: 90rem;
+  max-width: 72rem;
   margin: 0 auto;
-  padding: 2rem 6% 4rem;
+  padding: 2.5rem 6% 5rem;
 }
 
-.loadingWrapper, .errorWrapper {
+.errorWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -24,36 +24,37 @@
   align-items: center;
   min-height: 50vh;
   text-align: center;
-}
 
-.loadingText {
-  font-family: variables.$font-body;
-  font-size: 1.125rem;
-  color: variables.$color-text-light;
-  animation: pulse 1.5s infinite ease-in-out;
-}
+  h2 {
+    font-family: variables.$font-display;
+    color: variables.$color-text;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+  }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.errorWrapper h2 {
-  font-family: variables.$font-display;
-  color: variables.$color-text;
-  margin-bottom: 1rem;
+  p {
+    font-family: variables.$font-body;
+    color: variables.$color-text-light;
+  }
 }
 
 .backBtn {
   margin-top: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: variables.$color-primary;
+  padding: 0.875rem 2rem;
+  background-color: variables.$color-text;
   color: variables.$color-surface;
   border: none;
-  border-radius: variables.$border-radius;
+  border-radius: variables.$border-radius-full;
   cursor: pointer;
   font-weight: 600;
   font-family: variables.$font-body;
+  transition: all variables.$transition-default;
+
+  &:hover {
+    background-color: variables.$color-primary;
+    transform: translateY(-0.125rem);
+    box-shadow: variables.$shadow-md;
+  }
 }
 
 .successBanner {
@@ -61,32 +62,44 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 3rem 0;
-  margin-bottom: 2rem;
+  padding: 3rem 2rem;
+  margin-bottom: 2.5rem;
+  background-color: variables.$color-surface;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid rgba(16, 185, 129, 0.2);
+  box-shadow: variables.$shadow-sm;
 
-  svg {
-    color: #10b981;
+  .iconCircle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 4rem;
+    height: 4rem;
+    background-color: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
     margin-bottom: 1.5rem;
+    color: #10b981;
   }
 
   h1 {
     font-family: variables.$font-display;
-    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
     font-weight: 800;
     color: variables.$color-text;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
   }
 
   p {
     font-family: variables.$font-body;
     color: variables.$color-text-light;
-    font-size: 1.125rem;
+    font-size: 1.0625rem;
   }
 }
 
 .orderGrid {
   display: grid;
-  grid-template-columns: 1fr 26rem;
+  grid-template-columns: 1fr 24rem;
   gap: 2rem;
   align-items: start;
 
@@ -104,7 +117,7 @@
 .sideCol {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .card {
@@ -113,10 +126,15 @@
   border-radius: variables.$border-radius;
   padding: 2rem;
   box-shadow: variables.$shadow-sm;
+  transition: box-shadow variables.$transition-default;
+
+  &:hover {
+    box-shadow: variables.$shadow-md;
+  }
 
   h2 {
     font-family: variables.$font-display;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
     color: variables.$color-text;
     margin-bottom: 1.5rem;
@@ -127,9 +145,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   border-bottom: 0.0625rem solid variables.$color-border;
-  padding-bottom: 1rem;
+  padding-bottom: 1.5rem;
 
   h2 {
     margin-bottom: 0;
@@ -138,21 +156,31 @@
   .orderId {
     font-family: variables.$font-body;
     font-size: 0.875rem;
-    color: variables.$color-text-muted;
+    color: variables.$color-text-light;
     font-weight: 600;
+    background-color: variables.$color-background;
+    padding: 0.375rem 0.75rem;
+    border-radius: variables.$border-radius;
+    border: 0.0625rem solid variables.$color-border;
   }
 }
 
 .itemsList {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
 .orderItem {
   display: flex;
   gap: 1.5rem;
   align-items: center;
+  padding: 1.5rem 0;
+  border-bottom: 0.0625rem solid variables.$color-border;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
 
   @media (max-width: 48rem) {
     flex-direction: column;
@@ -161,10 +189,11 @@
 }
 
 .itemImage {
-  width: 6rem;
-  height: 6rem;
+  width: 5.5rem;
+  height: 5.5rem;
   object-fit: cover;
-  border-radius: variables.$border-radius;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid variables.$color-border;
   background-color: variables.$color-background;
 }
 
@@ -176,14 +205,19 @@
     font-size: 1rem;
     font-weight: 600;
     color: variables.$color-text;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.375rem;
   }
 
   .brand, .size {
     font-family: variables.$font-body;
     font-size: 0.875rem;
     color: variables.$color-text-light;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
+  }
+  
+  .brand {
+    font-weight: 500;
+    color: variables.$color-primary;
   }
 }
 
@@ -201,11 +235,17 @@
   }
 
   .quantity {
+    font-family: variables.$font-body;
     font-size: 0.875rem;
+    font-weight: 500;
     color: variables.$color-text-light;
+    background-color: variables.$color-background;
+    padding: 0.25rem 0.625rem;
+    border-radius: variables.$border-radius-full;
   }
 
   .price {
+    font-family: variables.$font-display;
     font-size: 1.125rem;
     font-weight: 700;
     color: variables.$color-text;
@@ -219,10 +259,15 @@
   font-family: variables.$font-body;
   font-size: 0.9375rem;
   color: variables.$color-text-light;
+  
+  .summaryValue {
+    font-weight: 600;
+    color: variables.$color-text;
+  }
 
   .discount {
     color: #10b981;
-    font-weight: 600;
+    font-weight: 700;
   }
 }
 
@@ -235,8 +280,9 @@
 .totalRow {
   display: flex;
   justify-content: space-between;
-  font-family: variables.$font-body;
-  font-size: 1.25rem;
+  align-items: center;
+  font-family: variables.$font-display;
+  font-size: 1.375rem;
   font-weight: 800;
   color: variables.$color-text;
 }
@@ -248,6 +294,7 @@
   font-family: variables.$font-body;
   font-size: 0.9375rem;
   color: variables.$color-text-light;
+  line-height: 1.5;
 
   .name {
     font-weight: 700;
@@ -258,16 +305,34 @@
 
 .statusBadge {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  background-color: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 0.0625rem solid rgba(16, 185, 129, 0.2);
+  padding: 0.5rem 1.25rem;
   border-radius: variables.$border-radius-full;
   font-family: variables.$font-body;
   font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 0.0625rem solid transparent;
+
+  &.placed, &.pending {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border-color: rgba(245, 158, 11, 0.2);
+  }
+
+  &.confirmed, &.shipped {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
+  &.delivered {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
+  }
 }
 
 .continueBtn {
@@ -275,15 +340,58 @@
   width: 100%;
   text-align: center;
   padding: 1rem;
-  background-color: variables.$color-text;
+  background-color: variables.$color-primary;
   color: variables.$color-surface;
   border-radius: variables.$border-radius-full;
   font-family: variables.$font-body;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color variables.$transition-default;
+  transition: all variables.$transition-default;
+  border: 0.0625rem solid transparent;
 
   &:hover {
-    background-color: variables.$color-primary;
+    background-color: variables.$color-accent;
+    transform: translateY(-0.125rem);
+    box-shadow: variables.$shadow-md;
+  }
+}
+
+.skeletonBox {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: variables.$border-radius;
+}
+
+.skeletonBanner {
+  height: 12rem;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.skeletonTitle {
+  height: 1.5rem;
+  width: 10rem;
+  border-radius: 0.25rem;
+}
+
+.skeletonText {
+  height: 1rem;
+  width: 100%;
+  border-radius: 0.25rem;
+}
+
+.skeletonBadge {
+  height: 2.25rem;
+  width: 7rem;
+  border-radius: variables.$border-radius-full;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

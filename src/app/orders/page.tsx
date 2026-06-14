@@ -58,8 +58,41 @@ function OrdersHistoryContent() {
         </div>
 
         {loading ? (
-          <div className={styles.loadingWrapper}>
-            <p className={styles.loadingText}>Cargando tu historial...</p>
+          <div className={styles.ordersList}>
+            {[1, 2, 3].map((index) => (
+              <article key={index} className={styles.orderCard}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.orderMeta}>
+                    <div className={`${styles.skeletonBox} ${styles.skeletonText}`} style={{ width: "6rem" }}></div>
+                    <div className={`${styles.skeletonBox} ${styles.skeletonText}`} style={{ width: "8rem" }}></div>
+                  </div>
+                  <div className={`${styles.skeletonBox} ${styles.skeletonBadge}`}></div>
+                </div>
+
+                <div className={styles.cardBody}>
+                  <div className={styles.previewImages}>
+                    <div className={`${styles.skeletonBox} ${styles.skeletonThumbnail}`}></div>
+                    <div className={`${styles.skeletonBox} ${styles.skeletonThumbnail}`}></div>
+                    <div className={`${styles.skeletonBox} ${styles.skeletonThumbnail}`}></div>
+                  </div>
+                  
+                  <div className={styles.orderSummary}>
+                    <div className={styles.summaryItem}>
+                      <div className={`${styles.skeletonBox} ${styles.skeletonText}`} style={{ width: "4rem", marginBottom: "0.25rem" }}></div>
+                      <div className={`${styles.skeletonBox} ${styles.skeletonText}`} style={{ width: "2rem" }}></div>
+                    </div>
+                    <div className={styles.summaryItem}>
+                      <div className={`${styles.skeletonBox} ${styles.skeletonText}`} style={{ width: "5rem", marginBottom: "0.25rem" }}></div>
+                      <div className={`${styles.skeletonBox} ${styles.skeletonText}`} style={{ width: "6rem", height: "1.5rem" }}></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.cardFooter}>
+                  <div className={`${styles.skeletonBox} ${styles.skeletonButton}`}></div>
+                </div>
+              </article>
+            ))}
           </div>
         ) : error ? (
           <div className={styles.errorWrapper}>
