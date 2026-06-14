@@ -1,0 +1,289 @@
+@use "./variables";
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: variables.$color-background;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 2rem 6% 4rem;
+}
+
+.loadingWrapper, .errorWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  text-align: center;
+}
+
+.loadingText {
+  font-family: variables.$font-body;
+  font-size: 1.125rem;
+  color: variables.$color-text-light;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.errorWrapper h2 {
+  font-family: variables.$font-display;
+  color: variables.$color-text;
+  margin-bottom: 1rem;
+}
+
+.backBtn {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: variables.$color-primary;
+  color: variables.$color-surface;
+  border: none;
+  border-radius: variables.$border-radius;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: variables.$font-body;
+}
+
+.successBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+
+  svg {
+    color: #10b981;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: variables.$font-display;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: variables.$color-text;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-family: variables.$font-body;
+    color: variables.$color-text-light;
+    font-size: 1.125rem;
+  }
+}
+
+.orderGrid {
+  display: grid;
+  grid-template-columns: 1fr 26rem;
+  gap: 2rem;
+  align-items: start;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sideCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.card {
+  background-color: variables.$color-surface;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius;
+  padding: 2rem;
+  box-shadow: variables.$shadow-sm;
+
+  h2 {
+    font-family: variables.$font-display;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: variables.$color-text;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 0.0625rem solid variables.$color-border;
+  padding-bottom: 1rem;
+
+  h2 {
+    margin-bottom: 0;
+  }
+
+  .orderId {
+    font-family: variables.$font-body;
+    font-size: 0.875rem;
+    color: variables.$color-text-muted;
+    font-weight: 600;
+  }
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.orderItem {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+
+  @media (max-width: 48rem) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.itemImage {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border-radius: variables.$border-radius;
+  background-color: variables.$color-background;
+}
+
+.itemDetails {
+  flex: 1;
+
+  h3 {
+    font-family: variables.$font-body;
+    font-size: 1rem;
+    font-weight: 600;
+    color: variables.$color-text;
+    margin-bottom: 0.25rem;
+  }
+
+  .brand, .size {
+    font-family: variables.$font-body;
+    font-size: 0.875rem;
+    color: variables.$color-text-light;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.itemPricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+
+  @media (max-width: 48rem) {
+    align-items: flex-start;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .quantity {
+    font-size: 0.875rem;
+    color: variables.$color-text-light;
+  }
+
+  .price {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: variables.$color-text;
+  }
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-family: variables.$font-body;
+  font-size: 0.9375rem;
+  color: variables.$color-text-light;
+
+  .discount {
+    color: #10b981;
+    font-weight: 600;
+  }
+}
+
+.divider {
+  height: 0.0625rem;
+  background-color: variables.$color-border;
+  margin: 1.5rem 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-family: variables.$font-body;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: variables.$color-text;
+}
+
+.addressInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: variables.$font-body;
+  font-size: 0.9375rem;
+  color: variables.$color-text-light;
+
+  .name {
+    font-weight: 700;
+    color: variables.$color-text;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 0.0625rem solid rgba(16, 185, 129, 0.2);
+  border-radius: variables.$border-radius-full;
+  font-family: variables.$font-body;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.continueBtn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+  background-color: variables.$color-text;
+  color: variables.$color-surface;
+  border-radius: variables.$border-radius-full;
+  font-family: variables.$font-body;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color variables.$transition-default;
+
+  &:hover {
+    background-color: variables.$color-primary;
+  }
+}
