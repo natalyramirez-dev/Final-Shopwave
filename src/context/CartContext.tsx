@@ -4,6 +4,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { Cart } from "@/models/cart.model";
 import { cartService } from "@/services/cart.service";
 
+interface Coupon {
+  code: string;
+  discount: number;
+}
+
 interface CartContextType {
   cart: Cart | null;
   loading: boolean;
@@ -11,24 +16,33 @@ interface CartContextType {
   updateQuantity: (cartItemId: number, quantity: number) => Promise<void>;
   removeItem: (cartItemId: number) => Promise<void>;
   addToCart: (productId: number, size: string, quantity: number) => Promise<void>;
+  
+  appliedCoupon: Coupon | null;
+  applyCoupon: (code: string) => boolean;
+  removeCoupon: () => void;
+  extraDiscountAmount: number;
+  finalCalculatedTotal: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const VALID_COUPONS: Record<string, number> = {
+  "SHOPWAVE": 5,
+  "DAHBNER": 10,
+  "QUEZADA": 20
+};
+
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
 
   const fetchCart = async () => {
     try {
       setLoading(true);
       const data = await cartService.getUserCart();
       setCart(data);
-    } catch (error: any) {
-      // Si el backend devuelve error de carrito nulo, simplemente dejamos el carrito vacío
-      // en vez de romper la app — el carrito se creará cuando el usuario agregue su primer producto
-      const isCartNull = error?.message?.toLowerCase().includes("null");
-      if (!isCartNull) console.error(error);
+    } catch (error) {
       setCart(null);
     } finally {
       setLoading(false);
@@ -79,12 +93,42 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const applyCoupon = (code: string): boolean => {
+    const upperCode = code.trim().toUpperCase();
+    if (VALID_COUPONS[upperCode]) {
+      setAppliedCoupon({ code: upperCode, discount: VALID_COUPONS[upperCode] });
+      return true;
+    }
+    setAppliedCoupon(null);
+    return false;
+  };
+
+  const removeCoupon = () => setAppliedCoupon(null);
+
+  const baseTotal = cart?.totalDiscountedPrice || 0;
+  const extraDiscountAmount = appliedCoupon ? (baseTotal * (appliedCoupon.discount / 100)) : 0;
+  const finalCalculatedTotal = baseTotal - extraDiscountAmount;
+
   useEffect(() => {
     fetchCart();
   }, []);
 
   return (
-    <CartContext.Provider value={{ cart, loading, fetchCart, updateQuantity, removeItem, addToCart }}>
+    <CartContext.Provider 
+      value={{ 
+        cart, 
+        loading, 
+        fetchCart, 
+        updateQuantity, 
+        removeItem, 
+        addToCart,
+        appliedCoupon,
+        applyCoupon,
+        removeCoupon,
+        extraDiscountAmount,
+        finalCalculatedTotal
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -20,6 +20,7 @@ export default function AdminProductsList() {
   const [selectedProduct, setSelectedProduct] = useState<{
     id: number;
     data: CreateProductRequest;
+    originalCategory?: any;
   } | null>(null);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function AdminProductsList() {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = async (product: Product) => {
+  const handleOpenEdit = (product: Product) => {
     const productData: CreateProductRequest = {
       title: product.title || "",
       description: product.description || "",
@@ -60,7 +61,11 @@ export default function AdminProductsList() {
       thirdLevelCategory: product.category?.name || "",
       size: product.sizes || [{ name: "M", quantity: 10 }],
     };
-    setSelectedProduct({ id: product.id, data: productData });
+    setSelectedProduct({ 
+      id: product.id, 
+      data: productData,
+      originalCategory: product.category 
+    });
     setModalMode("edit");
     setIsModalOpen(true);
   };
@@ -71,12 +76,40 @@ export default function AdminProductsList() {
   };
 
   const handleSubmit = async (data: CreateProductRequest) => {
-    if (modalMode === "edit" && selectedProduct) {
-      await adminProductService.updateProduct(selectedProduct.id, data);
-    } else {
-      await adminProductService.createProduct(data);
+    try {
+      if (modalMode === "edit" && selectedProduct) {
+        const updatePayload: any = {
+          ...data,
+          sizes: data.size,
+          category: {
+            id: selectedProduct.originalCategory?.id,
+            name: data.thirdLevelCategory,
+            parentCategory: {
+              id: selectedProduct.originalCategory?.parentCategory?.id,
+              name: data.secondLevelCategory,
+              parentCategory: {
+                id: selectedProduct.originalCategory?.parentCategory?.parentCategory?.id,
+                name: data.topLevelCategory
+              }
+            }
+          }
+        };
+
+        delete updatePayload.size;
+        delete updatePayload.topLevelCategory;
+        delete updatePayload.secondLevelCategory;
+        delete updatePayload.thirdLevelCategory;
+
+        await adminProductService.updateProduct(selectedProduct.id, updatePayload);
+      } else {
+        await adminProductService.createProduct(data);
+      }
+
+      handleCloseModal();
+      await loadProducts();
+    } catch (err: any) {
+      alert(err.message);
     }
-    await loadProducts();
   };
 
   const handleDelete = async (id: number) => {
@@ -85,7 +118,7 @@ export default function AdminProductsList() {
       await adminProductService.deleteProduct(id);
       setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err: any) {
-      alert(`Error al eliminar: ${err.message}`);
+      alert(err.message);
     }
   };
 
@@ -172,7 +205,6 @@ export default function AdminProductsList() {
         </div>
       </div>
 
-      {/* Modal reutilizable */}
       <ProductForm
         isOpen={isModalOpen}
         onClose={handleCloseModal}

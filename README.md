@@ -559,3 +559,33 @@ A React Context was implemented to manage cart operations globally across the ap
 ### 4. UX/UI and Styling Improvements
 * **Modern SCSS Modules:** Complete UI overhaul of `ProductCard`, `CartItem`, and the Cart Page using strictly SCSS modules to match the overarching design system.
 * **Micro-interactions:** Replaced generic text buttons with optimized SVG icons (e.g., a dynamic trash can for item removal). Implemented disabled states, smooth hover transitions, and elegant box shadows (`variables.$shadow-md`) to enhance the premium feel of the e-commerce platform.
+
+---
+
+## Checkout, Order Management & Role-Based UI
+**Date:** 14/06/2026
+**Responsible Developer:** Dabner Orozco
+
+This module finalizes the end-to-end customer purchasing journey and introduces the administrative control layer. The implementation focused on building a secure checkout process, managing the complete order lifecycle, implementing role-based access control, and mitigating several strict backend constraints regarding order visibility and cart state.
+
+### 1. Multi-Step Checkout & Payment Simulation (`/checkout`)
+Transformed the standard checkout form into a cognitive-friendly, multi-step Wizard separating shipping details from payment logic.
+* **Simulated Payment Interface:** Implemented dynamic input formatting (e.g., auto-spacing credit card numbers every 4 digits) and visual mockup fields (Exp Month, Year, CVC) to simulate a realistic, secure payment environment without forcing unmapped fields into the backend payload.
+* **Cart State Resolution (Backend Override):** Solved a critical backend omission where the `createOrder` endpoint failed to clear the user's cart upon completion. Engineered a frontend synchronization layer that triggers a batch deletion via `Promise.all()`, mapping and executing `DELETE` requests for each individual cart item immediately after a successful order is placed.
+
+### 2. Order Lifecycle & History Management (`/orders`)
+* **Dynamic Receipt Rendering:** Built the `/orders/[id]` view leveraging Next.js `useParams` to fetch and render immutable order data (shipping details, itemized breakdown, status badges, calculated totals) immediately post-checkout.
+* **User Order History:** Created a dashboard for users to track past purchases. Engineered a custom visual summarization logic that displays thumbnails of the first three products in an order and dynamically generates a "+X" indicator for remaining items, optimizing vertical layout space.
+
+### 3. Admin Order Control & Status Resolution (`/admin/orders`)
+* **Database Rule Bypass:** Diagnosed a core architectural limitation in the Spring Boot `OrderRepository` where newly created orders default to a `PENDING` status, but the user history query strictly excludes `PENDING` records, making new orders functionally invisible to the buyer.
+* **Resolution Panel:** Built a comprehensive Admin Management table allowing administrators to fetch all orders globally and mutate their states (`CONFIRM`, `SHIP`, `DELIVER`, `CANCEL`). Confirming an order through this interface successfully updates the database and triggers visibility on the client side.
+
+### 4. Role-Based Navigation & Security (`Navbar.tsx`)
+* **JWT Role Extraction:** Upgraded the global Navbar to dynamically parse the `user.role` from the authentication context.
+* **Strict UI Segregation:** Implemented conditional rendering to isolate environments. Administrators (`ROLE_ADMIN`) are served exclusive management links, while standard users see e-commerce links (Cart/Profile/Orders). This prevents UI clutter and obfuscates unauthorized tools.
+* **Responsive Micro-animations:** Engineered a custom CSS "Slide & Fade" transition for the mobile hamburger menu, replacing rigid display toggles with a smoother DOM rendering approach.
+
+### 5. Premium UI & Perceived Performance
+* **Skeleton Loading Infrastructure:** Replaced all static loading states with CSS-driven Shimmer Effect Skeleton loaders across Checkout, Order Details, and History views. This eliminates Cumulative Layout Shift (CLS) and aligns the frontend with modern enterprise standards.
+* **SCSS Variable Hardening:** Resolved compilation errors related to undefined global variables, ensuring consistent cross-component styling and stable shadow rendering across all responsive viewports.

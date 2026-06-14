@@ -440,3 +440,53 @@
   &::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 99px; }
   &::-webkit-scrollbar-thumb:hover { background: #c0c0c0; }
 }
+
+.statusPill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: #f3f4f6;
+  color: #374151;
+  text-transform: uppercase;
+}
+
+.statusActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actionBtn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  border-radius: variables.$border-radius;
+  background-color: variables.$color-text;
+  color: variables.$color-surface;
+  cursor: pointer;
+  transition: variables.$transition-default;
+
+  &:hover {
+    background-color: variables.$color-primary;
+  }
+}
+
+.cancelBtn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #ef4444;
+  border-radius: variables.$border-radius;
+  background-color: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: variables.$transition-default;
+
+  &:hover {
+    background-color: #ef4444;
+    color: white;
+  }
+}
