@@ -162,3 +162,99 @@
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.4; }
 }
+
+.couponSection {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  p {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: variables.$color-text;
+    margin: 0;
+  }
+}
+
+.couponInputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.couponInput {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius;
+  font-family: variables.$font-body;
+  font-size: 0.875rem;
+  color: variables.$color-text;
+  background-color: variables.$color-background;
+  outline: none;
+  transition: border-color variables.$transition-default;
+  text-transform: uppercase;
+
+  &:focus {
+    border-color: variables.$color-primary;
+  }
+  
+  &::placeholder {
+    color: variables.$color-text-muted;
+    text-transform: none;
+  }
+
+  &:disabled {
+    background-color: #f3f4f6;
+    color: variables.$color-text-muted;
+    cursor: not-allowed;
+  }
+}
+
+.applyBtn {
+  padding: 0.75rem 1.25rem;
+  background-color: variables.$color-text;
+  color: variables.$color-surface;
+  border: none;
+  border-radius: variables.$border-radius;
+  font-family: variables.$font-body;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color variables.$transition-default;
+
+  &:hover {
+    background-color: variables.$color-accent;
+  }
+
+  &.removeBtn {
+    background-color: #ef4444;
+    &:hover {
+      background-color: #b91c1c;
+    }
+  }
+}
+
+.couponMessage {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in-out;
+
+  &.success {
+    color: #10b981;
+  }
+
+  &.error {
+    color: #ef4444;
+  }
+}
+
+.extraDiscountRow {
+  margin-top: 0.5rem;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.extraDiscount {
+  color: variables.$color-accent;
+  font-weight: 700;
+}

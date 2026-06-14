@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import CartItem from "@/components/cart/CartItem/CartItem";
 import EmptyState from "@/components/ui/EmptyState/EmptyState";
@@ -16,7 +18,35 @@ export default function CartPage() {
 }
 
 function CartContent() {
-  const { cart, loading } = useCart();
+  const { 
+    cart, 
+    loading,
+    appliedCoupon,
+    applyCoupon,
+    removeCoupon,
+    extraDiscountAmount,
+    finalCalculatedTotal
+  } = useCart();
+
+  const [couponCode, setCouponCode] = useState("");
+  const [couponMessage, setCouponMessage] = useState({ type: "", text: "" });
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+
+    const success = applyCoupon(couponCode);
+    if (success) {
+      setCouponMessage({ type: "success", text: "¡El cupón fue aplicado con éxito!" });
+    } else {
+      setCouponMessage({ type: "error", text: "Cupón inválido o expirado." });
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    removeCoupon();
+    setCouponCode("");
+    setCouponMessage({ type: "", text: "" });
+  };
 
   return (
     <main className={styles.container}>
@@ -61,7 +91,7 @@ function CartContent() {
               </div>
               
               <div className={styles.summaryRow}>
-                <span>Descuento</span>
+                <span>Descuento de tienda</span>
                 <span className={styles.discount}>- ${cart.discounte}</span>
               </div>
               
@@ -70,16 +100,52 @@ function CartContent() {
                 <span>Gratis</span>
               </div>
 
+              {}
+              <div className={styles.couponSection}>
+                <p>¿Tienes un código de descuento?</p>
+                <div className={styles.couponInputGroup}>
+                  <input 
+                    type="text" 
+                    placeholder="Ej. CODIGOCUPON" 
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    disabled={appliedCoupon !== null}
+                    className={styles.couponInput}
+                  />
+                  {!appliedCoupon ? (
+                    <button onClick={handleApplyCoupon} className={styles.applyBtn}>
+                      Aplicar
+                    </button>
+                  ) : (
+                    <button onClick={handleRemoveCoupon} className={`${styles.applyBtn} ${styles.removeBtn}`}>
+                      Quitar
+                    </button>
+                  )}
+                </div>
+                {couponMessage.text && (
+                  <span className={`${styles.couponMessage} ${styles[couponMessage.type]}`}>
+                    {couponMessage.text}
+                  </span>
+                )}
+              </div>
+
+              {appliedCoupon && (
+                <div className={`${styles.summaryRow} ${styles.extraDiscountRow}`}>
+                  <span>Cupón {appliedCoupon.code} ({appliedCoupon.discount}%)</span>
+                  <span className={styles.extraDiscount}>- ${extraDiscountAmount.toFixed(2)}</span>
+                </div>
+              )}
+
               <div className={styles.divider} />
 
               <div className={styles.totalRow}>
                 <span>Total</span>
-                <span>${cart.totalDiscountedPrice}</span>
+                <span>${finalCalculatedTotal.toFixed(2)}</span>
               </div>
 
-              <button className={styles.checkoutBtn}>
+              <Link href="/checkout" className={styles.checkoutBtn}>
                 Proceder al pago
-              </button>
+              </Link>
             </div>
           </div>
         )}

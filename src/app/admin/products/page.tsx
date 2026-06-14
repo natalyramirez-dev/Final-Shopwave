@@ -44,7 +44,7 @@ export default function AdminProductsList() {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = async (product: Product) => {
+  const handleOpenEdit = (product: Product) => {
     const productData: CreateProductRequest = {
       title: product.title || "",
       description: product.description || "",
@@ -71,12 +71,29 @@ export default function AdminProductsList() {
   };
 
   const handleSubmit = async (data: CreateProductRequest) => {
-    if (modalMode === "edit" && selectedProduct) {
-      await adminProductService.updateProduct(selectedProduct.id, data);
-    } else {
-      await adminProductService.createProduct(data);
+    try {
+      if (modalMode === "edit" && selectedProduct) {
+        const updatePayload: any = {
+          ...data,
+          sizes: data.size,
+        };
+        
+        delete updatePayload.size;
+        delete updatePayload.topLevelCategory;
+        delete updatePayload.secondLevelCategory;
+        delete updatePayload.thirdLevelCategory;
+
+        await adminProductService.updateProduct(selectedProduct.id, updatePayload);
+      } else {
+        await adminProductService.createProduct(data);
+      }
+      
+      handleCloseModal();
+      
+      await loadProducts();
+    } catch (err: any) {
+      alert("Error al guardar: " + (err.message || "Intente nuevamente."));
     }
-    await loadProducts();
   };
 
   const handleDelete = async (id: number) => {
@@ -172,7 +189,6 @@ export default function AdminProductsList() {
         </div>
       </div>
 
-      {/* Modal reutilizable */}
       <ProductForm
         isOpen={isModalOpen}
         onClose={handleCloseModal}
