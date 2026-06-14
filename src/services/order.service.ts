@@ -2,18 +2,18 @@ import { fetchApi } from "./api.service";
 import { Order, CreateOrderRequest } from "@/models/order.model";
 
 export const orderService = {
-  createOrder: (orderRequest: CreateOrderRequest) => {
+  createOrder: (payload: CreateOrderRequest): Promise<Order> => {
     return fetchApi<Order>("/orders/", {
       method: "POST",
-      body: JSON.stringify(orderRequest),
+      body: JSON.stringify(payload),
     });
   },
 
-  getUserOrderHistory: () => {
+  getUserOrderHistory: (): Promise<Order[]> => {
     return fetchApi<Order[]>("/orders/user");
   },
 
-  getOrderById: (orderId: number) => {
+  getOrderById: (orderId: number): Promise<Order> => {
     return fetchApi<Order>(`/orders/${orderId}`);
   }
 };
