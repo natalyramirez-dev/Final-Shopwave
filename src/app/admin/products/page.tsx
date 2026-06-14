@@ -20,6 +20,7 @@ export default function AdminProductsList() {
   const [selectedProduct, setSelectedProduct] = useState<{
     id: number;
     data: CreateProductRequest;
+    originalCategory?: any;
   } | null>(null);
 
   useEffect(() => {
@@ -60,7 +61,11 @@ export default function AdminProductsList() {
       thirdLevelCategory: product.category?.name || "",
       size: product.sizes || [{ name: "M", quantity: 10 }],
     };
-    setSelectedProduct({ id: product.id, data: productData });
+    setSelectedProduct({ 
+      id: product.id, 
+      data: productData,
+      originalCategory: product.category 
+    });
     setModalMode("edit");
     setIsModalOpen(true);
   };
@@ -76,8 +81,20 @@ export default function AdminProductsList() {
         const updatePayload: any = {
           ...data,
           sizes: data.size,
+          category: {
+            id: selectedProduct.originalCategory?.id,
+            name: data.thirdLevelCategory,
+            parentCategory: {
+              id: selectedProduct.originalCategory?.parentCategory?.id,
+              name: data.secondLevelCategory,
+              parentCategory: {
+                id: selectedProduct.originalCategory?.parentCategory?.parentCategory?.id,
+                name: data.topLevelCategory
+              }
+            }
+          }
         };
-        
+
         delete updatePayload.size;
         delete updatePayload.topLevelCategory;
         delete updatePayload.secondLevelCategory;
@@ -87,12 +104,11 @@ export default function AdminProductsList() {
       } else {
         await adminProductService.createProduct(data);
       }
-      
+
       handleCloseModal();
-      
       await loadProducts();
     } catch (err: any) {
-      alert("Error al guardar: " + (err.message || "Intente nuevamente."));
+      alert(err.message);
     }
   };
 
@@ -102,7 +118,7 @@ export default function AdminProductsList() {
       await adminProductService.deleteProduct(id);
       setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err: any) {
-      alert(`Error al eliminar: ${err.message}`);
+      alert(err.message);
     }
   };
 
