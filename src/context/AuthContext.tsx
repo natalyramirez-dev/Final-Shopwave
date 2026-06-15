@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       removeUser();
       setCurrentToken(null);
       setCurrentUser(null);
-      router.push("/login");
+      router.push("/");
     };
 
     window.addEventListener("auth-error", handleAuthError);

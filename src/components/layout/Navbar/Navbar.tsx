@@ -2,12 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/components/ui/scss/Navbar.module.scss";
 
-export default function Navbar() {
+type NavbarProps = {
+  onLoginClick?: () => void;
+  onRegisterClick?: () => void;
+};
+
+export default function Navbar({
+  onLoginClick,
+  onRegisterClick,
+}: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
   const { isAuthenticated, isLoading, logout, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -15,6 +25,28 @@ export default function Navbar() {
   const isAdmin = role === "ADMIN" || role === "ROLE_ADMIN";
 
   const closeMenu = () => setMenuOpen(false);
+
+  const handleLoginClick = () => {
+    closeMenu();
+
+    if (onLoginClick) {
+      onLoginClick();
+    }
+  };
+
+  const handleRegisterClick = () => {
+    closeMenu();
+
+    if (onRegisterClick) {
+      onRegisterClick();
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    closeMenu();
+    router.replace("/");
+  };
 
   if (isLoading) {
     return (
@@ -29,16 +61,19 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}>
-        <Link href="/" onClick={closeMenu}>ShopWave</Link>
+        <Link href="/" onClick={closeMenu}>
+          ShopWave
+        </Link>
       </div>
 
       <button
+        type="button"
         className={styles.burger}
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Abrir menú"
       >
-        <span className={menuOpen ? styles.burgerLineTop    : ""}></span>
-        <span className={menuOpen ? styles.burgerLineMid    : ""}></span>
+        <span className={menuOpen ? styles.burgerLineTop : ""}></span>
+        <span className={menuOpen ? styles.burgerLineMid : ""}></span>
         <span className={menuOpen ? styles.burgerLineBottom : ""}></span>
       </button>
 
@@ -46,16 +81,23 @@ export default function Navbar() {
         {!isAuthenticated && (
           <>
             <li>
-              <Link href="/login" onClick={closeMenu}
-                className={pathname === "/login" ? styles.activeLink : ""}>
+              <button
+                type="button"
+                onClick={handleLoginClick}
+                className={styles.authButton}
+              >
                 Login
-              </Link>
+              </button>
             </li>
+
             <li>
-              <Link href="/register" onClick={closeMenu}
-                className={pathname === "/register" ? styles.activeLink : ""}>
+              <button
+                type="button"
+                onClick={handleRegisterClick}
+                className={styles.authButton}
+              >
                 Register
-              </Link>
+              </button>
             </li>
           </>
         )}
@@ -63,20 +105,39 @@ export default function Navbar() {
         {isAuthenticated && isAdmin && (
           <>
             <li>
-              <Link href="/admin/products" onClick={closeMenu}
-                className={pathname.startsWith("/admin/products") ? styles.activeLink : ""}>
+              <Link
+                href="/admin/products"
+                onClick={closeMenu}
+                className={
+                  pathname.startsWith("/admin/products")
+                    ? styles.activeLink
+                    : ""
+                }
+              >
                 Administrar Productos
               </Link>
             </li>
+
             <li>
-              <Link href="/admin/orders" onClick={closeMenu}
-                className={pathname.startsWith("/admin/orders") ? styles.activeLink : ""}>
+              <Link
+                href="/admin/orders"
+                onClick={closeMenu}
+                className={
+                  pathname.startsWith("/admin/orders")
+                    ? styles.activeLink
+                    : ""
+                }
+              >
                 Administrar Ordenes
               </Link>
             </li>
+
             <li>
-              <button type="button" onClick={() => { logout(); closeMenu(); }}
-                className={styles.logoutButton}>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={styles.logoutButton}
+              >
                 Cerrar sesión
               </button>
             </li>
@@ -86,32 +147,51 @@ export default function Navbar() {
         {isAuthenticated && !isAdmin && (
           <>
             <li>
-              <Link href="/products" onClick={closeMenu}
-                className={pathname === "/products" ? styles.activeLink : ""}>
+              <Link
+                href="/products"
+                onClick={closeMenu}
+                className={pathname === "/products" ? styles.activeLink : ""}
+              >
                 Productos
               </Link>
             </li>
+
             <li>
-              <Link href="/cart" onClick={closeMenu}
-                className={pathname === "/cart" ? styles.activeLink : ""}>
+              <Link
+                href="/cart"
+                onClick={closeMenu}
+                className={pathname === "/cart" ? styles.activeLink : ""}
+              >
                 Carrito
               </Link>
             </li>
+
             <li>
-              <Link href="/orders" onClick={closeMenu}
-                className={pathname === "/orders" ? styles.activeLink : ""}>
+              <Link
+                href="/orders"
+                onClick={closeMenu}
+                className={pathname === "/orders" ? styles.activeLink : ""}
+              >
                 Ordenes
               </Link>
             </li>
+
             <li>
-              <Link href="/profile" onClick={closeMenu}
-                className={pathname === "/profile" ? styles.activeLink : ""}>
+              <Link
+                href="/profile"
+                onClick={closeMenu}
+                className={pathname === "/profile" ? styles.activeLink : ""}
+              >
                 Mi Perfil
               </Link>
             </li>
+
             <li>
-              <button type="button" onClick={() => { logout(); closeMenu(); }}
-                className={styles.logoutButton}>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={styles.logoutButton}
+              >
                 Cerrar sesión
               </button>
             </li>

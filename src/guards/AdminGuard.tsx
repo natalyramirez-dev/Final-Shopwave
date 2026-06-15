@@ -13,7 +13,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated) {
-        router.push("/login");
+        router.push("/");
       } else {
         const role = String(user?.role || "").toUpperCase();
         if (role === "ADMIN" || role === "ROLE_ADMIN") {
