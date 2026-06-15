@@ -51,12 +51,76 @@
   }
 }
 
+/* =========================================
+   CONTENEDOR DE NAVEGACIÓN Y BOTONES
+   ========================================= */
+.navigationWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem; 
+  width: 100%;
+  margin: 0 auto;
+  max-width: 45rem;
+
+  @media (max-width: 64rem) {
+    gap: 1.5rem;
+    max-width: 100%;
+  }
+
+  @media (max-width: 48rem) {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+
+    .card {
+      order: 1;
+      width: 100%;
+    }
+
+    .navButton {
+      order: 2;
+    }
+  }
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: variables.$color-surface;
+  border: 0.0625rem solid variables.$color-border;
+  color: variables.$color-text;
+  box-shadow: variables.$shadow-sm;
+  transition: all variables.$transition-default;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0; 
+
+  &:hover:not(.disabled) {
+    background-color: variables.$color-text;
+    color: variables.$color-surface;
+    transform: scale(1.1);
+    box-shadow: variables.$shadow-md;
+  }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: variables.$color-background;
+    pointer-events: none; 
+  }
+}
+
 .card {
   background-color: transparent;
   perspective: 1000px; 
   max-width: 28rem; 
   margin: 0 auto; 
   width: 100%;
+  box-sizing: border-box; 
 
   &:hover .flipCardInner {
     transform: rotateY(180deg);
@@ -73,18 +137,26 @@
 
 .flipCardFront, .flipCardBack {
   grid-area: 1 / 1; 
-  -webkit-backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; 
   backface-visibility: hidden;
   
   background-color: variables.$color-surface;
   border-radius: variables.$border-radius;
   border: 0.0625rem solid variables.$color-border;
   box-shadow: variables.$shadow-card;
+  
+  /* NUEVO: box-sizing para evitar que el padding sume ancho extra */
+  box-sizing: border-box; 
   padding: 2.5rem;
   
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+
+  /* NUEVO RESPONSIVE: Reducimos el padding interno en celulares */
+  @media (max-width: 48rem) {
+    padding: 1.5rem;
+  }
 }
 
 .flipCardBack {
@@ -100,6 +172,8 @@
   border-radius: variables.$border-radius-sm;
   padding: 1.5rem;
   height: 16rem; 
+  width: 100%; /* Asegura que no crezca más que su padre */
+  box-sizing: border-box;
 
   img {
     width: 100%;
