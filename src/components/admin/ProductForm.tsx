@@ -42,7 +42,6 @@ export default function ProductForm({
   const [error, setError] = useState<string | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Cargar datos al abrir el modal
   useEffect(() => {
     if (isOpen) {
       setError(null);
