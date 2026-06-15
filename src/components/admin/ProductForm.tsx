@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { CreateProductRequest } from "@/models/product.model";
-import styles from "@/components/ui/scss/admin.module.scss";
+import styles from "@/components/ui/scss/adminDashboard.module.scss";
 
 interface ProductFormProps {
   isOpen: boolean;
@@ -46,23 +46,13 @@ export default function ProductForm({
     if (isOpen) {
       setError(null);
       setLoading(false);
-      if (mode === "edit" && initialData) {
-        setFormData(initialData);
-      } else {
-        setFormData(defaultFormData);
-      }
+      setFormData(mode === "edit" && initialData ? initialData : defaultFormData);
     }
   }, [isOpen, mode, initialData]);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
   const handleChange = (
@@ -75,22 +65,19 @@ export default function ProductForm({
         ? (value === "" ? ("" as unknown as number) : Number(value))
         : value;
 
-      const nextFormData = { ...prev, [name]: parsedValue };
+      const next = { ...prev, [name]: parsedValue };
 
       if (name === "price" || name === "discountPersent") {
         const price = name === "price" ? parsedValue : prev.price;
         const discount = name === "discountPersent" ? parsedValue : prev.discountPersent;
-        
-        if (price !== "" && discount !== "") {
-          if (Number(price) > 0 && Number(discount) >= 0) {
-            nextFormData.discountedPrice = Math.round(Number(price) * (1 - Number(discount) / 100));
-          }
+        if (price !== "" && discount !== "" && Number(price) > 0 && Number(discount) >= 0) {
+          next.discountedPrice = Math.round(Number(price) * (1 - Number(discount) / 100));
         } else {
-          nextFormData.discountedPrice = "" as unknown as number;
+          next.discountedPrice = "" as unknown as number;
         }
       }
 
-      return nextFormData;
+      return next;
     });
   };
 
@@ -102,20 +89,18 @@ export default function ProductForm({
       await onSubmit(formData);
       onClose();
     } catch (err: any) {
-      if (err.message?.toLowerCase().includes("data too long")) {
-        setError("La descripción es demasiado larga. Por favor acórtala.");
-      } else {
-        setError(err.message || "Ocurrió un error. Intenta de nuevo.");
-      }
+      setError(
+        err.message?.toLowerCase().includes("data too long")
+          ? "La descripción es demasiado larga. Por favor acórtala."
+          : err.message || "Ocurrió un error. Intenta de nuevo."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current) {
-      onClose();
-    }
+    if (e.target === overlayRef.current) onClose();
   };
 
   if (!isOpen) return null;
@@ -132,7 +117,7 @@ export default function ProductForm({
       aria-labelledby="modal-title"
     >
       <div className={styles.modalContainer}>
-        {/* Header del modal */}
+        {/* Header */}
         <div className={styles.modalHeader}>
           <div className={styles.modalTitleBlock}>
             <span className={styles.modalBadge}>
@@ -152,7 +137,7 @@ export default function ProductForm({
           </button>
         </div>
 
-        {/* Contenido scrolleable */}
+        {/* Body scrolleable */}
         <div className={styles.modalBody}>
           {error && <div className={styles.errorMessage}>{error}</div>}
 
@@ -306,7 +291,7 @@ export default function ProductForm({
               </small>
             </div>
 
-            {/* Footer de acciones dentro del form */}
+            {/* Acciones del formulario */}
             <div className={`${styles.modalActions} ${styles.fullWidth}`}>
               <button
                 type="button"
@@ -322,12 +307,8 @@ export default function ProductForm({
                 disabled={loading}
               >
                 {loading
-                  ? isEdit
-                    ? "Guardando..."
-                    : "Creando..."
-                  : isEdit
-                  ? "Guardar Cambios"
-                  : "Crear Producto"}
+                  ? isEdit ? "Guardando..." : "Creando..."
+                  : isEdit ? "Guardar Cambios" : "Crear Producto"}
               </button>
             </div>
           </form>
