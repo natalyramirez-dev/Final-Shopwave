@@ -77,8 +77,47 @@
       width: 100%;
     }
 
+    .navControl.prev 
+    { 
+      order: 2; 
+      margin-left: auto; 
+    }
+    .navControl.next 
+    { 
+      order: 3;
+      margin-right: auto; 
+    }
+  }
+}
+
+.navControl {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  text-decoration: none;
+  cursor: pointer;
+
+  /* Efecto al hacer hover en TODO el control (Flecha + Imagen) */
+  &:hover:not(.disabled) {
     .navButton {
-      order: 2;
+      background-color: variables.$color-text;
+      color: variables.$color-surface;
+      transform: scale(1.1);
+      box-shadow: variables.$shadow-md;
+    }
+    
+    .sidePreview {
+      opacity: 0.8; /* Se vuelve más visible */
+      transform: scale(0.95); /* Crece ligeramente */
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    
+    .navButton {
+      opacity: 0.3;
+      background-color: variables.$color-background;
     }
   }
 }
@@ -96,7 +135,6 @@
   box-shadow: variables.$shadow-sm;
   transition: all variables.$transition-default;
   cursor: pointer;
-  text-decoration: none;
   flex-shrink: 0; 
 
   &:hover:not(.disabled) {
@@ -113,6 +151,40 @@
     pointer-events: none; 
   }
 }
+
+
+.sidePreview {
+  width: 10rem;
+  height: 14rem;
+  background-color: variables.$color-surface;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid variables.$color-border;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Estados iniciales (Transparente y pequeño) */
+  opacity: 0.35; 
+  transform: scale(0.85); 
+  transition: all variables.$transition-slow;
+  box-sizing: border-box;
+  box-shadow: variables.$shadow-sm;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+
+  /* REGLA DE ORO: Ocultar la previsualización en móviles y tablets pequeñas, 
+     dejando SOLO la bolita de flecha como querías */
+  @media (max-width: 64rem) {
+    display: none;
+  }
+}
+
 
 .card {
   background-color: transparent;

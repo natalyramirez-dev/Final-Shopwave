@@ -11,8 +11,8 @@ export const useProduct = (id: string | number) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [prevId, setPrevId] = useState<number | null>(null);
-  const [nextId, setNextId] = useState<number | null>(null);
+  const [prevProduct, setPrevProduct] = useState<Product | null>(null);
+  const [nextProduct, setNextProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -38,15 +38,15 @@ export const useProduct = (id: string | number) => {
         const currentIndex = allProductsCache.findIndex((p: Product) => p.id === Number(id));
 
         if (currentIndex > 0) {
-          setPrevId(allProductsCache[currentIndex - 1].id);
+          setPrevProduct(allProductsCache[currentIndex - 1]);
         } else {
-          setPrevId(null);
+          setPrevProduct(null);
         }
 
         if (currentIndex !== -1 && currentIndex < allProductsCache.length - 1) {
-          setNextId(allProductsCache[currentIndex + 1].id);
+          setNextProduct(allProductsCache[currentIndex + 1]);
         } else {
-          setNextId(null);
+          setNextProduct(null);
         }
       } catch (err) {
         setError("No pudimos cargar la información de este producto.");
@@ -58,5 +58,5 @@ export const useProduct = (id: string | number) => {
     if (id) fetchProduct();
   }, [id]);
 
-  return { product, loading, error, prevId, nextId };
+  return { product, loading, error, prevProduct, nextProduct };
 };

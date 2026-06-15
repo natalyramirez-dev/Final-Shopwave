@@ -15,7 +15,7 @@ export default function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { product, loading, error, prevId, nextId } = useProduct(id);
+  const { product, loading, error, prevProduct, nextProduct } = useProduct(id);
   const { addToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
@@ -81,7 +81,7 @@ export default function ProductDetailPage({
     }
   };
 
-  return (
+ return (
     <AuthGuard>
       <main className={styles.container}>
         <Navbar />
@@ -93,17 +93,25 @@ export default function ProductDetailPage({
 
           <div className={styles.navigationWrapper}>
             
-            {/* Botón Anterior */}
-            {prevId ? (
-              <Link href={`/products/${prevId}`} className={styles.navButton} aria-label="Producto anterior">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            {/* LÓGICA DEL CARRUSEL: Botón Anterior */}
+            {prevProduct ? (
+              <Link href={`/products/${prevProduct.id}`} className={`${styles.navControl} ${styles.prev}`} aria-label="Producto anterior">
+                <div className={styles.navButton}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </div>
+                <div className={styles.sidePreview}>
+                  <img src={prevProduct.imageUrl} alt={prevProduct.title} />
+                </div>
               </Link>
             ) : (
-              <div className={`${styles.navButton} ${styles.disabled}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <div className={`${styles.navControl} ${styles.prev} ${styles.disabled}`}>
+                <div className={styles.navButton}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </div>
               </div>
             )}
 
+            {/* === TU TARJETA EXISTENTE (MANTENLA EXACTAMENTE IGUAL) === */}
             <div className={styles.card}>
               <div className={styles.flipCardInner}>
                 
@@ -172,17 +180,11 @@ export default function ProductDetailPage({
                       <div className={styles.quantitySelector}>
                         <p>Cantidad:</p>
                         <div className={styles.quantityControls}>
-                          <button 
-                            onClick={() => setQuantity(q => Math.max(1, q - 1))} 
-                            disabled={quantity <= 1}
-                          >
+                          <button onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                           </button>
                           <span>{quantity}</span>
-                          <button 
-                            onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))} 
-                            disabled={quantity >= product.quantity}
-                          >
+                          <button onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))} disabled={quantity >= product.quantity}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                           </button>
                         </div>
@@ -213,21 +215,26 @@ export default function ProductDetailPage({
                         </div>
                       )}
                     </div>
-
                   </div>
                 </div>
-
               </div>
             </div>
 
-            {/* Botón Siguiente */}
-            {nextId ? (
-              <Link href={`/products/${nextId}`} className={styles.navButton} aria-label="Producto siguiente">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            {/* LÓGICA DEL CARRUSEL: Botón Siguiente */}
+            {nextProduct ? (
+              <Link href={`/products/${nextProduct.id}`} className={`${styles.navControl} ${styles.next}`} aria-label="Producto siguiente">
+                <div className={styles.sidePreview}>
+                  <img src={nextProduct.imageUrl} alt={nextProduct.title} />
+                </div>
+                <div className={styles.navButton}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
               </Link>
             ) : (
-              <div className={`${styles.navButton} ${styles.disabled}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <div className={`${styles.navControl} ${styles.next} ${styles.disabled}`}>
+                <div className={styles.navButton}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
               </div>
             )}
 
