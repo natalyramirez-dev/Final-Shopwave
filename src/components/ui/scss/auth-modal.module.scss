@@ -1,28 +1,27 @@
-.container,
-.form,
-.form * {
-  box-sizing: border-box;
-}
-
-.container {
-  min-height: 100vh;
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #f5f5f5;
+  background: rgba(0, 0, 0, 0.45);
 }
 
 .form {
+  position: relative;
   width: 100%;
   max-width: 520px;
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 18px;
   padding: 40px;
   border-radius: 18px;
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
 
   h1 {
     margin-bottom: 12px;
@@ -50,34 +49,47 @@
     &:focus {
       border-color: #111827;
     }
-  }
 
-  button {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 14px;
-    background: #111827;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-
-    &:hover {
-      background: #1f2937;
+    &:disabled {
+      background: #f3f4f6;
+      cursor: not-allowed;
     }
   }
 }
 
-.backButton {
-  width: fit-content;
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  border: none;
+  background: transparent;
   color: #111827;
-  font-size: 14px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 16px;
   font-weight: 600;
-  text-decoration: none;
+  cursor: pointer;
 
   &:hover {
-    text-decoration: underline;
+    background: #1f2937;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  &:disabled:hover {
+    background: #111827;
   }
 }
 
@@ -87,39 +99,32 @@
   text-align: center;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 20px;
-  }
+.switchText {
+  text-align: center;
+  font-size: 14px;
+  color: #4b5563;
+}
 
-  .form {
-    max-width: 460px;
-    padding: 32px;
-    gap: 16px;
+.switchButton {
+  border: none;
+  background: transparent;
+  color: #111827;
+  font-weight: 700;
+  cursor: pointer;
 
-    h1 {
-      font-size: 28px;
-    }
-
-    input,
-    button {
-      padding: 14px 16px;
-      font-size: 15px;
-    }
+  &:hover {
+    text-decoration: underline;
   }
 }
 
 @media (max-width: 480px) {
-  .container {
-    min-height: 100dvh;
-    align-items: center;
-    justify-content: center;
+  .overlay {
     padding: 16px;
   }
 
   .form {
     max-width: 100%;
-    padding: 24px 20px;
+    padding: 28px 20px;
     border-radius: 14px;
     gap: 14px;
 
@@ -128,19 +133,22 @@
       margin-bottom: 8px;
     }
 
-    input,
-    button {
+    input {
       padding: 13px 14px;
       border-radius: 12px;
       font-size: 14px;
     }
   }
 
-  .backButton {
-    font-size: 13px;
+  .submitButton {
+    padding: 13px 14px;
+    border-radius: 12px;
+    font-size: 14px;
   }
 
   .error {
     font-size: 13px;
   }
 }
+
+

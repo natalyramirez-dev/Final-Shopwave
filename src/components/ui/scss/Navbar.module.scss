@@ -1,28 +1,28 @@
-@use "../../../components/ui/scss/variables" ;
+@use "../../../components/ui/scss/variables";
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
- 
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap");
+
 .navbar {
   width: 100%;
   min-height: 4.5rem;
- 
+
   display: flex;
   justify-content: space-between;
   align-items: center;
- 
+
   padding: 0 6%;
- 
+
   background-color: variables.$color-surface;
   border-bottom: 0.0625rem solid variables.$color-border;
- 
+
   backdrop-filter: blur(0.75rem);
   -webkit-backdrop-filter: blur(0.75rem);
- 
+
   position: sticky;
   top: 0;
   z-index: 100;
 }
- 
+
 .logo a {
   font-family: variables.$font-display;
   font-size: 1.375rem;
@@ -31,43 +31,58 @@
   color: variables.$color-primary;
   text-decoration: none;
   transition: color variables.$transition-default;
- 
+
   &::after {
-    content: '.';
+    content: ".";
     color: variables.$color-accent;
   }
- 
+
   &:hover {
     color: variables.$color-accent;
   }
 }
- 
+
 .links {
   display: flex;
   align-items: center;
   gap: 0.25rem;
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
- 
-.links a {
+
+.links li {
+  display: flex;
+  align-items: center;
+}
+
+/* Links normales + botones Login/Register + botón Logout */
+.links a,
+.authButton,
+.logoutButton {
   font-family: variables.$font-body;
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   text-decoration: none;
   color: variables.$color-text-light;
- 
+
   padding: 0.5rem 0.875rem;
   border-radius: variables.$border-radius-full;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
   transition: variables.$transition-default;
   transition-property: color, background-color;
- 
+
   &:hover {
     color: variables.$color-primary;
     background-color: variables.$color-accent-muted;
   }
 }
- 
+
 .activeLink {
   background-color: variables.$color-primary !important;
   color: variables.$color-surface !important;
@@ -79,30 +94,8 @@
   }
 }
 
-.logoutButton {
-  font-family: variables.$font-body;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  color: variables.$color-text-light;
-  background: transparent;
-  border: none;
-  cursor: pointer;
- 
-  padding: 0.5rem 0.875rem;
-  border-radius: variables.$border-radius-full;
-  transition: variables.$transition-default;
-  transition-property: color, background-color;
- 
-  &:hover {
-    color: variables.$color-primary;
-    background-color: variables.$color-accent-muted;
-  }
-}
-
 .burger {
-  display: none; 
+  display: none;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
@@ -121,9 +114,17 @@
     transition: variables.$transition-default;
   }
 
-  .burgerLineTop    { transform: translateY(7px) rotate(45deg); }
-  .burgerLineMid    { opacity: 0; }
-  .burgerLineBottom { transform: translateY(-7px) rotate(-45deg); }
+  .burgerLineTop {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .burgerLineMid {
+    opacity: 0;
+  }
+
+  .burgerLineBottom {
+    transform: translateY(-7px) rotate(-45deg);
+  }
 }
 
 @media (max-width: 48rem) {
@@ -157,10 +158,12 @@
   }
 
   .links a,
+  .authButton,
   .logoutButton {
     display: block;
     width: 100%;
     padding: 0.75rem 1rem;
     border-radius: variables.$border-radius;
+    text-align: left;
   }
 }

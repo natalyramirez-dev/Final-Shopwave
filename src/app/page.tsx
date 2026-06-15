@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import Hero from "@/components/layout/Hero/Hero";
 import styles from "@/components/ui/scss/home.module.scss";
 import TeamCard from "@/components/ui/TeamCard/TeamCard";
+import LoginModal from "@/components/auth/LoginModal";
+import RegisterModal from "@/components/auth/RegisterModal";
 
 const team = [
   { name: "Camilo Rodriguez", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
@@ -13,9 +18,15 @@ const team = [
 ];
 
 export default function HomePage() {
+  const [authModal, setAuthModal] = useState<"login" | "register" | null>(null);
+
   return ( 
     <main className={styles.container}>
-      <Navbar />
+      <Navbar
+        onLoginClick={() => setAuthModal("login")}
+        onRegisterClick={() => setAuthModal("register")}
+      />
+
       <Hero />
 
       {/* About */}
@@ -78,6 +89,20 @@ export default function HomePage() {
           Ver productos
         </Link>
       </section>
+
+      {authModal === "login" && (
+        <LoginModal
+          onClose={() => setAuthModal(null)}
+          onSwitchToRegister={() => setAuthModal("register")}
+        />
+      )}
+
+      {authModal === "register" && (
+        <RegisterModal
+          onClose={() => setAuthModal(null)}
+          onSwitchToLogin={() => setAuthModal("login")}
+        />
+      )}
     </main>
   );
 }
