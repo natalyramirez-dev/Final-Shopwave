@@ -51,21 +51,189 @@
   }
 }
 
-.card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+/* =========================================
+   CONTENEDOR DE NAVEGACIÓN Y BOTONES
+   ========================================= */
+.navigationWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem; 
+  width: 100%;
+  margin: 0 auto;
+  max-width: 45rem;
+
+  @media (max-width: 64rem) {
+    gap: 1.5rem;
+    max-width: 100%;
+  }
+
+  @media (max-width: 48rem) {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+
+    .card {
+      order: 1;
+      width: 100%;
+    }
+
+    .navControl.prev 
+    { 
+      order: 2; 
+      margin-left: auto; 
+    }
+    .navControl.next 
+    { 
+      order: 3;
+      margin-right: auto; 
+    }
+  }
+}
+
+.navControl {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  text-decoration: none;
+  cursor: pointer;
+
+  /* Efecto al hacer hover en TODO el control (Flecha + Imagen) */
+  &:hover:not(.disabled) {
+    .navButton {
+      background-color: variables.$color-text;
+      color: variables.$color-surface;
+      transform: scale(1.1);
+      box-shadow: variables.$shadow-md;
+    }
+    
+    .sidePreview {
+      opacity: 0.8; /* Se vuelve más visible */
+      transform: scale(0.95); /* Crece ligeramente */
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    
+    .navButton {
+      opacity: 0.3;
+      background-color: variables.$color-background;
+    }
+  }
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
   background-color: variables.$color-surface;
-  padding: 3rem;
+  border: 0.0625rem solid variables.$color-border;
+  color: variables.$color-text;
+  box-shadow: variables.$shadow-sm;
+  transition: all variables.$transition-default;
+  cursor: pointer;
+  flex-shrink: 0; 
+
+  &:hover:not(.disabled) {
+    background-color: variables.$color-text;
+    color: variables.$color-surface;
+    transform: scale(1.1);
+    box-shadow: variables.$shadow-md;
+  }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: variables.$color-background;
+    pointer-events: none; 
+  }
+}
+
+
+.sidePreview {
+  width: 10rem;
+  height: 14rem;
+  background-color: variables.$color-surface;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid variables.$color-border;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Estados iniciales (Transparente y pequeño) */
+  opacity: 0.35; 
+  transform: scale(0.85); 
+  transition: all variables.$transition-slow;
+  box-sizing: border-box;
+  box-shadow: variables.$shadow-sm;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+
+  /* REGLA DE ORO: Ocultar la previsualización en móviles y tablets pequeñas, 
+     dejando SOLO la bolita de flecha como querías */
+  @media (max-width: 64rem) {
+    display: none;
+  }
+}
+
+
+.card {
+  background-color: transparent;
+  perspective: 1000px; 
+  max-width: 28rem; 
+  margin: 0 auto; 
+  width: 100%;
+  box-sizing: border-box; 
+
+  &:hover .flipCardInner {
+    transform: rotateY(180deg);
+  }
+}
+
+.flipCardInner {
+  position: relative;
+  width: 100%;
+  display: grid; 
+  transition: transform 0.7s variables.$transition-slow;
+  transform-style: preserve-3d;
+}
+
+.flipCardFront, .flipCardBack {
+  grid-area: 1 / 1; 
+  -webkit-backface-visibility: hidden; 
+  backface-visibility: hidden;
+  
+  background-color: variables.$color-surface;
   border-radius: variables.$border-radius;
   border: 0.0625rem solid variables.$color-border;
   box-shadow: variables.$shadow-card;
+  
+  /* NUEVO: box-sizing para evitar que el padding sume ancho extra */
+  box-sizing: border-box; 
+  padding: 2.5rem;
+  
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 
-  @media (max-width: 64rem) {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-    padding: 2rem;
+  /* NUEVO RESPONSIVE: Reducimos el padding interno en celulares */
+  @media (max-width: 48rem) {
+    padding: 1.5rem;
   }
+}
+
+.flipCardBack {
+  transform: rotateY(180deg);
+  justify-content: space-between;
 }
 
 .imageContainer {
@@ -73,23 +241,32 @@
   justify-content: center;
   align-items: center;
   background-color: variables.$color-background;
-  border-radius: variables.$border-radius;
-  border: 0.0625rem solid variables.$color-border;
-  padding: 2rem;
-  min-height: 25rem;
+  border-radius: variables.$border-radius-sm;
+  padding: 1.5rem;
+  height: 16rem; 
+  width: 100%; /* Asegura que no crezca más que su padre */
+  box-sizing: border-box;
 
   img {
     width: 100%;
-    max-width: 25rem;
+    max-height: 100%;
     object-fit: contain;
     mix-blend-mode: multiply;
   }
 }
 
-.detailsContainer {
+.frontDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: center; 
+}
+
+.backDetails {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  height: 100%;
 }
 
 .brandCategory {
@@ -98,12 +275,13 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 .title {
   font-family: variables.$font-display;
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
-  margin-top: 0.5rem;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
   color: variables.$color-text;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -114,6 +292,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .currentPrice {
@@ -131,7 +310,7 @@
 
 .discountBadge {
   background-color: variables.$color-accent-muted;
-  color: variables.$color-primary;
+  color: variables.$color-accent;
   padding: 0.25rem 0.75rem;
   border-radius: variables.$border-radius-full;
   font-size: 0.875rem;
@@ -162,7 +341,7 @@
 .sizeBadge {
   border: 0.0625rem solid variables.$color-border;
   padding: 0.5rem 1rem;
-  border-radius: variables.$border-radius;
+  border-radius: variables.$border-radius-sm;
   font-size: 0.875rem;
   font-weight: 500;
   font-family: variables.$font-body;
@@ -181,7 +360,7 @@
 
   &.unavailable {
     color: variables.$color-text-muted;
-    background-color: variables.$color-background;
+    background-color: variables.$color-surface-alt;
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -208,7 +387,7 @@
   display: inline-flex;
   align-items: center;
   gap: 1.25rem;
-  background-color: variables.$color-background;
+  background-color: variables.$color-surface-alt;
   border: 0.0625rem solid variables.$color-border;
   border-radius: variables.$border-radius-full;
   padding: 0.375rem 0.5rem;
@@ -228,7 +407,7 @@
     box-shadow: variables.$shadow-sm;
 
     &:disabled {
-      color: rgba(0, 0, 0, 0.2);
+      color: variables.$color-text-muted;
       background-color: transparent;
       border-color: transparent;
       box-shadow: none;
@@ -255,7 +434,7 @@
 
 .actionSection {
   margin-top: auto;
-  padding-top: 2rem;
+  padding-top: 1.5rem; 
   border-top: 0.0625rem solid variables.$color-border;
 
   p {
@@ -271,7 +450,7 @@
 }
 
 .outOfStock {
-  color: #ef4444;
+  color: variables.$color-accent;
   font-weight: 600;
 }
 
@@ -290,12 +469,12 @@
     background-color: variables.$color-primary;
     color: variables.$color-surface;
     cursor: pointer;
-    box-shadow: variables.$shadow-md;
+    box-shadow: variables.$shadow-sm;
 
     &:hover:not(:disabled) {
       background-color: variables.$color-accent;
       transform: translateY(-0.125rem);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      box-shadow: variables.$shadow-md;
     }
 
     &:disabled {
@@ -307,8 +486,9 @@
   }
 
   &.unavailable {
-    background-color: variables.$color-border;
+    background-color: variables.$color-background;
     color: variables.$color-text-muted;
+    border: 0.0625rem solid variables.$color-border;
     cursor: not-allowed;
     box-shadow: none;
   }
@@ -317,13 +497,14 @@
 .successMessage {
   margin-top: 1rem;
   padding: 0.75rem;
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: variables.$color-surface-alt;
+  border: 0.0625rem solid variables.$color-border;
+  color: #10b981; 
   border-radius: variables.$border-radius;
   font-size: 0.875rem;
   font-weight: 500;
   text-align: center;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn variables.$transition-default;
 }
 
 @keyframes fadeIn {
