@@ -1,0 +1,314 @@
+@use "./variables";
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: variables.$color-background;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 4rem 6%;
+}
+
+.header {
+  margin-bottom: 3rem;
+  text-align: center;
+
+  h1 {
+    font-family: variables.$font-display;
+    font-size: clamp(1.875rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: variables.$color-text;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-family: variables.$font-body;
+    color: variables.$color-text-light;
+  }
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3rem;
+  width: 100%;
+  max-width: 32rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stepIndicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 2;
+
+  span {
+    font-family: variables.$font-body;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: variables.$color-text-light;
+    transition: color variables.$transition-default;
+  }
+
+  &.active {
+    .stepCircle {
+      background-color: variables.$color-text;
+      color: variables.$color-surface;
+      border-color: variables.$color-text;
+    }
+    span {
+      color: variables.$color-text;
+    }
+  }
+}
+
+.stepCircle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: variables.$color-surface;
+  border: 0.125rem solid variables.$color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: variables.$font-body;
+  font-weight: 700;
+  color: variables.$color-text-light;
+  transition: all variables.$transition-default;
+}
+
+.stepLine {
+  flex: 1;
+  height: 0.125rem;
+  background-color: variables.$color-border;
+  margin: 0 1rem;
+  position: relative;
+  top: -1rem;
+}
+
+.formContainer {
+  background-color: variables.$color-surface;
+  padding: 3rem;
+  border-radius: variables.$border-radius;
+  border: 0.0625rem solid variables.$color-border;
+  box-shadow: variables.$shadow-md;
+  overflow: hidden;
+}
+
+.formElement {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.stepSlide {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.inputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 48rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-family: variables.$font-body;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: variables.$color-text-light;
+  }
+}
+
+.inputField {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius;
+  font-family: variables.$font-body;
+  font-size: 0.9375rem;
+  color: variables.$color-text;
+  background-color: variables.$color-background;
+  transition: variables.$transition-default;
+  outline: none;
+  appearance: none;
+
+  &::placeholder {
+    color: variables.$color-text-muted;
+  }
+
+  &:focus {
+    border-color: variables.$color-text;
+    background-color: variables.$color-surface;
+    box-shadow: 0 0 0 0.125rem rgba(15, 23, 42, 0.05);
+  }
+}
+
+select.inputField {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  padding-right: 3rem;
+}
+
+.paymentAmountBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background-color: #f8fafc;
+  border-radius: variables.$border-radius;
+  margin-bottom: 0.5rem;
+  
+  span {
+    font-family: variables.$font-body;
+    color: variables.$color-text;
+    font-size: 1rem;
+  }
+  
+  .amount {
+    font-family: variables.$font-display;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+}
+
+.cardMockup {
+  background-color: #f8fafc;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: 1rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+.cardRow {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+
+  @media (max-width: 36rem) {
+    flex-wrap: wrap;
+    .inputGroup {
+      flex: 1 1 100% !important;
+    }
+  }
+}
+
+.actionButtonsRight {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.actionButtonsSplit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 1rem;
+
+  @media (max-width: 36rem) {
+    flex-direction: column-reverse;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.primaryBtn {
+  padding: 1rem 2.5rem;
+  background-color: variables.$color-text;
+  color: variables.$color-surface;
+  border: none;
+  border-radius: variables.$border-radius-full;
+  font-family: variables.$font-body;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: variables.$transition-default;
+
+  &:hover {
+    background-color: variables.$color-primary;
+    transform: translateY(-0.125rem);
+  }
+}
+
+.secondaryBtn {
+  padding: 1rem 2rem;
+  background-color: transparent;
+  color: variables.$color-text;
+  border: 0.0625rem solid variables.$color-border;
+  border-radius: variables.$border-radius-full;
+  font-family: variables.$font-body;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: variables.$transition-default;
+
+  &:hover {
+    background-color: variables.$color-background;
+    border-color: variables.$color-text;
+  }
+}
+
+.submitBtn {
+  padding: 1rem 3rem;
+  background-color: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  border-radius: variables.$border-radius-full;
+  font-family: variables.$font-body;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: variables.$transition-default;
+
+  &:hover:not(:disabled) {
+    background-color: #7c3aed;
+    transform: translateY(-0.125rem);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}

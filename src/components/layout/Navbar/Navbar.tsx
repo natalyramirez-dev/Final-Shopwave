@@ -32,7 +32,6 @@ export default function Navbar() {
         <Link href="/" onClick={closeMenu}>ShopWave</Link>
       </div>
 
-      {/* Botón hamburguesa — solo visible en móvil */}
       <button
         className={styles.burger}
         onClick={() => setMenuOpen((prev) => !prev)}
@@ -43,51 +42,7 @@ export default function Navbar() {
         <span className={menuOpen ? styles.burgerLineBottom : ""}></span>
       </button>
 
-      {/* Links — en móvil se muestran solo si menuOpen es true */}
       <ul className={`${styles.links} ${menuOpen ? styles.open : ""}`}>
-        {isAuthenticated && (
-          <>
-            {isAdmin && (
-              <li>
-                <Link href="/admin/products" onClick={closeMenu}
-                  className={pathname.startsWith("/admin") ? styles.activeLink : ""}>
-                  Panel Admin
-                </Link>
-              </li>
-            )}
-            <li>
-              <Link href="/products" onClick={closeMenu}
-                className={pathname === "/products" ? styles.activeLink : ""}>
-                Products
-              </Link>
-            </li>
-            <li>
-              <Link href="/cart" onClick={closeMenu}
-                className={pathname === "/cart" ? styles.activeLink : ""}>
-                Cart
-              </Link>
-            </li>
-            <li>
-              <Link href="/orders" onClick={closeMenu}
-                className={pathname === "/orders" ? styles.activeLink : ""}>
-                Orders
-              </Link>
-            </li>
-            <li>
-              <Link href="/profile" onClick={closeMenu}
-                className={pathname === "/profile" ? styles.activeLink : ""}>
-                Profile
-              </Link>
-            </li>
-            <li>
-              <button type="button" onClick={() => { logout(); closeMenu(); }}
-                className={styles.logoutButton}>
-                Cerrar sesión
-              </button>
-            </li>
-          </>
-        )}
-
         {!isAuthenticated && (
           <>
             <li>
@@ -101,6 +56,64 @@ export default function Navbar() {
                 className={pathname === "/register" ? styles.activeLink : ""}>
                 Register
               </Link>
+            </li>
+          </>
+        )}
+
+        {isAuthenticated && isAdmin && (
+          <>
+            <li>
+              <Link href="/admin/products" onClick={closeMenu}
+                className={pathname.startsWith("/admin/products") ? styles.activeLink : ""}>
+                Administrar Productos
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/orders" onClick={closeMenu}
+                className={pathname.startsWith("/admin/orders") ? styles.activeLink : ""}>
+                Administrar Ordenes
+              </Link>
+            </li>
+            <li>
+              <button type="button" onClick={() => { logout(); closeMenu(); }}
+                className={styles.logoutButton}>
+                Cerrar sesión
+              </button>
+            </li>
+          </>
+        )}
+
+        {isAuthenticated && !isAdmin && (
+          <>
+            <li>
+              <Link href="/products" onClick={closeMenu}
+                className={pathname === "/products" ? styles.activeLink : ""}>
+                Productos
+              </Link>
+            </li>
+            <li>
+              <Link href="/cart" onClick={closeMenu}
+                className={pathname === "/cart" ? styles.activeLink : ""}>
+                Carrito
+              </Link>
+            </li>
+            <li>
+              <Link href="/orders" onClick={closeMenu}
+                className={pathname === "/orders" ? styles.activeLink : ""}>
+                Ordenes
+              </Link>
+            </li>
+            <li>
+              <Link href="/profile" onClick={closeMenu}
+                className={pathname === "/profile" ? styles.activeLink : ""}>
+                Mi Perfil
+              </Link>
+            </li>
+            <li>
+              <button type="button" onClick={() => { logout(); closeMenu(); }}
+                className={styles.logoutButton}>
+                Cerrar sesión
+              </button>
             </li>
           </>
         )}

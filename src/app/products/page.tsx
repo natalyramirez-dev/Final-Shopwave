@@ -83,9 +83,9 @@ function ProductsContent() {
 
       <section className={styles.header}>
         <div>
-          <h1>Products</h1>
+          <h1>Productos</h1>
 
-          <p>Explore all available products in the store.</p>
+          <p>Explora todos los productos disponibles en la tienda.</p>
         </div>
 
         <input

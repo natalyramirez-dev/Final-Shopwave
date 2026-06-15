@@ -10,7 +10,7 @@ export const adminProductService = {
     });
   },
 
-  updateProduct: (productId: number, data: Partial<CreateProductRequest>): Promise<Product> => {
+  updateProduct: (productId: number, data: any): Promise<Product> => {
     return fetchApi<Product>(`/admin/products/${productId}/update`, {
       method: "PUT",
       body: JSON.stringify(data),
