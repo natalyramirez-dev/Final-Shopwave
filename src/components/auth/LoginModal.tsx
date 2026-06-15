@@ -20,6 +20,8 @@ export default function LoginModal({
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -66,14 +68,30 @@ export default function LoginModal({
           disabled={isSubmitting}
         />
 
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-          disabled={isSubmitting}
-        />
+        <div className={styles.passwordWrapper}>
+            <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Contraseña"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                disabled={isSubmitting}
+            />
+
+            <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={() => setShowPassword((current) => !current)}
+                disabled={isSubmitting}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+                <img
+                src={showPassword ? "/close_eye.svg" : "/eye.svg"}
+                alt=""
+                className={styles.passwordIcon}
+                />
+            </button>
+            </div>
 
         {error && <p className={styles.error}>{error}</p>}
 

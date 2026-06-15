@@ -24,6 +24,9 @@ export default function RegisterModal({
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleChange = (field: keyof typeof form, value: string) => {
     setForm((currentForm) => ({
       ...currentForm,
@@ -101,15 +104,32 @@ export default function RegisterModal({
           disabled={isSubmitting}
         />
 
+        <div className={styles.passwordWrapper}>
         <input
-          type="password"
-          placeholder="Contraseña"
-          value={form.password}
-          onChange={(event) => handleChange("password", event.target.value)}
-          required
-          minLength={6}
-          disabled={isSubmitting}
+            type={showPassword ? "text" : "password"}
+            placeholder="Contraseña"
+            value={form.password}
+            onChange={(event) => handleChange("password", event.target.value)}
+            required
+            minLength={6}
+            disabled={isSubmitting}
         />
+
+        <button
+            type="button"
+            className={styles.passwordToggle}
+            onClick={() => setShowPassword((current) => !current)}
+            disabled={isSubmitting}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+        >
+            <img
+            src={showPassword ? "/close_eye.svg" : "/eye.svg"}
+            alt=""
+            className={styles.passwordIcon}
+            />
+        </button>
+        </div>
+
 
         <input
           type="tel"

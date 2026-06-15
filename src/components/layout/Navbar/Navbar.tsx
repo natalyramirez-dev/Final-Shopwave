@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/components/ui/scss/Navbar.module.scss";
 
@@ -16,6 +16,8 @@ export default function Navbar({
   onRegisterClick,
 }: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
   const { isAuthenticated, isLoading, logout, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -40,6 +42,12 @@ export default function Navbar({
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    closeMenu();
+    router.replace("/");
+  };
+
   if (isLoading) {
     return (
       <nav className={styles.navbar}>
@@ -59,10 +67,10 @@ export default function Navbar({
       </div>
 
       <button
+        type="button"
         className={styles.burger}
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Abrir menú"
-        type="button"
       >
         <span className={menuOpen ? styles.burgerLineTop : ""}></span>
         <span className={menuOpen ? styles.burgerLineMid : ""}></span>
@@ -115,7 +123,9 @@ export default function Navbar({
                 href="/admin/orders"
                 onClick={closeMenu}
                 className={
-                  pathname.startsWith("/admin/orders") ? styles.activeLink : ""
+                  pathname.startsWith("/admin/orders")
+                    ? styles.activeLink
+                    : ""
                 }
               >
                 Administrar Ordenes
@@ -125,10 +135,7 @@ export default function Navbar({
             <li>
               <button
                 type="button"
-                onClick={() => {
-                  logout();
-                  closeMenu();
-                }}
+                onClick={handleLogout}
                 className={styles.logoutButton}
               >
                 Cerrar sesión
@@ -182,10 +189,7 @@ export default function Navbar({
             <li>
               <button
                 type="button"
-                onClick={() => {
-                  logout();
-                  closeMenu();
-                }}
+                onClick={handleLogout}
                 className={styles.logoutButton}
               >
                 Cerrar sesión
