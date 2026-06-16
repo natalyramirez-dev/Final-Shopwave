@@ -29,6 +29,80 @@ const defaultFormData: CreateProductRequest = {
   size: [{ name: "M", quantity: 10 }],
 };
 
+type FieldErrors = Partial<Record<keyof CreateProductRequest, string>>;
+
+function validate(formData: CreateProductRequest): FieldErrors {
+  const errors: FieldErrors = {};
+
+  if (!formData.title.trim()) {
+    errors.title = "El título es obligatorio.";
+  } else if (formData.title.trim().length < 3) {
+    errors.title = "El título debe tener al menos 3 caracteres.";
+  }
+
+  if (!formData.brand.trim()) {
+    errors.brand = "La marca es obligatoria.";
+  }
+
+  if (formData.price == null || formData.price === (""  as unknown as number)) {
+    errors.price = "El precio es obligatorio.";
+  } else if (Number(formData.price) <= 0) {
+    errors.price = "El precio debe ser mayor a 0.";
+  }
+
+  if (formData.discountedPrice == null || formData.discountedPrice === ("" as unknown as number)) {
+    errors.discountPersent = "El descuento debe estar entre 0 y 100.";
+  }
+
+  if (formData.quantity == null || formData.quantity === ("" as unknown as number)) {
+    errors.discountedPrice = "El precio con descuento es obligatorio.";
+  } else if (Number(formData.discountedPrice) < 0) {
+    errors.discountedPrice = "El precio con descuento no puede ser negativo.";
+  } else if (Number(formData.price) > 0 && Number(formData.discountedPrice) > Number(formData.price)) {
+    errors.discountedPrice = "No puede ser mayor al precio regular.";
+  }
+
+  if (formData.quantity == null || formData.quantity === ("" as unknown as number)) {
+    errors.quantity = "El stock es obligatorio.";
+  } else if (Number(formData.quantity) < 0) {
+    errors.quantity = "El stock no puede ser negativo.";
+  }
+
+  if (!formData.color.trim()) {
+    errors.color = "El color es obligatorio.";
+  }
+
+  if (!formData.imageUrl.trim()) {
+    errors.imageUrl = "La URL de la imagen es obligatoria.";
+  } else {
+    try {
+      new URL(formData.imageUrl);
+    } catch {
+      errors.imageUrl = "Ingresa una URL válida (https://...).";
+    }
+  }
+
+  if (!formData.topLevelCategory.trim()) {
+    errors.topLevelCategory = "La categoría principal es obligatoria.";
+  }
+
+  if (!formData.secondLevelCategory.trim()) {
+    errors.secondLevelCategory = "La sub categoría es obligatoria.";
+  }
+
+  if (!formData.thirdLevelCategory.trim()) {
+    errors.thirdLevelCategory = "La categoría específica es obligatoria.";
+  }
+
+  if (!formData.description.trim()) {
+    errors.description = "La descripción es obligatoria.";
+  } else if (formData.description.trim().length < 10) {
+    errors.description = "La descripción debe tener al menos 10 caracteres.";
+  }
+
+  return errors;
+}
+
 export default function ProductForm({
   isOpen,
   onClose,
@@ -38,14 +112,18 @@ export default function ProductForm({
   productId,
 }: ProductFormProps) {
   const [formData, setFormData] = useState<CreateProductRequest>(defaultFormData);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof CreateProductRequest, boolean>>>({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
-      setError(null);
+      setSubmitError(null);
       setLoading(false);
+      setFieldErrors({});
+      setTouched({});
       setFormData(mode === "edit" && initialData ? initialData : defaultFormData);
     }
   }, [isOpen, mode, initialData]);
@@ -77,19 +155,45 @@ export default function ProductForm({
         }
       }
 
+      if (touched[name as keyof CreateProductRequest]) {
+        const errs = validate(next);
+        setFieldErrors((prev) => ({ ...prev, [name]: errs[name as keyof CreateProductRequest] }));
+      }
+
       return next;
     });
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const errs = validate(formData);
+    setFieldErrors((prev) => ({ ...prev, [name]: errs[name as keyof CreateProductRequest] }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const allTouched = Object.keys(defaultFormData).reduce(
+      (acc, key) => ({ ...acc, [key]: true }),
+      {} as typeof touched
+    );
+    setTouched(allTouched);
+
+    const errs = validate(formData);
+    setFieldErrors(errs);
+
+    if (Object.keys(errs).length > 0) {
+      setSubmitError("Corrige los errores antes de continuar.");
+      return;
+    }
+
     setLoading(true);
-    setError(null);
+    setSubmitError(null);
     try {
       await onSubmit(formData);
       onClose();
     } catch (err: any) {
-      setError(
+      setSubmitError(
         err.message?.toLowerCase().includes("data too long")
           ? "La descripción es demasiado larga. Por favor acórtala."
           : err.message || "Ocurrió un error. Intenta de nuevo."
@@ -107,6 +211,28 @@ export default function ProductForm({
 
   const isEdit = mode === "edit";
 
+  const Field = ({
+    label,
+    name,
+    children,
+    fullWidth,
+  }: {
+    label: string;
+    name: keyof CreateProductRequest;
+    children: React.ReactNode;
+    fullWidth?: boolean;
+  }) => (
+    <div className={`${styles.formGroup} ${fullWidth ? styles.fullWidth : ""}`}>
+      <label>{label}</label>
+      {children}
+      {fieldErrors[name] && (
+        <span style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px", display: "block" }}>
+          {fieldErrors[name]}
+        </span>
+      )}
+    </div>
+  );
+
   return (
     <div
       className={styles.modalOverlay}
@@ -117,195 +243,165 @@ export default function ProductForm({
       aria-labelledby="modal-title"
     >
       <div className={styles.modalContainer}>
-        {/* Header */}
         <div className={styles.modalHeader}>
           <div className={styles.modalTitleBlock}>
-            <span className={styles.modalBadge}>
-              {isEdit ? "Edición" : "Nuevo"}
-            </span>
+            <span className={styles.modalBadge}>{isEdit ? "Edición" : "Nuevo"}</span>
             <h2 id="modal-title" className={styles.modalTitle}>
               {isEdit ? `Editar Producto #${productId}` : "Crear Nuevo Producto"}
             </h2>
           </div>
-          <button
-            className={styles.modalClose}
-            onClick={onClose}
-            aria-label="Cerrar formulario"
-            type="button"
-          >
+          <button className={styles.modalClose} onClick={onClose} aria-label="Cerrar formulario" type="button">
             ✕
           </button>
         </div>
 
-        {/* Body scrolleable */}
         <div className={styles.modalBody}>
-          {error && <div className={styles.errorMessage}>{error}</div>}
+          {submitError && <div className={styles.errorMessage}>{submitError}</div>}
 
-          <form onSubmit={handleSubmit} className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label>Título del Producto</label>
+          <form onSubmit={handleSubmit} noValidate className={styles.formGrid}>
+            <Field label="Título del Producto" name="title">
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Ej: Chaqueta de cuero premium"
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Marca</label>
+            <Field label="Marca" name="brand">
               <input
                 type="text"
                 name="brand"
                 value={formData.brand}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Ej: Nike, Adidas..."
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Precio Regular ($)</label>
+            <Field label="Precio Regular ($)" name="price">
               <input
                 type="number"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 min="0"
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>% de Descuento</label>
+            <Field label="% de Descuento" name="discountPersent">
               <input
                 type="number"
                 name="discountPersent"
                 value={formData.discountPersent}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 min="0"
                 max="100"
                 placeholder="0"
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Precio con Descuento ($)</label>
+            <Field label="Precio con Descuento ($)" name="discountedPrice">
               <input
                 type="number"
                 name="discountedPrice"
                 value={formData.discountedPrice}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 min="0"
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Stock Inicial (Cantidad)</label>
+            <Field label="Stock Inicial (Cantidad)" name="quantity">
               <input
                 type="number"
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 min="0"
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Color</label>
+            <Field label="Color" name="color">
               <input
                 type="text"
                 name="color"
                 value={formData.color}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Ej: Negro, Rojo..."
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>URL de la Imagen</label>
+            <Field label="URL de la Imagen" name="imageUrl">
               <input
-                type="url"
+                type="text"
                 name="imageUrl"
                 value={formData.imageUrl}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="https://..."
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Categoría Principal (Ej: Hombre)</label>
+            <Field label="Categoría Principal (Ej: Hombre)" name="topLevelCategory">
               <input
                 type="text"
                 name="topLevelCategory"
                 value={formData.topLevelCategory}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Ej: Hombre, Mujer..."
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Sub Categoría (Ej: Ropa)</label>
+            <Field label="Sub Categoría (Ej: Ropa)" name="secondLevelCategory">
               <input
                 type="text"
                 name="secondLevelCategory"
                 value={formData.secondLevelCategory}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Ej: Ropa, Calzado..."
-                required
               />
-            </div>
+            </Field>
 
-            <div className={styles.formGroup}>
-              <label>Categoría Específica (Ej: Poleras)</label>
+            <Field label="Categoría Específica (Ej: Poleras)" name="thirdLevelCategory">
               <input
                 type="text"
                 name="thirdLevelCategory"
                 value={formData.thirdLevelCategory}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Ej: Poleras, Jeans..."
-                required
               />
-            </div>
+            </Field>
 
-            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-              <label>Descripción (máx. 250 caracteres)</label>
+            <Field label="Descripción (máx. 250 caracteres)" name="description" fullWidth>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 rows={4}
                 maxLength={250}
                 placeholder="Describe el producto brevemente..."
-                required
               />
               <small className={styles.charCount}>
                 {formData.description.length}/250
               </small>
-            </div>
+            </Field>
 
-            {/* Acciones del formulario */}
             <div className={`${styles.modalActions} ${styles.fullWidth}`}>
-              <button
-                type="button"
-                className={styles.cancelBtn}
-                onClick={onClose}
-                disabled={loading}
-              >
+              <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={loading}>
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className={styles.submitBtn}
-                disabled={loading}
-              >
+              <button type="submit" className={styles.submitBtn} disabled={loading}>
                 {loading
                   ? isEdit ? "Guardando..." : "Creando..."
                   : isEdit ? "Guardar Cambios" : "Crear Producto"}

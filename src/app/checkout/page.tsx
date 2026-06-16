@@ -8,6 +8,7 @@ import { orderService } from "@/services/order.service";
 import { CreateOrderRequest } from "@/models/order.model";
 import { useCart } from "@/context/CartContext";
 import { cartService } from "@/services/cart.service";
+import { useAuth } from "@/context/AuthContext";
 import styles from "@/components/ui/scss/checkout.module.scss";
 
 export default function CheckoutPage() {
@@ -21,18 +22,22 @@ export default function CheckoutPage() {
 function CheckoutContent() {
   const router = useRouter();
   const { cart, fetchCart, finalCalculatedTotal } = useCart();
-  
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  
+  const [stepError, setStepError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const { user } = useAuth();
+
   const [formData, setFormData] = useState<CreateOrderRequest>({
-    firstName: "",
-    lastName: "",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
     streetAddress: "",
     city: "",
     state: "",
     zipCode: "",
-    mobile: "",
+    mobile: user?.mobile || "",
     paymentMethod: "CREDIT_CARD",
     cardholderName: "",
     cardNumber: ""
@@ -44,6 +49,7 @@ function CheckoutContent() {
     cvc: ""
   });
 
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -62,37 +68,48 @@ function CheckoutContent() {
 
   const nextStep = () => {
     if (
-      formData.firstName && 
-      formData.lastName && 
-      formData.streetAddress && 
-      formData.city && 
+      formData.firstName &&
+      formData.lastName &&
+      formData.streetAddress &&
+      formData.city &&
       formData.mobile
     ) {
+      setStepError(null);
       setStep(2);
     } else {
-      alert("Por favor completa todos los campos obligatorios del envío.");
+      setStepError("Por favor completa todos los campos obligatorios del envío.");
     }
   };
 
-  const prevStep = () => setStep(1);
+  const prevStep = () => {
+    setSubmitError(null);
+    setStep(1);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
+      setSubmitError(null);
       const newOrder = await orderService.createOrder(formData);
-      
+
+      // Guardar ID de orden en localStorage como respaldo
+      const savedIds: number[] = JSON.parse(localStorage.getItem("shopwave_order_ids") || "[]");
+      if (!savedIds.includes(newOrder.id)) {
+        savedIds.push(newOrder.id);
+        localStorage.setItem("shopwave_order_ids", JSON.stringify(savedIds));
+      }
       if (cart?.cartItems && cart.cartItems.length > 0) {
-        const deletePromises = cart.cartItems.map(item => 
+        const deletePromises = cart.cartItems.map(item =>
           cartService.removeCartItem(item.id)
         );
         await Promise.all(deletePromises);
       }
 
       await fetchCart();
-      router.push(`/orders/${newOrder.id}`); 
+      router.push(`/orders/${newOrder.id}`);
     } catch (error: any) {
-      alert(error.message);
+      setSubmitError(error.message || "Ocurrió un error al procesar el pago. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -123,26 +140,32 @@ function CheckoutContent() {
           <form onSubmit={handleSubmit} className={styles.formElement}>
             {step === 1 && (
               <div className={styles.stepSlide}>
+                {stepError && (
+                  <p role="alert" aria-live="polite" style={{ color: "#ef4444", marginBottom: "1rem", fontSize: "14px" }}>
+                    {stepError}
+                  </p>
+                )}
+
                 <div className={styles.inputRow}>
                   <div className={styles.inputGroup}>
-                    <label>Nombre</label>
-                    <input required type="text" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Ej. Carlos" className={styles.inputField} />
+                    <label htmlFor="firstName">Nombre</label>
+                    <input id="firstName" type="text" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Ej. Carlos" className={styles.inputField} />
                   </div>
                   <div className={styles.inputGroup}>
-                    <label>Apellido</label>
-                    <input required type="text" name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Ej. Mendoza" className={styles.inputField} />
+                    <label htmlFor="lastName">Apellido</label>
+                    <input id="lastName" type="text" name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Ej. Mendoza" className={styles.inputField} />
                   </div>
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label>Dirección de entrega</label>
-                  <input required type="text" name="streetAddress" value={formData.streetAddress} onChange={handleChange} placeholder="Ej. Av. Blanco Galindo Km 2, Edificio Los Pinos" className={styles.inputField} />
+                  <label htmlFor="streetAddress">Dirección de entrega</label>
+                  <input id="streetAddress" type="text" name="streetAddress" value={formData.streetAddress} onChange={handleChange} placeholder="Ej. Av. Blanco Galindo Km 2, Edificio Los Pinos" className={styles.inputField} />
                 </div>
 
                 <div className={styles.inputRow}>
                   <div className={styles.inputGroup}>
-                    <label>Departamento</label>
-                    <select required name="city" value={formData.city} onChange={handleChange} className={styles.inputField}>
+                    <label htmlFor="city">Departamento</label>
+                    <select id="city" name="city" value={formData.city} onChange={handleChange} className={styles.inputField}>
                       <option value="" disabled>Selecciona un departamento</option>
                       <option value="Beni">Beni</option>
                       <option value="Chuquisaca">Chuquisaca</option>
@@ -156,19 +179,19 @@ function CheckoutContent() {
                     </select>
                   </div>
                   <div className={styles.inputGroup}>
-                    <label>Provincia / Zona (Opcional)</label>
-                    <input type="text" name="state" value={formData.state} onChange={handleChange} placeholder="Ej. Cercado" className={styles.inputField} />
+                    <label htmlFor="state">Provincia / Zona (Opcional)</label>
+                    <input id="state" type="text" name="state" value={formData.state} onChange={handleChange} placeholder="Ej. Cercado" className={styles.inputField} />
                   </div>
                 </div>
 
                 <div className={styles.inputRow}>
                   <div className={styles.inputGroup}>
-                    <label>Código Postal (Opcional)</label>
-                    <input type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} placeholder="Ej. 0000" className={styles.inputField} />
+                    <label htmlFor="zipCode">Código Postal (Opcional)</label>
+                    <input id="zipCode" type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} placeholder="Ej. 0000" className={styles.inputField} />
                   </div>
                   <div className={styles.inputGroup}>
-                    <label>Teléfono Celular</label>
-                    <input required type="text" name="mobile" value={formData.mobile} onChange={handleChange} placeholder="Ej. 70012345" className={styles.inputField} />
+                    <label htmlFor="mobile">Teléfono Celular</label>
+                    <input id="mobile" type="text" name="mobile" value={formData.mobile} onChange={handleChange} placeholder="Ej. 70012345" className={styles.inputField} />
                   </div>
                 </div>
 
@@ -182,6 +205,12 @@ function CheckoutContent() {
 
             {step === 2 && (
               <div className={styles.stepSlide}>
+                {submitError && (
+                  <p role="alert" aria-live="polite" style={{ color: "#ef4444", marginBottom: "1rem", fontSize: "14px" }}>
+                    {submitError}
+                  </p>
+                )}
+
                 <div className={styles.paymentAmountBanner}>
                   <span>Monto del pago</span>
                   <span className={styles.amount}>${finalCalculatedTotal?.toFixed(2)}</span>
@@ -189,29 +218,29 @@ function CheckoutContent() {
 
                 <div className={styles.cardMockup}>
                   <div className={styles.inputGroup}>
-                    <label>Número de tarjeta</label>
-                    <input required type="text" name="cardNumber" value={formData.cardNumber} onChange={handleCardNumberChange} placeholder="5559 0000 0000 0000" className={styles.inputField} />
+                    <label htmlFor="cardNumber">Número de tarjeta</label>
+                    <input id="cardNumber" type="text" name="cardNumber" value={formData.cardNumber} onChange={handleCardNumberChange} placeholder="5559 0000 0000 0000" className={styles.inputField} />
                   </div>
 
                   <div className={styles.cardRow}>
                     <div className={styles.inputGroup} style={{ flex: 2 }}>
-                      <label>Poseedor</label>
-                      <input required type="text" name="cardholderName" value={formData.cardholderName} onChange={handleChange} placeholder="LUIS TORREZ" className={styles.inputField} />
+                      <label htmlFor="cardholderName">Poseedor</label>
+                      <input id="cardholderName" type="text" name="cardholderName" value={formData.cardholderName} onChange={handleChange} placeholder="LUIS TORREZ" className={styles.inputField} />
                     </div>
                     <div className={styles.inputGroup} style={{ flex: 1 }}>
-                      <label>Mes</label>
-                      <input required type="text" name="expMonth" value={visualCardData.expMonth} onChange={handleVisualChange} placeholder="MM" maxLength={2} className={styles.inputField} />
+                      <label htmlFor="expMonth">Mes</label>
+                      <input id="expMonth" type="text" name="expMonth" value={visualCardData.expMonth} onChange={handleVisualChange} placeholder="MM" maxLength={2} className={styles.inputField} />
                     </div>
                     <div className={styles.inputGroup} style={{ flex: 1 }}>
-                      <label>Año</label>
-                      <input required type="text" name="expYear" value={visualCardData.expYear} onChange={handleVisualChange} placeholder="YY" maxLength={2} className={styles.inputField} />
+                      <label htmlFor="expYear">Año</label>
+                      <input id="expYear" type="text" name="expYear" value={visualCardData.expYear} onChange={handleVisualChange} placeholder="YY" maxLength={2} className={styles.inputField} />
                     </div>
                   </div>
 
                   <div className={styles.cardRow}>
                     <div className={styles.inputGroup} style={{ flex: 1 }}>
-                      <label>CVC/CVV</label>
-                      <input required type="password" name="cvc" value={visualCardData.cvc} onChange={handleVisualChange} placeholder="***" maxLength={4} className={styles.inputField} />
+                      <label htmlFor="cvc">CVC/CVV</label>
+                      <input id="cvc" type="password" name="cvc" value={visualCardData.cvc} onChange={handleVisualChange} placeholder="***" maxLength={4} className={styles.inputField} />
                     </div>
                     <div style={{ flex: 2 }}></div>
                   </div>

@@ -2,8 +2,9 @@
 
 import { AuthGuard } from "@/guards/AuthGuard";
 import { useAuth } from "@/context/AuthContext";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import styles from "@/components/ui/scss/profile.module.scss";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   return (
@@ -20,6 +21,7 @@ function ProfileContent() {
   if (!user) {
     return (
       <main className={styles.container}>
+        <Navbar />
         <section className={styles.card}>
           <p>Cargando perfil...</p>
         </section>
@@ -33,52 +35,55 @@ function ProfileContent() {
 
   return (
     <main className={styles.container}>
-      <section className={styles.card}>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className={styles.backButton}
-        >
-          ← Volver atrás
-        </button>
-        <div className={styles.avatar}>
-          {initials || user.email.charAt(0).toUpperCase()}
+      <Navbar />
+        <div className={styles.content}>
+          <section className={styles.card}>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className={styles.backButton}
+            >
+              ← Volver atrás
+            </button>
+            <div className={styles.avatar}>
+              {initials || user.email.charAt(0).toUpperCase()}
+            </div>
+
+            <div className={styles.header}>
+              <p className={styles.label}>Mi perfil</p>
+              <h1>
+                {user.firstName} {user.lastName}
+              </h1>
+              <span className={styles.emailBadge}>{user.email}</span>
+            </div>
+
+            <div className={styles.infoGrid}>
+              <div className={styles.infoItem}>
+                <span>Nombre</span>
+                <strong>{user.firstName}</strong>
+              </div>
+
+              <div className={styles.infoItem}>
+                <span>Apellido</span>
+                <strong>{user.lastName}</strong>
+              </div>
+
+              <div className={styles.infoItem}>
+                <span>Correo electrónico</span>
+                <strong>{user.email}</strong>
+              </div>
+
+              <div className={styles.infoItem}>
+                <span>Celular</span>
+                <strong>{user.mobile}</strong>
+              </div>
+            </div>
+
+            <button type="button" onClick={logout} className={styles.logoutButton}>
+              Cerrar sesión
+            </button>
+          </section>
         </div>
-
-        <div className={styles.header}>
-          <p className={styles.label}>Mi perfil</p>
-          <h1>
-            {user.firstName} {user.lastName}
-          </h1>
-          <span className={styles.emailBadge}>{user.email}</span>
-        </div>
-
-        <div className={styles.infoGrid}>
-          <div className={styles.infoItem}>
-            <span>Nombre</span>
-            <strong>{user.firstName}</strong>
-          </div>
-
-          <div className={styles.infoItem}>
-            <span>Apellido</span>
-            <strong>{user.lastName}</strong>
-          </div>
-
-          <div className={styles.infoItem}>
-            <span>Correo electrónico</span>
-            <strong>{user.email}</strong>
-          </div>
-
-          <div className={styles.infoItem}>
-            <span>Celular</span>
-            <strong>{user.mobile}</strong>
-          </div>
-        </div>
-
-        <button type="button" onClick={logout} className={styles.logoutButton}>
-          Cerrar sesión
-        </button>
-      </section>
     </main>
   );
 }

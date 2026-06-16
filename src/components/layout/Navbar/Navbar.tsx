@@ -28,17 +28,19 @@ export default function Navbar({
 
   const handleLoginClick = () => {
     closeMenu();
-
     if (onLoginClick) {
       onLoginClick();
+    } else {
+      router.push("/login");
     }
   };
 
   const handleRegisterClick = () => {
     closeMenu();
-
     if (onRegisterClick) {
       onRegisterClick();
+    } else {
+      router.push("/register");
     }
   };
 

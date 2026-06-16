@@ -30,7 +30,18 @@ function OrdersHistoryContent() {
     try {
       setLoading(true);
       const data = await orderService.getUserOrderHistory();
-      setOrders(data);
+
+      if (data && data.length > 0) {
+        setOrders(data);
+      } else {
+        const savedIds: number[] = JSON.parse(localStorage.getItem("shopwave_order_ids") || "[]");
+        if (savedIds.length > 0) {
+          const fetched = await Promise.all(
+            savedIds.map(id => orderService.getOrderById(id).catch(() => null))
+          );
+          setOrders(fetched.filter(Boolean) as Order[]);
+        }
+      }
     } catch (err: any) {
       setError(err.message || "No se pudo cargar el historial de órdenes.");
     } finally {
