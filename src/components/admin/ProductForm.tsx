@@ -120,12 +120,16 @@ export default function ProductForm({
 
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = "hidden";
       setSubmitError(null);
       setLoading(false);
       setFieldErrors({});
       setTouched({});
       setFormData(mode === "edit" && initialData ? initialData : defaultFormData);
     }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen, mode, initialData]);
 
   useEffect(() => {

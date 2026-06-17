@@ -58,7 +58,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentToken(token);  // actualiza el estado de React
     setCurrentUser(user);    // actualiza el estado de React
 
-    router.push("/");  // redirige al inicio
+    if (user.role === "ROLE_ADMIN") {
+      router.push("/admin/dashboard");
+    } else {
+      router.push("/");
+    }
   };
 
   const logout = (): void => {

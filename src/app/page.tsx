@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import Hero from "@/components/layout/Hero/Hero";
 import styles from "@/components/ui/scss/home.module.scss";
 import TeamCard from "@/components/ui/TeamCard/TeamCard";
 import LoginModal from "@/components/auth/LoginModal";
 import RegisterModal from "@/components/auth/RegisterModal";
+import AdminDashboardPage from "@/app/admin/dashboard/page";
 
 const team = [
   { name: "Camilo Rodriguez", role: "Full Stack Developer", image: "/team/camilo.jpeg" },
@@ -18,9 +20,14 @@ const team = [
 ];
 
 export default function HomePage() {
+  const { user } = useAuth();
   const [authModal, setAuthModal] = useState<"login" | "register" | null>(null);
 
-  return ( 
+  if (user?.role === "ROLE_ADMIN") {
+    return <AdminDashboardPage />;
+  }
+
+  return (
     <main className={styles.container}>
       <Navbar
         onLoginClick={() => setAuthModal("login")}
@@ -29,7 +36,6 @@ export default function HomePage() {
 
       <Hero />
 
-      {/* About */}
       <section className={styles.aboutSection}>
         <div className={styles.aboutContent}>
           <span className={styles.label}>Nuestra historia</span>
@@ -62,13 +68,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Team */}
       <section className={styles.teamSection}>
         <div className={styles.teamHeader}>
           <span className={styles.label}>El equipo</span>
           <h2>Las personas detrás de ShopWave.</h2>
         </div>
-
         <div className={styles.teamGrid}>
           {team.map((member) => (
             <TeamCard
@@ -81,7 +85,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className={styles.ctaSection}>
         <h2>¿Listo para explorar?</h2>
         <p>Descubre nuestra colección completa de sneakers y moda.</p>

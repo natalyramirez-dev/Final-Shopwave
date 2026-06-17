@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import { productService } from "@/services/product.service";
 import { adminProductService } from "@/services/admin-product.service";
 import { Product } from "@/models/product.model";
@@ -197,17 +197,33 @@ export default function AdminProductsList() {
     }
   };
 
+  if (loading) {
+    return (
+      <main className={styles.pageWrapper}>
+        <Navbar />
+        <div className={styles.dashboardContent}>
+          <div className={styles.tableLoading}>
+            <div className={styles.loadingSpinner} />
+            <p>Cargando catálogo...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
   // ─── Render ──────────────────────────────────────────────────
   return (
-    <AdminLayout
-      title="Gestión de Productos"
-      subtitle={`${products.length} productos en catálogo`}
-      actions={
-        <button className={styles.primaryBtn} onClick={handleOpenCreate}>
-          + Nuevo Producto
-        </button>
-      }
-    >
+    <main className={styles.pageWrapper}>
+      <Navbar />
+      <div className={styles.dashboardContent}>
+        <div className={styles.pageHeader}>
+          <div>
+            <h1 className={styles.pageTitle}>Gestión de Productos</h1>
+            <p className={styles.pageSubtitle}>{products.length} productos en catálogo</p>
+          </div>
+          <button className={styles.primaryBtn} onClick={handleOpenCreate}>
+            + Nuevo Producto
+          </button>
+        </div>
       {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
 
       {/* Stock Summary Chips */}
@@ -473,6 +489,7 @@ export default function AdminProductsList() {
         mode={modalMode}
         productId={selectedProduct?.id}
       />
-    </AdminLayout>
+      </div>
+    </main>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import styles from "@/components/ui/scss/adminDashboard.module.scss";
 
 interface BarChartProps {
@@ -15,11 +16,14 @@ export default function MiniBarChart({
   color = "#e8410a",
   height = 120,
 }: BarChartProps) {
+  const uid = useId().replace(/:/g, "");
+
   if (!data || data.length === 0) return null;
 
   const max = Math.max(...data.map((d) => d.value), 1);
   const barWidth = 100 / data.length;
   const gap = barWidth * 0.25;
+  const gradId = `grad-${uid}`;
 
   return (
     <div className={styles.chartWrapper}>
@@ -34,7 +38,7 @@ export default function MiniBarChart({
         aria-label={title}
       >
         <defs>
-          <linearGradient id={`grad-${title.replace(/\s/g, "")}`} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity="1" />
             <stop offset="100%" stopColor={color} stopOpacity="0.4" />
           </linearGradient>
@@ -52,14 +56,13 @@ export default function MiniBarChart({
                 width={w}
                 height={barH}
                 rx="2"
-                fill={`url(#grad-${title.replace(/\s/g, "")})`}
+                fill={`url(#${gradId})`}
               />
               <title>{`${d.label}: ${d.value}`}</title>
             </g>
           );
         })}
       </svg>
-      {/* X-axis labels */}
       <div className={styles.chartLabels}>
         {data.map((d, i) => (
           <span key={i} className={styles.chartLabel}>{d.label}</span>

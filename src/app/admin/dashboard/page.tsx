@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import AdminLayout from "@/components/admin/AdminLayout";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import MetricCard from "@/components/admin/MetricCard";
 import MiniBarChart from "@/components/admin/MiniBarChart";
 import DonutChart from "@/components/admin/DonutChart";
@@ -12,6 +12,7 @@ import { adminOrderService } from "@/services/admin-order.service";
 import { Product } from "@/models/product.model";
 import { Order } from "@/models/order.model";
 import { formatPrice } from "@/utils/currency.util";
+import { useAuth } from "@/context/AuthContext";
 import styles from "@/components/ui/scss/adminDashboard.module.scss";
 
 // Utility: group orders by status
@@ -103,6 +104,7 @@ export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const load = async () => {
@@ -152,25 +154,40 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <AdminLayout title="Dashboard">
+      <main className={styles.pageWrapper}>
+        <Navbar />
         <div className={styles.dashboardLoading}>
           <div className={styles.loadingSpinner} />
           <p>Cargando dashboard...</p>
         </div>
-      </AdminLayout>
+      </main>
     );
   }
 
   return (
-    <AdminLayout
-      title="Dashboard"
-      subtitle="Resumen ejecutivo en tiempo real de tu plataforma"
-    >
-      {error && (
-        <div className={styles.dashboardError}>
-          <span>⚠</span> {error}
+    <main className={styles.pageWrapper}>
+      <Navbar />
+      <div className={styles.dashboardContent}>
+
+        {/* Banner de bienvenida */}
+        <div className={styles.welcomeBanner}>
+          <div className={styles.welcomeText}>
+            <span className={styles.welcomeLabel}>Panel de Administración</span>
+            <h1 className={styles.welcomeTitle}>
+              Bienvenido, {user?.firstName} 
+            </h1>
+            <p className={styles.welcomeSubtitle}>
+              Aquí tienes el resumen ejecutivo de ShopWave en tiempo real.
+            </p>
+          </div>
+          <div className={styles.welcomeBadge}>ADMIN</div>
         </div>
-      )}
+
+        {error && (
+          <div className={styles.dashboardError}>
+            <span>⚠</span> {error}
+          </div>
+        )}
 
       {/* ─── Metric Cards ─────────────────────────────────────── */}
       <div className={styles.metricsGrid}>
@@ -306,6 +323,7 @@ export default function AdminDashboardPage() {
         {/* Stock Alerts */}
         <StockAlerts products={products} />
       </div>
-    </AdminLayout>
+    </div>
+  </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import { adminOrderService } from "@/services/admin-order.service";
 import { Order } from "@/models/order.model";
 import { formatPrice } from "@/utils/currency.util";
@@ -171,11 +171,19 @@ export default function AdminOrdersList() {
     { value: "CANCELLED", label: `Cancelado (${statusCounts.CANCELLED || 0})` },
   ];
 
-  return (
-    <AdminLayout
-      title="Gestión de Órdenes"
-      subtitle={`Monitoreo global de ${orders.length} pedidos · Ingresos: ${formatPrice(totalRevenue)}`}
-    >
+return (
+  <main className={styles.pageWrapper}>
+    <Navbar />
+    <div className={styles.dashboardContent}>
+      <div className={styles.pageHeader}>
+        <div>
+          <h1 className={styles.pageTitle}>Gestión de Órdenes</h1>
+          <p className={styles.pageSubtitle}>
+            Monitoreo global de {orders.length} pedidos · Ingresos: {formatPrice(totalRevenue)}
+          </p>
+        </div>
+      </div>
+
       {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
 
       {/* Status Tabs */}
@@ -399,6 +407,7 @@ export default function AdminOrdersList() {
           </div>
         )}
       </div>
-    </AdminLayout>
-  );
+    </div>
+  </main>
+);
 }
