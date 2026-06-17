@@ -22,6 +22,19 @@ export default function ProductsPage() {
   );
 }
 
+function ProductSkeletonCard() {
+  return (
+    <div className={styles.skeletonCard} aria-hidden="true">
+      <div className={styles.skeletonImage} />
+      <div className={styles.skeletonBody}>
+        <div className={styles.skeletonLine} style={{ width: "80%" }} />
+        <div className={styles.skeletonLine} style={{ width: "40%" }} />
+        <div className={styles.skeletonPrice} />
+      </div>
+    </div>
+  );
+}
+
 function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +46,6 @@ function ProductsContent() {
     const loadProducts = async () => {
       try {
         const response = await productService.getAllProducts();
-
-        console.log("PRODUCTS:", response);
-
         setProducts(response);
       } catch (error) {
         console.error("Error loading products:", error);
@@ -88,8 +98,12 @@ function ProductsContent() {
           <p>Explora todos los productos disponibles en la tienda.</p>
         </div>
 
+        <label htmlFor="products-search" className={styles.srOnly}>
+          Buscar productos
+        </label>
         <input
-          type="text" 
+          id="products-search"
+          type="text"
           placeholder="Search products..."
           value={search}
           onChange={(event) => {
@@ -111,6 +125,7 @@ function ProductsContent() {
               setSelectedCategory(category);
               setCurrentPage(1);
             }}
+            aria-pressed={selectedCategory === category}
           >
             {category}
           </button>
@@ -119,8 +134,14 @@ function ProductsContent() {
 
       <section className={styles.productsSection}>
         {loading ? (
-          <div className={styles.loadingContainer}>
-            <p>Loading products...</p>
+          <div
+            className={styles.productsGrid}
+            role="status"
+            aria-label="Cargando productos"
+          >
+            {Array.from({ length: PRODUCTS_PER_PAGE }).map((_, i) => (
+              <ProductSkeletonCard key={i} />
+            ))}
           </div>
         ) : paginatedProducts.length > 0 ? (
           <div className={styles.productsGrid}>
@@ -137,25 +158,27 @@ function ProductsContent() {
       </section>
 
       {totalPages > 1 && (
-        <section className={styles.pagination}>
+        <nav className={styles.pagination} aria-label="Paginación de productos">
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
+            aria-label="Página anterior"
           >
             Prev
           </button>
 
-          <span>
+          <span aria-live="polite" aria-atomic="true">
             Page {currentPage} of {totalPages}
           </span>
 
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => prev + 1)}
+            aria-label="Página siguiente"
           >
             Next
           </button>
-        </section>
+        </nav>
       )}
     </main>
   );
