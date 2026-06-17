@@ -27,6 +27,11 @@ export default function AdminProductsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // P-04: error de acción (reemplaza alert())
+  const [adminError, setAdminError] = useState<string | null>(null);
+  // P-04: id pendiente de confirmar eliminación (reemplaza window.confirm())
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<number | null>(null);
+
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -62,6 +67,11 @@ export default function AdminProductsList() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const showAdminError = (msg: string) => {
+    setAdminError(msg);
+    setTimeout(() => setAdminError(null), 4000);
   };
 
   // ─── Derived state ────────────────────────────────────────────
@@ -187,23 +197,31 @@ export default function AdminProductsList() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.")) return;
+  const handleDeleteRequest = (id: number) => {
+    setConfirmingDeleteId(id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (confirmingDeleteId === null) return;
+    const idToDelete = confirmingDeleteId;
+    setConfirmingDeleteId(null);
     try {
-      await adminProductService.deleteProduct(id);
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      await adminProductService.deleteProduct(idToDelete);
+      setProducts((prev) => prev.filter((p) => p.id !== idToDelete));
     } catch (err: any) {
-      alert(err.message);
+      showAdminError(err.message || "No se pudo eliminar el producto.");
     }
   };
+
+  const handleDeleteCancel = () => setConfirmingDeleteId(null);
 
   if (loading) {
     return (
       <main className={styles.pageWrapper}>
         <Navbar />
         <div className={styles.dashboardContent}>
-          <div className={styles.tableLoading}>
-            <div className={styles.loadingSpinner} />
+          <div className={styles.tableLoading} role="status" aria-label="Cargando catálogo de productos">
+            <div className={styles.loadingSpinner} aria-hidden="true" />
             <p>Cargando catálogo...</p>
           </div>
         </div>
@@ -224,31 +242,44 @@ export default function AdminProductsList() {
             + Nuevo Producto
           </button>
         </div>
-      {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
+      {error && <div className={styles.errorBanner} role="alert"><span aria-hidden="true">⚠</span> {error}</div>}
+
+      {/* P-08: error de acción con aria-live */}
+      <div aria-live="polite" aria-atomic="true">
+        {adminError && (
+          <div className={styles.errorBanner} role="alert">
+            <span aria-hidden="true">⚠</span> {adminError}
+          </div>
+        )}
+      </div>
 
       {/* Stock Summary Chips */}
-      <div className={styles.stockSummary}>
+      <div className={styles.stockSummary} role="group" aria-label="Filtrar por stock">
         <button
           className={`${styles.stockChip} ${stockFilter === "all" ? styles.stockChipActive : ""}`}
           onClick={() => setStockFilter("all")}
+          aria-pressed={stockFilter === "all"}
         >
           Todos <span className={styles.chipCount}>{products.length}</span>
         </button>
         <button
           className={`${styles.stockChip} ${styles.stockChipOk} ${stockFilter === "ok" ? styles.stockChipActive : ""}`}
           onClick={() => setStockFilter("ok")}
+          aria-pressed={stockFilter === "ok"}
         >
           ✓ OK <span className={styles.chipCount}>{okCount}</span>
         </button>
         <button
           className={`${styles.stockChip} ${styles.stockChipLow} ${stockFilter === "low" ? styles.stockChipActive : ""}`}
           onClick={() => setStockFilter("low")}
+          aria-pressed={stockFilter === "low"}
         >
           ⚡ Stock bajo <span className={styles.chipCount}>{lowCount}</span>
         </button>
         <button
           className={`${styles.stockChip} ${styles.stockChipOut} ${stockFilter === "out" ? styles.stockChipActive : ""}`}
           onClick={() => setStockFilter("out")}
+          aria-pressed={stockFilter === "out"}
         >
           ✕ Sin stock <span className={styles.chipCount}>{outCount}</span>
         </button>
@@ -259,8 +290,10 @@ export default function AdminProductsList() {
         {/* Toolbar */}
         <div className={styles.tableToolbar}>
           <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>⌕</span>
+            <span className={styles.searchIcon} aria-hidden="true">⌕</span>
+            <label htmlFor="admin-products-search" className={styles.srOnly}>Buscar productos</label>
             <input
+              id="admin-products-search"
               type="text"
               placeholder="Buscar por nombre, marca, categoría o ID..."
               value={search}
@@ -268,14 +301,14 @@ export default function AdminProductsList() {
               className={styles.searchInput}
             />
             {search && (
-              <button className={styles.searchClear} onClick={() => setSearch("")}>
+              <button className={styles.searchClear} onClick={() => setSearch("")} aria-label="Limpiar búsqueda">
                 ✕
               </button>
             )}
           </div>
           <div className={styles.tableInfo}>
             {filtered.length !== products.length && (
-              <span className={styles.filterCount}>
+              <span className={styles.filterCount} aria-live="polite">
                 {filtered.length} de {products.length} resultados
               </span>
             )}
@@ -284,8 +317,8 @@ export default function AdminProductsList() {
 
         {/* Table */}
         {loading ? (
-          <div className={styles.tableLoading}>
-            <div className={styles.loadingSpinner} />
+          <div className={styles.tableLoading} role="status" aria-label="Cargando catálogo">
+            <div className={styles.loadingSpinner} aria-hidden="true" />
             <p>Cargando catálogo...</p>
           </div>
         ) : (
@@ -335,14 +368,16 @@ export default function AdminProductsList() {
                 ) : (
                   paginated.map((product) => {
                     const stock = getStockStatus(product.quantity);
+                    const isConfirming = confirmingDeleteId === product.id;
                     return (
                       <tr key={product.id} className={styles.tableRow}>
                         <td className={styles.cellId}>#{product.id}</td>
                         <td>
                           <img
                             src={product.imageUrl || "/placeholder.jpg"}
-                            alt={product.title}
+                            alt={`Imagen de ${product.title}`}
                             className={styles.productThumb}
+                            loading="lazy"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src =
                                 "https://via.placeholder.com/56x56?text=N/A";
@@ -393,22 +428,31 @@ export default function AdminProductsList() {
                           )}
                         </td>
                         <td>
-                          <div className={styles.rowActions}>
-                            <button
-                              className={styles.editBtn}
-                              onClick={() => handleOpenEdit(product)}
-                              title="Editar producto"
-                            >
-                              ✎ Editar
-                            </button>
-                            <button
-                              className={styles.deleteBtn}
-                              onClick={() => handleDelete(product.id)}
-                              title="Eliminar producto"
-                            >
-                              ✕
-                            </button>
-                          </div>
+                          {/* P-04: confirmación inline en vez de window.confirm() */}
+                          {isConfirming ? (
+                            <div className={styles.confirmRow}>
+                              <span className={styles.confirmText}>¿Eliminar?</span>
+                              <button className={styles.confirmYesBtn} onClick={handleDeleteConfirm}>Sí</button>
+                              <button className={styles.confirmNoBtn} onClick={handleDeleteCancel}>No</button>
+                            </div>
+                          ) : (
+                            <div className={styles.rowActions}>
+                              <button
+                                className={styles.editBtn}
+                                onClick={() => handleOpenEdit(product)}
+                                title="Editar producto"
+                              >
+                                ✎ Editar
+                              </button>
+                              <button
+                                className={styles.deleteBtn}
+                                onClick={() => handleDeleteRequest(product.id)}
+                                title="Eliminar producto"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     );

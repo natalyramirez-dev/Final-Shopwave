@@ -48,6 +48,14 @@ export default function AdminOrdersList() {
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
 
+  // P-04: error de acción (reemplaza alert())
+  const [adminError, setAdminError] = useState<string | null>(null);
+  // P-04: confirmación inline por fila (reemplaza window.confirm())
+  const [confirmingId, setConfirmingId] = useState<{
+    orderId: number;
+    action: "CANCEL" | "DELETE";
+  } | null>(null);
+
   // Filters
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -73,6 +81,11 @@ export default function AdminOrdersList() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const showAdminError = (msg: string) => {
+    setAdminError(msg);
+    setTimeout(() => setAdminError(null), 4000);
   };
 
   // ─── Derived ─────────────────────────────────────────────────
@@ -136,29 +149,46 @@ export default function AdminOrdersList() {
   const si = (field: SortField) => sortField === field ? (sortDir === "asc" ? " ↑" : " ↓") : "";
 
   const handleUpdateStatus = async (orderId: number, action: string) => {
-    if (action === "CANCEL" && !window.confirm("¿Cancelar esta orden?")) return;
+    if (action === "CANCEL") {
+      setConfirmingId({ orderId, action: "CANCEL" });
+      return;
+    }
     try {
       setActionLoading(orderId);
       if (action === "CONFIRM") await adminOrderService.confirmOrder(orderId);
       else if (action === "SHIP") await adminOrderService.shipOrder(orderId);
       else if (action === "DELIVER") await adminOrderService.deliverOrder(orderId);
-      else if (action === "CANCEL") await adminOrderService.cancelOrder(orderId);
       await loadOrders();
     } catch (err: any) {
-      alert(err.message);
+      showAdminError(err.message || "No se pudo actualizar el estado de la orden.");
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleDelete = async (orderId: number) => {
-    if (!window.confirm("¿Eliminar permanentemente este registro? Esta acción no se puede deshacer.")) return;
+  const handleConfirmAction = async () => {
+    if (!confirmingId) return;
+    const { orderId, action } = confirmingId;
+    setConfirmingId(null);
+
     try {
-      await adminOrderService.deleteOrder(orderId);
-      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      setActionLoading(orderId);
+      if (action === "CANCEL") {
+        await adminOrderService.cancelOrder(orderId);
+        await loadOrders();
+      } else if (action === "DELETE") {
+        await adminOrderService.deleteOrder(orderId);
+        setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      }
     } catch (err: any) {
-      alert(err.message);
+      showAdminError(err.message || "No se pudo completar la acción.");
+    } finally {
+      setActionLoading(null);
     }
+  };
+
+  const handleDelete = (orderId: number) => {
+    setConfirmingId({ orderId, action: "DELETE" });
   };
 
   const statusFilterTabs: { value: StatusFilter; label: string }[] = [
@@ -184,13 +214,24 @@ return (
         </div>
       </div>
 
-      {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
+      {error && <div className={styles.errorBanner} role="alert"><span aria-hidden="true">⚠</span> {error}</div>}
+
+      {/* P-08: error de acción con aria-live */}
+      <div aria-live="polite" aria-atomic="true">
+        {adminError && (
+          <div className={styles.errorBanner} role="alert">
+            <span aria-hidden="true">⚠</span> {adminError}
+          </div>
+        )}
+      </div>
 
       {/* Status Tabs */}
-      <div className={styles.statusTabs}>
+      <div className={styles.statusTabs} role="tablist" aria-label="Filtrar por estado">
         {statusFilterTabs.map((tab) => (
           <button
             key={tab.value}
+            role="tab"
+            aria-selected={statusFilter === tab.value}
             className={`${styles.statusTab} ${statusFilter === tab.value ? styles.statusTabActive : ""}`}
             onClick={() => setStatusFilter(tab.value)}
             style={
@@ -206,6 +247,7 @@ return (
               <span
                 className={styles.statusTabDot}
                 style={{ backgroundColor: STATUS_COLORS[tab.value] }}
+                aria-hidden="true"
               />
             )}
             {tab.label}
@@ -218,8 +260,10 @@ return (
         {/* Toolbar */}
         <div className={styles.tableToolbar}>
           <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>⌕</span>
+            <span className={styles.searchIcon} aria-hidden="true">⌕</span>
+            <label htmlFor="admin-orders-search" className={styles.srOnly}>Buscar órdenes</label>
             <input
+              id="admin-orders-search"
               type="text"
               placeholder="Buscar por ID, cliente o ciudad..."
               value={search}
@@ -227,19 +271,19 @@ return (
               className={styles.searchInput}
             />
             {search && (
-              <button className={styles.searchClear} onClick={() => setSearch("")}>✕</button>
+              <button className={styles.searchClear} onClick={() => setSearch("")} aria-label="Limpiar búsqueda">✕</button>
             )}
           </div>
           {filtered.length !== orders.length && (
-            <span className={styles.filterCount}>
+            <span className={styles.filterCount} aria-live="polite">
               {filtered.length} de {orders.length} resultados
             </span>
           )}
         </div>
 
         {loading ? (
-          <div className={styles.tableLoading}>
-            <div className={styles.loadingSpinner} />
+          <div className={styles.tableLoading} role="status" aria-label="Cargando órdenes">
+            <div className={styles.loadingSpinner} aria-hidden="true" />
             <p>Cargando órdenes...</p>
           </div>
         ) : (
@@ -273,12 +317,14 @@ return (
                     </td>
                   </tr>
                 ) : (
-                  paginated.map((order) => (
+                  paginated.map((order) => {
+                    const isConfirming = confirmingId?.orderId === order.id;
+                    return (
                     <tr key={order.id} className={`${styles.tableRow} ${actionLoading === order.id ? styles.tableRowLoading : ""}`}>
                       <td className={styles.cellId}>#{order.id}</td>
                       <td>
                         <div className={styles.customerCell}>
-                          <div className={styles.customerAvatar}>
+                          <div className={styles.customerAvatar} aria-hidden="true">
                             {(order.shippingAddress?.firstName?.[0] || "?").toUpperCase()}
                           </div>
                           <div>
@@ -318,58 +364,69 @@ return (
                         </span>
                       </td>
                       <td>
-                        <div className={styles.orderActions}>
-                          {order.orderStatus === "PENDING" && (
+                        {/* P-04: confirmación inline en vez de window.confirm() */}
+                        {isConfirming ? (
+                          <div className={styles.confirmRow}>
+                            <span className={styles.confirmText}>
+                              {confirmingId!.action === "DELETE" ? "¿Eliminar?" : "¿Cancelar?"}
+                            </span>
+                            <button className={styles.confirmYesBtn} onClick={handleConfirmAction}>Sí</button>
+                            <button className={styles.confirmNoBtn} onClick={() => setConfirmingId(null)}>No</button>
+                          </div>
+                        ) : (
+                          <div className={styles.orderActions}>
+                            {order.orderStatus === "PENDING" && (
+                              <button
+                                className={styles.flowBtn}
+                                onClick={() => handleUpdateStatus(order.id, "CONFIRM")}
+                                disabled={actionLoading === order.id}
+                                title="Confirmar pago"
+                              >
+                                ✓ Confirmar
+                              </button>
+                            )}
+                            {order.orderStatus === "CONFIRMED" && (
+                              <button
+                                className={styles.flowBtn}
+                                onClick={() => handleUpdateStatus(order.id, "SHIP")}
+                                disabled={actionLoading === order.id}
+                                title="Marcar como enviado"
+                              >
+                                ✈ Enviar
+                              </button>
+                            )}
+                            {order.orderStatus === "SHIPPED" && (
+                              <button
+                                className={styles.flowBtn}
+                                onClick={() => handleUpdateStatus(order.id, "DELIVER")}
+                                disabled={actionLoading === order.id}
+                                title="Marcar como entregado"
+                              >
+                                ⊕ Entregar
+                              </button>
+                            )}
+                            {["PENDING", "PLACED", "CONFIRMED"].includes(order.orderStatus) && (
+                              <button
+                                className={styles.cancelFlowBtn}
+                                onClick={() => handleUpdateStatus(order.id, "CANCEL")}
+                                disabled={actionLoading === order.id}
+                                title="Cancelar orden"
+                              >
+                                ✕
+                              </button>
+                            )}
                             <button
-                              className={styles.flowBtn}
-                              onClick={() => handleUpdateStatus(order.id, "CONFIRM")}
-                              disabled={actionLoading === order.id}
-                              title="Confirmar pago"
+                              className={styles.deleteBtn}
+                              onClick={() => handleDelete(order.id)}
+                              title="Eliminar registro"
                             >
-                              ✓ Confirmar
+                              🗑
                             </button>
-                          )}
-                          {order.orderStatus === "CONFIRMED" && (
-                            <button
-                              className={styles.flowBtn}
-                              onClick={() => handleUpdateStatus(order.id, "SHIP")}
-                              disabled={actionLoading === order.id}
-                              title="Marcar como enviado"
-                            >
-                              ✈ Enviar
-                            </button>
-                          )}
-                          {order.orderStatus === "SHIPPED" && (
-                            <button
-                              className={styles.flowBtn}
-                              onClick={() => handleUpdateStatus(order.id, "DELIVER")}
-                              disabled={actionLoading === order.id}
-                              title="Marcar como entregado"
-                            >
-                              ⊕ Entregar
-                            </button>
-                          )}
-                          {["PENDING", "PLACED", "CONFIRMED"].includes(order.orderStatus) && (
-                            <button
-                              className={styles.cancelFlowBtn}
-                              onClick={() => handleUpdateStatus(order.id, "CANCEL")}
-                              disabled={actionLoading === order.id}
-                              title="Cancelar orden"
-                            >
-                              ✕
-                            </button>
-                          )}
-                          <button
-                            className={styles.deleteBtn}
-                            onClick={() => handleDelete(order.id)}
-                            title="Eliminar registro"
-                          >
-                            🗑
-                          </button>
-                        </div>
+                          </div>
+                        )}
                       </td>
                     </tr>
-                  ))
+                  );})
                 )}
               </tbody>
             </table>
