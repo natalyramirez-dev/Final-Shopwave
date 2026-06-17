@@ -1,0 +1,33 @@
+@use "./variables";
+
+.guardScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1.25rem;
+  background-color: variables.$color-background;
+
+  p {
+    font-family: variables.$font-body;
+    font-size: 0.9375rem;
+    color: variables.$color-text-light;
+    letter-spacing: 0.01em;
+  }
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid variables.$color-border;
+  border-top-color: variables.$color-accent;
+  border-radius: 50%;
+  animation: guardSpin 0.75s linear infinite;
+}
+
+@keyframes guardSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
