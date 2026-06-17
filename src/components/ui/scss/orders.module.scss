@@ -65,7 +65,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background-color: rgba(249, 250, 251, 0.5);
+  background-color: variables.$color-surface-alt;
   border-bottom: 0.0625rem solid variables.$color-border;
   flex-wrap: wrap;
   gap: 1rem;
@@ -96,8 +96,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: variables.$color-surface-alt;
+  color: variables.$color-text-light;
 
   &.placed, &.pending {
     background-color: rgba(245, 158, 11, 0.1);
@@ -149,7 +149,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 0.5rem;
-  background-color: #f3f4f6;
+  background-color: variables.$color-surface-alt;
   color: variables.$color-text-light;
   font-family: variables.$font-body;
   font-weight: 600;
@@ -217,12 +217,12 @@
 
   &:hover {
     border-color: variables.$color-text;
-    background-color: #f9fafb;
+    background-color: variables.$color-surface-alt;
   }
 }
 
 .skeletonBox {
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background: linear-gradient(90deg, var(--color-surface-alt) 25%, var(--color-border) 50%, var(--color-surface-alt) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
   border-radius: variables.$border-radius;
