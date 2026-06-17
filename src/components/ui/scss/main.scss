@@ -1,56 +1,20 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
-:root {
-  // Valores originales (Modo Claro)
-  --color-primary:        #0a0a0f;
-  --color-secondary:      #13131a;
-  --color-accent:         #e8410a;
-  --color-accent-light:   #ff6b3d;
-  --color-accent-muted:   rgba(232, 65, 10, 0.12);
-  
-  --color-background:     #f5f4f0;
-  --color-surface:        #ffffff;
-  --color-surface-alt:    #faf9f6;
-  
-  --color-text:           #0a0a0f;
-  --color-text-light:     #8a8880;
-  --color-text-muted:     #b8b5af;
-  
-  --color-border:         rgba(10, 10, 15, 0.08);
-}
+@use './auth-modal.module.scss';
 
-[data-theme="dark"] {
-  --color-primary:        #f5f4f0;
-  --color-secondary:      #faf9f6;
-  --color-accent:         #e8410a; 
-  --color-accent-light:   #ff6b3d;
-  --color-accent-muted:   rgba(232, 65, 10, 0.20); 
-  
-  --color-background:     #0a0a0f;
-  --color-surface:        #13131a;
-  --color-surface-alt:    #1c1c24;
-  
-  --color-text:           #f5f4f0;
-  --color-text-light:     #b8b5af;
-  --color-text-muted:     #8a8880;
-  
-  --color-border:         rgba(255, 255, 255, 0.1);
-}
-
-@use './variables';
-
-@use './login.module.scss';
-@use './register.module.scss';
 @use './Navbar.module.scss';
 @use './ProductCard.module.scss';
 @use './productDetail.module.scss';
 @use './products.module.scss';
 @use './Hero.module.scss';
 @use './home.module.scss';
+
 @use './EmptyState.module.scss';
+
 @use './admin.module.scss';
 @use './profile.module.scss';
+
 @use './cart.module.scss';
 @use './CartItem.module.scss';
 
@@ -66,4 +30,3 @@ html {
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
 }
-
