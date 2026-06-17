@@ -21,7 +21,6 @@
   width: 100%;
   height: 100%;
  
-  // rich gradient instead of solid block — keeps the photo visible
   background: linear-gradient(
     135deg,
     rgba(10, 10, 15, 0.82) 0%,
@@ -44,12 +43,10 @@
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  color: variables.$color-surface;
+  color: #ffffff;
  
-  // accent stroke on last word via a faux underline decoration
   position: relative;
  
-  // animated bottom rule
   &::after {
     content: '';
     display: block;

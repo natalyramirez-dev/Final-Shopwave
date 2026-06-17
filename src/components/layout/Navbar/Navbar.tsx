@@ -169,6 +169,20 @@ export default function Navbar({
           <>
             <li>
               <Link
+                href="/admin/dashboard"
+                onClick={closeMenu}
+                className={
+                  pathname.startsWith("/admin/dashboard")
+                    ? styles.activeLink
+                    : ""
+                }
+              >
+                Dashboard Admin
+              </Link>
+            </li>
+
+            <li>
+              <Link
                 href="/admin/products"
                 onClick={closeMenu}
                 className={

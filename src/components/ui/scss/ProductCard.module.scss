@@ -35,6 +35,8 @@
   height: 17rem;
   object-fit: cover;
 
+  /* Prevent browser dark-mode filters from inverting product images */
+  color-scheme: light;
   filter: saturate(0.9);
   transition: filter variables.$transition-slow,
               transform variables.$transition-slow;
