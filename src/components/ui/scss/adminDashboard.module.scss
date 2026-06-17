@@ -1892,3 +1892,64 @@
   flex-shrink: 0;
   align-self: flex-start;
 }
+
+.confirmRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.confirmText {
+  font-size: 12px;
+  font-weight: 600;
+  color: variables.$color-text-light;
+  white-space: nowrap;
+}
+
+.confirmYesBtn {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: variables.$transition-default;
+
+  &:hover {
+    background: #b91c1c;
+  }
+}
+
+.confirmNoBtn {
+  background: variables.$color-surface;
+  color: variables.$color-text-light;
+  border: 1.5px solid variables.$color-border;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: variables.$transition-default;
+
+  &:hover {
+    border-color: variables.$color-primary;
+    color: variables.$color-primary;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
