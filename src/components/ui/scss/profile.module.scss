@@ -1,17 +1,5 @@
 @use "variables";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CAMBIO: .avatar usaba color: variables.$color-text-light sobre un fondo
-// variables.$color-primary (casi negro / casi blanco según el tema), lo que
-// daba contraste insuficiente para las iniciales (texto gris medio sobre
-// fondo oscuro). Se cambia a variables.$color-surface, que siempre es el
-// color opuesto fuerte (blanco en claro, gris muy oscuro en oscuro),
-// garantizando buen contraste en ambos temas.
-// El resto del archivo es idéntico al original; el borde de .card y
-// .infoItem ya se refuerza automáticamente porque ambos usan
-// variables.$color-border, que ahora apunta a una opacidad más alta.
-// ─────────────────────────────────────────────────────────────────────────────
-
 .container {
   min-height: 100vh;
   display: flex;
@@ -42,7 +30,6 @@
   height: 88px;
   border-radius: 50%;
   background: variables.$color-primary;
-  /* FIX de contraste: antes $color-text-light (gris medio, bajo contraste) */
   color: variables.$color-surface;
   display: flex;
   align-items: center;
