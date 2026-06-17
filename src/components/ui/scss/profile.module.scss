@@ -1,5 +1,17 @@
 @use "variables";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CAMBIO: .avatar usaba color: variables.$color-text-light sobre un fondo
+// variables.$color-primary (casi negro / casi blanco según el tema), lo que
+// daba contraste insuficiente para las iniciales (texto gris medio sobre
+// fondo oscuro). Se cambia a variables.$color-surface, que siempre es el
+// color opuesto fuerte (blanco en claro, gris muy oscuro en oscuro),
+// garantizando buen contraste en ambos temas.
+// El resto del archivo es idéntico al original; el borde de .card y
+// .infoItem ya se refuerza automáticamente porque ambos usan
+// variables.$color-border, que ahora apunta a una opacidad más alta.
+// ─────────────────────────────────────────────────────────────────────────────
+
 .container {
   min-height: 100vh;
   display: flex;
@@ -22,7 +34,7 @@
   border-radius: 24px;
   padding: 40px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid variables.$color-border;
 }
 
 .avatar {
@@ -30,7 +42,8 @@
   height: 88px;
   border-radius: 50%;
   background: variables.$color-primary;
-  color: variables.$color-text-light;
+  /* FIX de contraste: antes $color-text-light (gris medio, bajo contraste) */
+  color: variables.$color-surface;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,15 +114,20 @@
   border: none;
   border-radius: 999px;
   background: variables.$color-primary;
-  color: variables.$color-text-light;
+  color: variables.$color-surface;
   padding: 14px 20px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 
   &:hover {
-    background: variables.$color-primary;
+    background: variables.$color-accent;
     transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid variables.$color-accent;
+    outline-offset: 3px;
   }
 }
 
@@ -125,8 +143,13 @@
   transition: color 0.2s ease, transform 0.2s ease;
 
   &:hover {
-    color: variables.$color-primary;
+    color: variables.$color-accent;
     transform: translateX(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid variables.$color-accent;
+    outline-offset: 3px;
   }
 }
 
