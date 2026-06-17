@@ -13,7 +13,7 @@
   padding: 0 6%;
 
   background-color: variables.$color-surface;
-  border-bottom: 0.0625rem solid variables.$color-border;
+  border-bottom: 0.0625rem solid var(--color-border-strong);
 
   backdrop-filter: blur(0.75rem);
   -webkit-backdrop-filter: blur(0.75rem);
@@ -42,6 +42,40 @@
   }
 }
 
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 0.0625rem solid var(--color-border-strong);
+  background-color: variables.$color-surface-alt;
+  color: variables.$color-text;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: variables.$transition-default;
+  transition-property: background-color, border-color, color, transform;
+
+  &:hover {
+    background-color: variables.$color-accent-muted;
+    border-color: variables.$color-accent;
+    color: variables.$color-accent;
+    transform: rotate(15deg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid variables.$color-accent;
+    outline-offset: 2px;
+  }
+}
+
 .links {
   display: flex;
   align-items: center;
@@ -56,7 +90,6 @@
   align-items: center;
 }
 
-/* Links normales + botones Login/Register + botón Logout */
 .links a,
 .authButton,
 .logoutButton {
@@ -80,6 +113,11 @@
   &:hover {
     color: variables.$color-primary;
     background-color: variables.$color-accent-muted;
+  }
+
+  &:focus-visible {
+    outline: 2px solid variables.$color-accent;
+    outline-offset: 2px;
   }
 }
 
@@ -125,6 +163,11 @@
   .burgerLineBottom {
     transform: translateY(-7px) rotate(-45deg);
   }
+
+  &:focus-visible {
+    outline: 2px solid variables.$color-accent;
+    outline-offset: 2px;
+  }
 }
 
 @media (max-width: 48rem) {
@@ -146,7 +189,7 @@
     align-items: flex-start;
     gap: 0.25rem;
     padding: 0.75rem 0 1rem;
-    border-top: 0.0625rem solid variables.$color-border;
+    border-top: 0.0625rem solid var(--color-border-strong);
   }
 
   .links.open {
