@@ -1,8 +1,55 @@
 @import "tailwindcss";
 
+:root,
+[data-theme="light"] {
+  --color-primary:        #0a0a0f;
+  --color-secondary:      #13131a;
+  --color-accent:         #e8410a;
+  --color-accent-light:   #ff6b3d;
+  --color-accent-muted:   rgba(232, 65, 10, 0.12);
+
+  --color-background:     #f5f4f0;
+  --color-surface:        #ffffff;
+  --color-surface-alt:    #faf9f6;
+
+  --color-text:           #0a0a0f;
+  --color-text-light:     #8a8880;
+  --color-text-muted:     #b8b5af;
+
+  --color-border:         rgba(10, 10, 15, 0.16);
+  --color-border-strong:  rgba(10, 10, 15, 0.24);
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --color-primary:        #f5f4f0;
+  --color-secondary:      #e8e6e0;
+  --color-accent:         #ff6b3d;
+  --color-accent-light:   #ff8c5e;
+  --color-accent-muted:   rgba(255, 107, 61, 0.18);
+
+  --color-background:     #0c0c10;
+  --color-surface:        #16161c;
+  --color-surface-alt:    #1c1c24;
+
+  --color-text:           #f5f4f0;
+  --color-text-light:     #a3a09a;
+  --color-text-muted:     #6f6d68;
+
+  --color-border:         rgba(245, 244, 240, 0.16);
+  --color-border-strong:  rgba(245, 244, 240, 0.26);
+
+  color-scheme: dark;
+}
+
+* {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--color-background);
+  --foreground: var(--color-text);
 }
 
 @theme inline {
@@ -12,15 +59,8 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-background);
+  color: var(--color-text);
   font-family: Arial, Helvetica, sans-serif;
 }

@@ -45,7 +45,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  mix-blend-mode: multiply;
 }
 
 .details {
@@ -130,7 +129,7 @@
     box-shadow: variables.$shadow-sm;
     
     &:disabled {
-      color: rgba(0, 0, 0, 0.2);
+      color: variables.$color-text-muted;
       background-color: transparent;
       border-color: transparent;
       box-shadow: none;
@@ -168,7 +167,7 @@
   transition: variables.$transition-default;
 
   &:hover {
-    background-color: #fee2e2;
+    background-color: rgba(239, 68, 68, 0.12);
     color: #b91c1c;
     transform: scale(1.1);
   }

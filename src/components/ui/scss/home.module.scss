@@ -1,4 +1,4 @@
-@use "../../../components/ui/scss/variables";
+@use "./variables";
 
 .container {
   width: 100%;
@@ -222,7 +222,7 @@
 
   p {
     font-size: 1rem;
-    color: rgba(255, 255, 255, 0.65);
+    color: variables.$color-text-light;
     max-width: 28rem;
   }
 }

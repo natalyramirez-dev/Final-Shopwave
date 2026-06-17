@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/components/ui/scss/auth-modal.module.scss";
 
@@ -19,8 +19,28 @@ export default function LoginModal({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
+
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    firstInputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,77 +63,100 @@ export default function LoginModal({
   };
 
   return (
-    <section className={styles.overlay} onClick={onClose}>
-      <form
+    <div className={styles.overlay} onClick={onClose} role="presentation">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-modal-title"
         className={styles.form}
-        onSubmit={handleSubmit}
         onClick={(event) => event.stopPropagation()}
       >
         <button
           type="button"
           className={styles.closeButton}
           onClick={onClose}
+          aria-label="Cerrar modal de inicio de sesión"
         >
           ×
         </button>
 
-        <h1>Iniciar sesión</h1>
+        <h1 id="login-modal-title">Iniciar sesión</h1>
 
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-          disabled={isSubmitting}
-        />
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="login-email" className={styles.fieldLabel}>
+            Correo electrónico
+          </label>
+          <input
+            ref={firstInputRef}
+            id="login-email"
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            disabled={isSubmitting}
+            autoComplete="email"
+          />
 
-        <div className={styles.passwordWrapper}>
+          <label htmlFor="login-password" className={styles.fieldLabel}>
+            Contraseña
+          </label>
+          <div className={styles.passwordWrapper}>
             <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Contraseña"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-                disabled={isSubmitting}
+              id="login-password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Contraseña"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              disabled={isSubmitting}
+              autoComplete="current-password"
             />
 
             <button
-                type="button"
-                className={styles.passwordToggle}
-                onClick={() => setShowPassword((current) => !current)}
-                disabled={isSubmitting}
-                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              type="button"
+              className={styles.passwordToggle}
+              onClick={() => setShowPassword((current) => !current)}
+              disabled={isSubmitting}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             >
-                <img
+              <img
                 src={showPassword ? "/close_eye.svg" : "/eye.svg"}
                 alt=""
                 className={styles.passwordIcon}
-                />
+              />
             </button>
-            </div>
+          </div>
 
-        {error && <p className={styles.error}>{error}</p>}
+          <div aria-live="polite" aria-atomic="true">
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
+          </div>
 
-        <button
-          type="submit"
-          className={styles.submitButton}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Ingresando..." : "Ingresar"}
-        </button>
-
-        <p className={styles.switchText}>
-          ¿No tienes cuenta?{" "}
           <button
-            type="button"
-            className={styles.switchButton}
-            onClick={onSwitchToRegister}
+            type="submit"
+            className={styles.submitButton}
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
           >
-            Regístrate
+            {isSubmitting ? "Ingresando..." : "Ingresar"}
           </button>
-        </p>
-      </form>
-    </section>
+
+          <p className={styles.switchText}>
+            ¿No tienes cuenta?{" "}
+            <button
+              type="button"
+              className={styles.switchButton}
+              onClick={onSwitchToRegister}
+            >
+              Regístrate
+            </button>
+          </p>
+        </form>
+      </div>
+    </div>
   );
 }

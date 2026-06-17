@@ -191,9 +191,10 @@ select.inputField {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background-color: #f8fafc;
+  background-color: variables.$color-surface-alt;
   border-radius: variables.$border-radius;
   margin-bottom: 0.5rem;
+  border: 0.0625rem solid variables.$color-border;
   
   span {
     font-family: variables.$font-body;
@@ -209,7 +210,7 @@ select.inputField {
 }
 
 .cardMockup {
-  background-color: #f8fafc;
+  background-color: variables.$color-surface-alt;
   border: 0.0625rem solid variables.$color-border;
   border-radius: 1rem;
   padding: 2rem;

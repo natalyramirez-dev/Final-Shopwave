@@ -43,17 +43,17 @@
   }
 
   .createBtn {
-    background-color: variables.$color-primary;
-    color: variables.$color-surface;
-    padding: 12px 24px;
-    border-radius: 999px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease;
-    text-align: center;
+    background-color: variables.$color-accent-muted;
+  color: variables.$color-accent;
+  padding: 12px 24px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  text-align: center;
 
     @media (max-width: 768px) {
       width: 100%;
@@ -71,7 +71,7 @@
   border-radius: 24px;
   padding: 40px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid variables.$color-border;
   width: 100%;
 
   @media (max-width: 768px) {
@@ -87,9 +87,9 @@
   padding-bottom: 8px;
 
   &::-webkit-scrollbar { height: 6px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
-  &::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 8px; }
-  &::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+  &::-webkit-scrollbar-track { background: variables.$color-background; border-radius: 8px; }
+  &::-webkit-scrollbar-thumb { background: variables.$color-border; border-radius: 8px; }
+  &::-webkit-scrollbar-thumb:hover { background: variables.$color-text-muted; }
 
   table {
     width: 100%;
@@ -104,14 +104,14 @@
       color: variables.$color-text-light;
       text-transform: uppercase;
       letter-spacing: 2px;
-      border-bottom: 1px solid #eeeeee;
+      border-bottom: 1px solid variables.$color-border;
     }
 
     td {
       padding: 16px;
       font-size: 15px;
       color: variables.$color-primary;
-      border-bottom: 1px solid #fafafa;
+      border-bottom: 1px solid variables.$color-border;
       vertical-align: middle;
     }
 
@@ -120,7 +120,9 @@
       height: 60px;
       border-radius: 12px;
       object-fit: cover;
-      border: 1px solid #eeeeee;
+      border: 1px solid variables.$color-border;
+      /* Prevent dark-mode color inversion on product images */
+      color-scheme: light;
     }
   }
 }
@@ -141,15 +143,15 @@
   }
 
   .editBtn {
-    background-color: #f0e7df;
-    color: #7a4b35;
-    &:hover { background-color: #e6d8cd; }
+    background-color: variables.$color-accent-muted;
+    color: variables.$color-accent;
+    &:hover { opacity: 0.8; }
   }
 
   .deleteBtn {
-    background-color: #fee2e2;
+    background-color: rgba(220, 38, 38, 0.12);
     color: #dc2626;
-    &:hover { background-color: #fca5a5; }
+    &:hover { background-color: rgba(220, 38, 38, 0.22); }
   }
 }
 
@@ -177,7 +179,7 @@
   input, select, textarea {
     width: 100%;
     padding: 14px 16px;
-    border: 1.5px solid #e5e7eb;
+    border: 1.5px solid variables.$color-border-strong;
     border-radius: 12px;
     color: variables.$color-primary;
     background: variables.$color-background;
@@ -187,7 +189,7 @@
     transition: border-color 0.2s ease, background 0.2s ease;
     box-sizing: border-box;
 
-    &::placeholder { color: #b0b5c0; }
+    &::placeholder { color: variables.$color-text-muted; }
 
     &:focus {
       border-color: variables.$color-primary;
@@ -206,7 +208,7 @@
 }
 
 .charCount {
-  color: #9da4b2;
+  color: variables.$color-text-muted;
   font-size: 12px;
   text-align: right;
   margin-top: 2px;
@@ -239,7 +241,7 @@
 .cancelBtn {
   flex: 0 0 auto;
   padding: 14px 28px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid variables.$color-border-strong;
   border-radius: 12px;
   background: transparent;
   color: variables.$color-text-light;
@@ -265,7 +267,7 @@
   justify-content: flex-end;
   gap: 12px;
   padding-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid variables.$color-border;
   margin-top: 8px;
 
   @media (max-width: 480px) {
@@ -290,7 +292,7 @@
 
 .errorMessage {
   color: #dc2626;
-  background: #fee2e2;
+  background: rgba(220, 38, 38, 0.10);
   padding: 14px 18px;
   border-radius: 12px;
   font-size: 14px;
@@ -339,13 +341,12 @@
   @media (max-width: 480px) {
     border-radius: 24px 24px 0 0;
     max-height: 95vh;
-    // Pequeño indicador de drag en móvil
     &::before {
       content: "";
       display: block;
       width: 40px;
       height: 4px;
-      background: #e5e7eb;
+      background: variables.$color-border-strong;
       border-radius: 99px;
       margin: 12px auto 0;
       flex-shrink: 0;
@@ -369,7 +370,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 28px 32px 20px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid variables.$color-border;
   flex-shrink: 0;
 
   @media (max-width: 480px) {
@@ -406,7 +407,7 @@
 }
 
 .modalClose {
-  background: #f5f5f5;
+  background: variables.$color-surface-alt;
   border: none;
   width: 36px;
   height: 36px;
@@ -421,7 +422,7 @@
   transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {
-    background: #fee2e2;
+    background: rgba(220, 38, 38, 0.12);
     color: #dc2626;
   }
 }
@@ -437,8 +438,8 @@
 
   &::-webkit-scrollbar { width: 6px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 99px; }
-  &::-webkit-scrollbar-thumb:hover { background: #c0c0c0; }
+  &::-webkit-scrollbar-thumb { background: variables.$color-border; border-radius: 99px; }
+  &::-webkit-scrollbar-thumb:hover { background: variables.$color-border-strong; }
 }
 
 .statusPill {
@@ -447,8 +448,8 @@
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: variables.$color-surface-alt;
+  color: variables.$color-text;
   text-transform: uppercase;
 }
 

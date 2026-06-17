@@ -51,9 +51,6 @@
   }
 }
 
-/* =========================================
-   CONTENEDOR DE NAVEGACIÓN Y BOTONES
-   ========================================= */
 .navigationWrapper {
   display: flex;
   align-items: center;
@@ -97,7 +94,6 @@
   text-decoration: none;
   cursor: pointer;
 
-  /* Efecto al hacer hover en TODO el control (Flecha + Imagen) */
   &:hover:not(.disabled) {
     .navButton {
       background-color: variables.$color-text;
@@ -107,8 +103,8 @@
     }
     
     .sidePreview {
-      opacity: 0.8; /* Se vuelve más visible */
-      transform: scale(0.95); /* Crece ligeramente */
+      opacity: 0.8;
+      transform: scale(0.95);
     }
   }
 
@@ -164,7 +160,6 @@
   align-items: center;
   justify-content: center;
   
-  /* Estados iniciales (Transparente y pequeño) */
   opacity: 0.35; 
   transform: scale(0.85); 
   transition: all variables.$transition-slow;
@@ -175,11 +170,9 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    mix-blend-mode: multiply;
+
   }
 
-  /* REGLA DE ORO: Ocultar la previsualización en móviles y tablets pequeñas, 
-     dejando SOLO la bolita de flecha como querías */
   @media (max-width: 64rem) {
     display: none;
   }
@@ -217,7 +210,6 @@
   border: 0.0625rem solid variables.$color-border;
   box-shadow: variables.$shadow-card;
   
-  /* NUEVO: box-sizing para evitar que el padding sume ancho extra */
   box-sizing: border-box; 
   padding: 2.5rem;
   
@@ -225,7 +217,6 @@
   flex-direction: column;
   gap: 1.5rem;
 
-  /* NUEVO RESPONSIVE: Reducimos el padding interno en celulares */
   @media (max-width: 48rem) {
     padding: 1.5rem;
   }
@@ -244,14 +235,14 @@
   border-radius: variables.$border-radius-sm;
   padding: 1.5rem;
   height: 16rem; 
-  width: 100%; /* Asegura que no crezca más que su padre */
+  width: 100%;
   box-sizing: border-box;
 
   img {
     width: 100%;
     max-height: 100%;
     object-fit: contain;
-    mix-blend-mode: multiply;
+
   }
 }
 
@@ -516,4 +507,40 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.cartErrorMessage {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: variables.$color-surface-alt;
+  border: 0.0625rem solid variables.$color-border;
+  color: variables.$color-accent;
+  border-radius: variables.$border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  animation: fadeIn variables.$transition-default;
+}
+
+.loadingSpinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid variables.$color-border;
+  border-top-color: variables.$color-accent;
+  border-radius: 50%;
+  animation: detailSpin 0.75s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes detailSpin {
+  to { transform: rotate(360deg); }
+}
+
+.sizeBadge:focus-visible,
+.quantityControls button:focus-visible,
+.addToCartBtn:focus-visible,
+.navControl:focus-visible,
+.backLink:focus-visible {
+  outline: 2px solid variables.$color-accent;
+  outline-offset: 2px;
 }
