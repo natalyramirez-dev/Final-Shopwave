@@ -63,7 +63,6 @@ export default function Navbar({
       title={theme === "light" ? "Modo oscuro" : "Modo claro"}
     >
       {theme === "light" ? (
-        // Icono de luna (ofrece cambiar A oscuro)
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
@@ -79,7 +78,6 @@ export default function Navbar({
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
       ) : (
-        // Icono de sol (ofrece cambiar A claro)
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
@@ -126,8 +124,6 @@ export default function Navbar({
       </div>
 
       <div className={styles.rightControls}>
-        {themeToggleButton}
-
         <button
           type="button"
           className={styles.burger}
@@ -162,6 +158,8 @@ export default function Navbar({
                 Register
               </button>
             </li>
+
+            <li>{themeToggleButton}</li>
           </>
         )}
 
@@ -218,6 +216,7 @@ export default function Navbar({
                 Cerrar sesión
               </button>
             </li>
+            <li>{themeToggleButton}</li>
           </>
         )}
 
@@ -272,6 +271,7 @@ export default function Navbar({
                 Cerrar sesión
               </button>
             </li>
+            <li>{themeToggleButton}</li>
           </>
         )}
       </ul>

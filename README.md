@@ -1,591 +1,530 @@
-# Final-Shopwave
-Application with TypeScript and Nest.js, simple application of a store for final presentation of the subject Web Technology II
+# ShopWave Fusion — Final Project
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+> **Web Technology II · Final Presentation**
+> A full-stack e-commerce platform built with **Next.js 16 + React 19 + TypeScript**, consuming a **Spring Boot REST API** secured with **JWT authentication** and **role-based access control**.
+
+---
+
+## Table of Contents
+
+1. [Tech Stack](#-tech-stack)
+2. [Project Architecture](#-project-architecture)
+3. [Folder Structure](#-folder-structure)
+4. [Security: JWT, Guards & Role-Based Routes](#-security-jwt-guards--role-based-routes)
+5. [API Integration](#-api-integration)
+6. [Reusable Components](#-reusable-components)
+7. [Business Flow](#-business-flow)
+8. [Admin Panel](#-admin-panel)
+9. [UX/UI & Responsive Design](#-uxui--responsive-design)
+10. [Git Workflow](#-git-workflow)
+11. [Getting Started](#-getting-started)
+12. [Team](#-team)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5 |
+| UI Library | React 19 |
+| Styling | SCSS Modules + CSS Variables |
+| HTTP Client | Native Fetch API (custom wrapper) |
+| Auth | JWT (Bearer Token) |
+| Backend | Spring Boot REST API |
+| Linting | ESLint 9 + eslint-config-next |
+
+---
+
+## Project Architecture
+
+The project follows a **layered, modular architecture** with strict separation of concerns. Each layer has a single well-defined responsibility.
+
+```
+┌─────────────────────────────────────────────────┐
+│                  Next.js Pages                  │  ← Routing & rendering
+├─────────────────────────────────────────────────┤
+│              React Context (Global State)        │  ← AuthContext, CartContext
+├─────────────────────────────────────────────────┤
+│               Guards (Route Protection)          │  ← AuthGuard, AdminGuard
+├─────────────────────────────────────────────────┤
+│              Custom Hooks (useAuth, useCart...)  │  ← Business logic bridge
+├─────────────────────────────────────────────────┤
+│              Domain Services (*.service.ts)      │  ← API calls, isolated
+├─────────────────────────────────────────────────┤
+│        fetchApi Interceptor (api.service.ts)     │  ← JWT injection, error handling
+├─────────────────────────────────────────────────┤
+│              Spring Boot REST API                │  ← Backend (external)
+└─────────────────────────────────────────────────┘
+```
+
+### Design Principles Applied
+- **Separation of Concerns**: Components handle only the UI; services handle all network I/O.
+- **DRY (Don't Repeat Yourself)**: Token logic, API calls, and validation are centralized in utilities.
+- **Single Responsibility**: Each service file owns exactly one domain (auth, products, cart, orders, admin).
+- **Zero-State Architecture**: Guards eliminate infinite render loops caused by Context API re-renders.
+
+---
+
+## Folder Structure
+
+```
+src/
+├── app/                        # Next.js App Router pages
+│   ├── page.tsx                # Home
+│   ├── login/
+│   ├── register/
+│   ├── products/
+│   │   └── [id]/               # Dynamic product detail
+│   ├── cart/
+│   ├── checkout/
+│   ├── orders/
+│   │   └── [id]/               # Dynamic order receipt
+│   ├── profile/
+│   └── admin/                  # Role-protected admin section
+│       ├── page.tsx
+│       ├── dashboard/
+│       ├── products/
+│       │   └── [id]/edit/      # Dynamic edit route
+│       └── orders/
+│
+├── components/                 # UI building blocks
+│   ├── ui/                     # Generic reusable components
+│   │   ├── EmptyState/
+│   │   └── scss/               # All SCSS modules + _variables.scss
+│   ├── layout/
+│   │   ├── Navbar/
+│   │   └── Hero/
+│   ├── products/ProductCard/
+│   ├── cart/CartItem/
+│   ├── auth/                   # Login & Register modals
+│   └── admin/                  # Admin-specific components (charts, forms, sidebar)
+│
+├── context/                    # React Contexts (global state)
+│   ├── AuthContext.tsx
+│   └── CartContext.tsx
+│
+├── guards/                     # Route protection HOCs
+│   ├── AuthGuard.tsx
+│   └── AdminGuard.tsx
+│
+├── hooks/                      # Custom React Hooks
+│   ├── useAuth.ts
+│   ├── useCart.ts
+│   └── useProducts.ts
+│
+├── models/                     # TypeScript interfaces mirroring backend entities
+│   ├── user.model.ts
+│   ├── auth.model.ts
+│   ├── product.model.ts
+│   ├── cart.model.ts
+│   └── order.model.ts
+│
+├── services/                   # Domain-separated HTTP services
+│   ├── api.service.ts          # ★ Central interceptor
+│   ├── auth.service.ts
+│   ├── product.service.ts
+│   ├── cart.service.ts
+│   ├── order.service.ts
+│   ├── admin-product.service.ts
+│   └── admin-order.service.ts
+│
+├── types/                      # Global TypeScript types
+│   ├── role.type.ts
+│   ├── api-response.type.ts
+│   └── form-state.type.ts
+│
+└── utils/                      # Pure helper functions
+    ├── token.util.ts
+    ├── user.util.ts
+    └── validation.util.ts
+```
+
+---
+
+## Security: JWT, Guards & Role-Based Routes
+
+### JWT Authentication Flow
+
+```
+User submits credentials
+        │
+        ▼
+POST /auth/signup  or  GET /auth/signin (Basic Auth)
+        │
+        ▼
+Backend returns JWT in Authorization header
+        │
+        ├──► token.util.ts  → stores JWT in localStorage (key: shopwave_token)
+        └──► user.util.ts   → stores user profile (key: shopwave_user)
+        │
+        ▼
+AuthContext restores session on every page reload
+```
+
+### Token Utility (`src/utils/token.util.ts`)
+
+All `localStorage` interactions are centralized — no component accesses storage directly.
+
+```ts
+setToken(token)   // persist after login
+getToken()        // retrieve for API calls
+removeToken()     // clear on logout / 401
+hasToken()        // boolean check
+```
+
+### Route Protection with Guards
+
+| Guard | File | Protects |
+|---|---|---|
+| `AuthGuard` | `src/guards/AuthGuard.tsx` | Any authenticated-only page |
+| `AdminGuard` | `src/guards/AdminGuard.tsx` | All `/admin/**` routes |
+
+`AdminGuard` performs a **dual validation**:
+1. Checks for a valid JWT token.
+2. Verifies the user's role is `ADMIN` or `ROLE_ADMIN`.
+
+Users without the correct role are silently redirected to the home page — no content is rendered.
+
+### Role-Based UI Segregation (Navbar)
+
+The Navbar reads `user.role` from `AuthContext` and conditionally renders navigation links:
+
+```
+ROLE_ADMIN  → Dashboard · Products (Admin) · Orders (Admin)
+CUSTOMER    → Products · Cart · My Orders · Profile
+Guest       → Login · Register
+```
+
+### Session Expiry Handling
+
+```
+Backend returns 401
+      │
+      ▼
+fetchApi interceptor detects it
+      │
+      ├──► removeToken()
+      ├──► removeUser()
+      └──► dispatches global 'auth-error' event
+                  │
+                  ▼
+            AuthContext redirects → /login
+```
+
+---
+
+## 🔌 API Integration
+
+### Central HTTP Interceptor (`src/services/api.service.ts`)
+
+All requests pass through a single `fetchApi<T>` wrapper that handles:
+
+- **Automatic JWT injection**: reads token and attaches it to the `Authorization` header.
+- **Token sanitization**: strips surrounding quotes and any accidental `Bearer` prefix that would cause Spring Boot's base64url parser to crash.
+- **Cache invalidation**: forces `cache: 'no-store'` on every call to prevent Next.js from serving stale cart or order data.
+- **Structured error handling**: parses the backend's `ErrorDetails` payload and surfaces the exact server message to the UI — generic errors are never shown.
+- **Global session management**: dispatches `auth-error` on 401/403 responses.
+
+### Domain Services
+
+Each file in `src/services/` owns one domain and only calls `fetchApi`:
+
+| Service | Responsibilities |
+|---|---|
+| `auth.service.ts` | `signup`, `signin` (Basic Auth), returns JWT + user profile |
+| `product.service.ts` | Catalog listing with `URLSearchParams` for search, filters, pagination |
+| `cart.service.ts` | Add (`PUT`), update quantity (`PUT`), remove item (`DELETE`), fetch cart |
+| `order.service.ts` | Create order (checkout), fetch order by ID, fetch user order history |
+| `admin-product.service.ts` | Admin CRUD: list, create, update (`PUT`), delete products |
+| `admin-order.service.ts` | Fetch all orders globally, update order status |
+
+### API Endpoints Reference
+
+```
+Auth
+  GET  /auth/signin            Basic Auth → JWT + user
+  POST /auth/signup            Register new user
+
+Products
+  GET  /products               Catalog (search, category, page params)
+  GET  /products/{id}          Single product detail
+
+Cart
+  GET  /cart                   Fetch authenticated user's cart
+  PUT  /cart/add               Add or update item
+  DELETE /cart/{itemId}        Remove item
+
+Orders
+  POST /orders                 Place order (checkout)
+  GET  /orders/{id}            Order detail / receipt
+  GET  /orders/user            User order history
+
+Admin
+  POST   /products             Create product
+  PUT    /products/{id}        Update product
+  DELETE /products/{id}        Delete product
+  GET    /orders/all           All orders (admin only)
+  PUT    /orders/{id}/status   Update order status
+```
+
+---
+
+## Reusable Components
+
+The component library is organized to maximize reuse and maintain visual consistency across the application.
+
+### Generic UI Components (`src/components/ui/`)
+
+| Component | Purpose |
+|---|---|
+| `EmptyState` | Fallback UI for empty lists with configurable message and icon |
+| `TeamCard` | Developer card for the about/team section |
+
+### Layout Components (`src/components/layout/`)
+
+| Component | Key Features |
+|---|---|
+| `Navbar` | Responsive, role-aware, dark mode, hamburger menu with CSS slide & fade animation |
+| `Hero` | Full-viewport hero section with CTA buttons |
+
+### Domain Components
+
+| Component | Domain | Key Features |
+|---|---|---|
+| `ProductCard` | Products | Image, price, discount badge, "Add to Cart" action |
+| `CartItem` | Cart | Quantity controls (+/−), per-item loading state (`isUpdating`), SVG trash icon |
+| `LoginModal` | Auth | Modal with form validation, error display |
+| `RegisterModal` | Auth | Modal with all required fields, redirects to login on success |
+
+### Admin Components (`src/components/admin/`)
+
+| Component | Purpose |
+|---|---|
+| `AdminSidebar` | Navigation sidebar for the admin section |
+| `AdminLayout` | Shared layout wrapper for all admin pages |
+| `ProductForm` | Shared create/edit form with type-safe field validation |
+| `MetricCard` | KPI display card for dashboard |
+| `DonutChart` | Visual data chart for admin dashboard |
+| `MiniBarChart` | Compact bar chart for quick metric overviews |
+| `StockAlerts` | Low-stock product alerts panel |
+
+### Styling System
+
+All styles use **SCSS Modules** with a shared `_variables.scss` token file:
+
+```scss
+// src/components/ui/scss/_variables.scss
+$shadow-sm, $shadow-md, $shadow-lg   // consistent elevation
+$radius-*                             // border radius scale
+$color-primary, $color-accent, ...   // brand color tokens
+```
+
+No inline styles are used anywhere in the codebase.
+
+---
+
+## Business Flow
+
+### Customer Journey
+
+```
+Browse Products (/products)
+        │  search · filter by category · paginate
+        ▼
+Product Detail (/products/[id])
+        │  select size · set quantity · stock validation
+        ▼
+Add to Cart  ──►  Cart (/cart)
+                      │  adjust quantities · remove items · live totals
+                      ▼
+              Checkout (/checkout)
+                      │  multi-step wizard:
+                      │    Step 1: Shipping address
+                      │    Step 2: Simulated payment (card formatting, CVC)
+                      │  → POST /orders
+                      │  → batch DELETE cart items (Promise.all)
+                      ▼
+              Order Receipt (/orders/[id])
+                      │  itemized breakdown · shipping details · status badge
+                      ▼
+              Order History (/orders)
+                        thumbnail grid (first 3 items + "+X more" indicator)
+```
+
+### Key Technical Decisions in the Flow
+
+- **Real-time discount recalculation**: the frontend recalculates discount percentages client-side to ensure accuracy regardless of backend rounding.
+- **Flicker-free cart**: per-item `isUpdating` state prevents full-page re-renders during quantity mutations.
+- **Cart post-checkout**: since the backend doesn't clear the cart on order creation, the frontend orchestrates a `Promise.all()` batch deletion after a successful order.
+- **Order visibility fix**: newly created orders have `PENDING` status, which the backend history query excludes. An admin must confirm the order for it to appear in the user's history — documented behavior.
+
+---
+
+## Admin Panel
+
+Access: `/admin/**` — requires `ROLE_ADMIN` JWT claim.
+
+### Features
+
+**Product Management (`/admin/products`)**
+- Responsive table with stock, price, image preview, and touch-scroll for mobile.
+- Create form (`/admin/products/create`) — strictly typed against the `CreateProductRequest` backend model, with dynamic numeric field validation.
+- Edit form (`/admin/products/[id]/edit`) — pre-populated, same validation rules.
+- Delete with native confirmation dialog to prevent accidental data loss.
+- All mutations go through `admin-product.service.ts` — zero business logic in components.
+
+**Order Management (`/admin/orders`)**
+- Global order listing regardless of user.
+- Status transitions: `PENDING → CONFIRMED → SHIPPED → DELIVERED` or `CANCELLED`.
+- Confirming an order makes it visible to the customer in their order history.
+
+**Dashboard (`/admin/dashboard`)**
+- Metric cards, donut charts, mini bar charts, and stock alert panels built with dedicated admin components.
+
+---
+
+## UX/UI & Responsive Design
+
+### Responsive Strategy
+- CSS Grid for multi-column layouts (product catalog, admin tables).
+- Relative units exclusively: `rem`, `%`, `vh`, `vw` — no hardcoded pixel breakpoints.
+- Mobile-first SCSS — all components degrade gracefully to single-column on small viewports.
+- Touch-scroll wrapper on admin product table for seamless mobile navigation.
+
+### Dark Mode
+- Implemented system-level dark mode via CSS variables toggled on the root element.
+- All SCSS modules reference variable tokens — zero color values are hardcoded.
+
+### Loading & Perceived Performance
+- **Skeleton loaders** with CSS shimmer animation replace all spinner placeholders on Checkout, Order Detail, and Order History pages.
+- This eliminates Cumulative Layout Shift (CLS) and matches enterprise UX standards.
+
+### Micro-interactions
+- Navbar hamburger: custom CSS "Slide & Fade" transition (not a `display` toggle).
+- Cart item removal: SVG trash icon with disabled state and hover transition.
+- Product card: shadow elevation on hover (`$shadow-md`).
+- Form buttons: disabled + loading state during API calls to prevent double submissions.
+
+### Accessibility
+- ARIA roles and `aria-label` on guards' loading screens.
+- `role="status"` on redirect screens.
+- `suppressHydrationWarning` on root layout to prevent hydration mismatches from browser extensions.
+
+---
+
+## Git Workflow
+
+The team used **feature branching** with pull requests into `main`.
+
+### Branch Strategy
+
+| Branch Pattern | Purpose |
+|---|---|
+| `main` | Production-ready code |
+| `feature/*` | New functionality |
+| `name_development_team/*` | Developer-specific branches |
+
+### Branch History
+
+```
+feature/login-registro       Login & register pages
+feature/login                Login refinements
+feature/registro             Register refinements
+feature/mejoras-login-register  Auth UX improvements
+core-ui-architecture         Base component library
+pagehome                     Home page
+navburguer                   Navbar + hamburger menu
+feature/detalle-producto     Product detail page
+feature/profile-page         User profile
+feature/cart                 Shopping cart
+feature/orders               Order management
+feature/dabner-defensa       Final defense fixes
+camilo/servicios-http-core   HTTP service layer
+camilo/panel-admin-productos Admin product panel
+camilo/Panel-Admin           Full admin panel
+camilo/Refactor              Final refactoring
+majo-examen / majo_cambios   Exam branch contributions
+```
+
+**Total commits:** 157+  
+**Total remote branches:** 20
+
+### Commit Convention
+
+Commits follow the `feat(scope): description` pattern:
+
+```
+feat(refactor): mejora del navbar e implementacion del modo oscuro
+feat(refactor): mejora del cartItem para que se vea mejor
+feat(refactor): implementacion de authGuard.module
+feat(refactor): mejora de la aparencia visual de dashboard de admin
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- A running instance of the ShopWave Spring Boot API
+
+### Environment Variables
+
+Create a `.env.local` file in the project root:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+
+### Installation & Development
 
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd proyecto-final-shop
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | Description |
+|---|---|
+| `npm run dev` | Start development server (webpack mode) |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
 
-## Learn More
+### Default Credentials (for testing)
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-22/05/2026
-## Project Architecture
-
-The project follows a modular and scalable architecture using Next.js and TypeScript.
-
-### Global Types
-
-Reusable global types were created to ensure consistency across the application:
-
-- `role.type.ts`
-- `api-response.type.ts`
-- `form-state.type.ts`
-
-### Models
-
-Centralized TypeScript models are used for shared application entities:
-
-- `user.model.ts`
-- `auth.model.ts`
-- `product.model.ts`
-
-### Reusable UI Components
-
-Reusable UI components were implemented to maintain visual consistency and scalability:
-
-- Button
-- Input
-- Spinner
-- Empty State Card
-
-24/05/2026
-## Home Page and Products Catalog
-
-The application now includes a modern ecommerce interface built with reusable components and SCSS modules.
-
-### Home Page (`app/page.tsx`)
-
-The main page was redesigned to provide a more professional ecommerce experience.
-
-#### Features
-- Responsive Navbar
-- Hero section
-- Featured products section
-- Reusable UI components
-- Responsive layout using CSS Grid
-- SCSS module structure
-- Clean architecture with separated components
+| Role | Access |
+|---|---|
+| `CUSTOMER` | Register via `/register` |
+| `ADMIN` | Requires backend seed data or manual role assignment |
 
 ---
 
-### Products Catalog (`app/products/page.tsx`)
+## Team
 
-The products page was implemented as a complete catalog view connected to the backend services.
-
-#### Features
-- Dynamic product listing
-- Product search
-- Category filters
-- Pagination system
-- Responsive products grid
-- Empty state handling
-- Loading states
-- Integration with product services
+| Developer | Contributions |
+|---|---|
+| **Camilo** | HTTP service layer · Admin panel · JWT interceptor · Refactoring |
+| **Dabner Orozco** | Cart module · Checkout wizard · Order management · Role-based UI |
+| **Majo** | Auth pages · UI contributions · Exam branch |
+| **Nataly** | Core UI architecture · Component library · Refactoring Code · Refactoring Visual · Home Panel · Home Admin |
+| **Luis** | Supporting contributions · Interface improvements in the registration and login section|
 
 ---
 
-### Reusable Components
-
-The following reusable components are used across the application:
-
-- Navbar
-- Hero
-- ProductCard
-- EmptyState
-
----
-
-### Styling
-
-The project uses:
-- SCSS Modules
-- Responsive units (`rem`, `%`, `vh`)
-- CSS Grid for layouts
-- Reusable and maintainable styles
-
----
-
-### Backend Integration
-
-Products are fetched from the backend API using:
-
-```ts
-GET /products
-
----
-
-
-
----
-
-# Authentication, Session Management and Profile Page
-
-The application includes a complete authentication flow based on JWT, protected frontend routes, session persistence with local storage and a user profile page.
-
-This implementation allows users to register, log in, access private pages, keep their session active after refreshing the browser and log out safely.
-
----
-
-## Authentication Flow
-
-The authentication process is integrated with the backend API.
-
-The login request is sent to:
-
-```ts
-GET /auth/signin
-```
-
-The frontend sends the user credentials using Basic Authentication.
-
-If the credentials are valid, the backend returns:
-
-```txt
-A JWT token in the Authorization response header
-The authenticated user information in the response body
-```
-
-The JWT token is then used to authenticate protected API requests.
-
----
-
-## Login Behavior
-
-After a successful login, the frontend performs the following actions:
-
-```txt
-1. Receives the JWT token from the backend.
-2. Receives the authenticated user data.
-3. Stores the JWT token in local storage.
-4. Stores the user data in local storage.
-5. Updates the global authentication state.
-6. Redirects the user to the home page.
-```
-
-The login redirection is handled with:
-
-```ts
-router.push("/")
-```
-
-This means that after logging in, the user returns to the main home page instead of going directly to the products page.
-
----
-
-## Register Flow
-
-The register page allows new users to create an account.
-
-File:
-
-```txt
-src/app/register/page.tsx
-```
-
-The registration request is sent to:
-
-```ts
-POST /auth/signup
-```
-
-### Register Form Fields
-
-```txt
-Nombre
-Apellido
-Correo electrónico
-Contraseña
-Celular
-```
-
-After a successful registration, the user is redirected to the login page:
-
-```ts
-router.push("/login")
-```
-
-This allows the user to log in with the newly created account.
-
----
-
-# Token Management
-
-The JWT token is stored in local storage using the following key:
-
-```txt
-shopwave_token
-```
-
-Token management is centralized in:
-
-```txt
-src/utils/token.util.ts
-```
-
-This utility is responsible for handling all token-related operations.
-
----
-
-## Token Utility Responsibilities
-
-```txt
-Save the JWT token after login.
-Retrieve the current token when making protected API requests.
-Remove the token during logout.
-Remove the token when the backend reports an invalid or expired session.
-Check whether a token exists.
-```
-
----
-
-## Main Token Functions
-
-```ts
-setToken(token)
-getToken()
-removeToken()
-hasToken()
-```
-
-Centralizing this logic avoids repeating `localStorage` operations throughout the project and keeps the authentication flow cleaner.
-
----
-
-# User Session Management
-
-In addition to the token, the authenticated user information is also stored locally.
-
-The user is stored using the key:
-
-```txt
-shopwave_user
-```
-
-User persistence is handled in:
-
-```txt
-src/utils/user.util.ts
-```
-
----
-
-## User Utility Responsibilities
-
-```txt
-Save the authenticated user after login.
-Retrieve the user after page reloads.
-Remove the user during logout.
-Remove the user when the session becomes invalid.
-```
-
----
-
-## Main User Functions
-
-```ts
-setUser(user)
-getUser()
-removeUser()
-```
-
-This is important because the profile page depends on the authenticated user's data.
-
-By storing the user locally, the profile information can still be displayed after refreshing the browser.
-
----
-
-# Auth Context
-
-The authentication state is managed globally using a React Context.
-
-File:
-
-```txt
-src/context/AuthContext.tsx
-```
-
-The `AuthContext` is responsible for making authentication data and actions available across the application.
-
----
-
-## AuthContext Responsibilities
-
-```txt
-Store the current JWT token.
-Store the authenticated user.
-Restore the token and user from local storage when the app loads.
-Provide the login function.
-Provide the logout function.
-Expose whether the user is authenticated.
-Expose whether the authentication state is still loading.
-Handle global authentication errors.
-Redirect users after login or logout.
-```
-
----
-
-## Values Exposed by AuthContext
-
-```ts
-isAuthenticated
-isLoading
-token
-user
-login()
-logout()
-```
-
-The `isLoading` value is important because the app needs to wait until the session is restored from local storage before deciding whether the user is authenticated or not.
-
-Without this loading state, private pages could redirect the user to `/login` before the app finishes checking if a valid token already exists.
-
----
-
-# Logout Flow
-
-The logout process is handled globally by the `logout()` function from `AuthContext`.
-
-When the user logs out, the application performs the following steps:
-
-```txt
-1. Removes shopwave_token from local storage.
-2. Removes shopwave_user from local storage.
-3. Clears the token from the authentication state.
-4. Clears the user from the authentication state.
-5. Redirects the user to /login.
-```
-
-The logout behavior ensures that private data is no longer available after the session is closed.
-
----
-
-# API Authorization
-
-Protected backend requests are handled through a reusable API service.
-
-File:
-
-```txt
-src/services/api.service.ts
-```
-
-This service automatically attaches the JWT token to protected requests.
-
-The token is sent using the `Authorization` header:
-
-```txt
-Authorization: Bearer <token>
-```
-
-This format is required by the backend JWT validation filter.
-
----
-
-## API Service Responsibilities
-
-```txt
-Read the current JWT token from local storage.
-Add the token to the Authorization header.
-Send requests to the backend API.
-Detect unauthorized responses.
-Detect forbidden responses.
-Trigger a global auth-error event when the token is invalid or expired.
-```
-
----
-
-## Authentication Error Handling
-
-If the backend responds with:
-
-```txt
-401 Unauthorized
-```
-
-the frontend treats the session as invalid or expired.
-
-The flow is:
-
-```txt
-Backend returns 401
-→ API service detects the error
-→ token is removed
-→ user data is removed
-→ auth-error event is dispatched
-→ AuthContext redirects the user to /login
-```
-
-If the backend responds with:
-
-```txt
-403 Forbidden
-```
-
-it means the token is valid, but the user does not have enough permissions to access the resource.
-
----
-
-# Protected Routes
-
-Private frontend routes are protected using an authentication guard.
-
-File:
-
-```txt
-src/guards/AuthGuard.tsx
-```
-
-The guard prevents unauthenticated users from accessing private pages manually through the browser URL.
-
----
-
-## AuthGuard Responsibilities
-
-```txt
-Check if the user is authenticated.
-Wait until the authentication state finishes loading.
-Render the private content only when the user is authenticated.
-Redirect unauthenticated users to /login.
-```
----
-
-## HTTP Services Layer, Models, and Testing
-**Date:** 22/05/2026
-**Responsible Developer:** Camilo
-
-The backend connection module acts as the main bridge between the Next.js interface and the Spring Boot REST API. A highly decoupled service architecture has been implemented using the native Fetch API, ensuring security, strict typing, and global exception handling.
-
-### 1. Core Architecture: Global Interceptor (`api.service.ts`)
-Every HTTP request to the server passes through a centralized wrapper (`fetchApi`). This pattern ensures compliance with the following business rules:
-* **Automatic JWT Injection:** The service extracts the token from local storage and silently attaches it to the `Authorization` header for protected routes.
-* **Dynamic Error Handling:** Generic error responses are prohibited. The interceptor catches `4xx` and `5xx` codes, extracting the exact message emitted by the backend's `ErrorDetails` to provide precise feedback to the UI.
-* **Session Management:** Upon receiving `401 Unauthorized` or `403 Forbidden` responses, the service destroys the expired token and emits a global event (`auth-error`) to force a redirection to the login page.
-
-### 2. Decoupled Domain Services
-Network logic is strictly separated from React components. The following services have been modularized:
-* `auth.service.ts`: Handles the registration flow and login via *Basic Auth*, returning both the JWT and the user profile to synchronize the global state.
-* `product.service.ts`: Exposes the catalog, integrating dynamic search parameters (`URLSearchParams`) for complex filtering and pagination.
-* `cart.service.ts`: Manages the remote state of the shopping cart, adapting to specific backend HTTP verbs (`PUT` for addition/update, `DELETE` for removal).
-* `order.service.ts`: Processes checkout and retrieves the authenticated user's purchase history.
-* `user.service.ts`: Retrieves persistent user profile information.
-
-### 3. Strict Typing (Models and Interfaces)
-To ensure data integrity between Java and TypeScript, interfaces were defined to act as exact mirrors of the Spring Boot entities.
-* **Generic Types:** Use of `ApiResponse<T>` and `PaginatedResponse<T>` to safely handle data collections and operation confirmations.
-* **Business Models:** Robust structuring of `Product`, `User`, `Cart`, `CartItem`, `Order`, and `OrderItem` in the `src/models/` directory.
-
-### 4. Automated Testing (Postman)
-An exhaustive Postman collection has been configured to validate API resilience prior to UI consumption.
-* **Dynamic JWT Capture:** The collection includes JavaScript *Test Scripts* that intercept the token after a successful login and automatically inject it into environment variables for subsequent requests.
-* **Assertions (Tests):** Automated validation of HTTP status codes (200, 202, 400) and the structures of JSON objects returned by the server.
-
----
-
-## Supervisor Module (Administration Panel)
-**Date:** 27/05/2026
-**Responsible Developer:** Camilo
-
-This module centralizes the store's inventory management (ShopWave Fusion) through an exclusive control panel for users with high privileges. A complete and secure CRUD (Create, Read, Update, Delete) has been implemented, strictly respecting the separation of concerns and the HTTP service-based architecture.
-
-### Implemented Routes
-* `app/admin/products/page.tsx`: Inventory management table and general listing.
-* `app/admin/products/create/page.tsx`: Registration form for new products.
-* `app/admin/products/[id]/edit/page.tsx`: Dynamic form for updating existing products.
-* `app/admin/cart/page.tsx`: Dynamic form for check products that have been added on the cart.
-
-### Key Features
-1. **Complete Product Management (CRUD):**
-   * **List:** Responsive table that consumes the general catalog, displaying vital information such as stock, price, and images. Includes a custom touch-scroll wrapper for seamless mobile device navigation.
-   * **Create & Edit:** Robust forms strictly mapped to the `CreateProductRequest` model expected by Spring Boot. They include dynamic type validation (preventing string submissions in numeric fields) and loading state control (`loading`, `fetching`) to prevent accidental multiple submissions.
-   * **Delete:** Deletion button with native confirmation interceptor to prevent data loss from accidental clicks.
-
-2. **Security and Route Protection (`AdminGuard`):**
-   * Developed a wrapper component (Guard) that not only validates the existence of a valid JWT but also intercepts the session to verify the user's role (`ADMIN` or `ROLE_ADMIN`).
-   * Implemented a Zero-State architecture to completely eliminate infinite rendering loops caused by Context API re-renders.
-   * If an unauthenticated user or one with a `CUSTOMER` role attempts to access any `/admin/...` route, they are blocked from rendering and immediately expelled to the home or login page silently.
-
-3. **Architecture and Clean Code:**
-   * **Decoupled Service:** All data mutation logic is isolated in `src/services/admin-product.service.ts`, keeping React components clean and focused solely on the UI.
-   * **Modular Styles:** Total elimination of inline styles. The panel uses 100% SCSS Modules (`admin.module.scss`) mapped to the global design system (variables, borders, shadows), ensuring a premium, responsive layout that matches the rest of the application without style collisions.
-   * **Global Error Handling:** Requests catch errors generated by the backend and display dynamic UI notifications, complying with the strict rule of not hiding failures in the console.
-
-### Future Scalability
-The architecture of this administrative section has been designed to scale seamlessly. In the future (for post-MVP versions), this panel will serve as the foundation for the integration of **interactive dashboards**, performance charts, and **sales KPI** calculators (e.g., top-selling products, low stock alerts, ROI), elevating the platform's managerial and professional level.
-
----
-
-## Shopping Cart Module & Product Integration
-**Date:** 28/05/2026
-**Responsible Developer:** Dabner Orozco
-
-This module handles the complete shopping cart lifecycle, bridging the gap between the product catalog and the checkout process. The implementation involved building a global state, modernizing the user interface, and solving complex synchronization and caching issues between the Next.js frontend and the Spring Boot backend.
-
-### 1. Global Cart State Management (`CartContext.tsx`)
-A React Context was implemented to manage cart operations globally across the application without prop-drilling.
-* **Dynamic Operations:** Handled adding new products, updating quantities (increment/decrement), and removing items through decoupled services.
-* **Real-time Math Calculation:** To ensure data accuracy regardless of backend input errors, the frontend dynamically recalculates real discount percentages (e.g., displaying exactly 30% instead of 27%) and automatically updates totals and subtotals.
-* **Flicker-Free UI:** Implemented local state loaders (`isUpdating`) within individual cart items to prevent the entire page from re-rendering and flickering during API calls.
-
-### 2. Product Details & Admin Integration
-* **Product Page Refactoring (`products/[id]/page.tsx`):** Completely redesigned the product details view to be fully responsive. Added dynamic size selection, quantity controls, and strict stock validation before allowing a user to add an item to the cart.
-* **Admin Panel Request Corrections:** Fixed severe parameter mismatches in the `CreateProductRequest` model. Corrected the nested category hierarchy (`topLevelCategory`, `secondLevelCategory`, `thirdLevelCategory`) and size arrays, enabling the admin panel to successfully persist new products in the database.
-
-### 3. Advanced API Synchronization & Bug Fixes
-* **JWT Token Sanitization:** Discovered and fixed a critical backend crash (`Illegal base64url character`) caused by Spring Boot's inability to parse the space in the "Bearer " header. The frontend interceptor was modified to sanitize and send a raw token format, preventing 202 false-positive errors.
-* **Next.js Cache Invalidation:** Resolved the "Phantom Cart" issue where Next.js aggressively cached empty cart `GET` responses. Applied `cache: 'no-store'` to the Fetch API options, forcing the browser to retrieve fresh data after every mutation.
-* **Hydration Mismatch Fix:** Eliminated Next.js hydration errors caused by third-party browser extensions by applying `suppressHydrationWarning` to the application's root layout.
-
-### 4. UX/UI and Styling Improvements
-* **Modern SCSS Modules:** Complete UI overhaul of `ProductCard`, `CartItem`, and the Cart Page using strictly SCSS modules to match the overarching design system.
-* **Micro-interactions:** Replaced generic text buttons with optimized SVG icons (e.g., a dynamic trash can for item removal). Implemented disabled states, smooth hover transitions, and elegant box shadows (`variables.$shadow-md`) to enhance the premium feel of the e-commerce platform.
-
----
-
-## Checkout, Order Management & Role-Based UI
-**Date:** 14/06/2026
-**Responsible Developer:** Dabner Orozco
-
-This module finalizes the end-to-end customer purchasing journey and introduces the administrative control layer. The implementation focused on building a secure checkout process, managing the complete order lifecycle, implementing role-based access control, and mitigating several strict backend constraints regarding order visibility and cart state.
-
-### 1. Multi-Step Checkout & Payment Simulation (`/checkout`)
-Transformed the standard checkout form into a cognitive-friendly, multi-step Wizard separating shipping details from payment logic.
-* **Simulated Payment Interface:** Implemented dynamic input formatting (e.g., auto-spacing credit card numbers every 4 digits) and visual mockup fields (Exp Month, Year, CVC) to simulate a realistic, secure payment environment without forcing unmapped fields into the backend payload.
-* **Cart State Resolution (Backend Override):** Solved a critical backend omission where the `createOrder` endpoint failed to clear the user's cart upon completion. Engineered a frontend synchronization layer that triggers a batch deletion via `Promise.all()`, mapping and executing `DELETE` requests for each individual cart item immediately after a successful order is placed.
-
-### 2. Order Lifecycle & History Management (`/orders`)
-* **Dynamic Receipt Rendering:** Built the `/orders/[id]` view leveraging Next.js `useParams` to fetch and render immutable order data (shipping details, itemized breakdown, status badges, calculated totals) immediately post-checkout.
-* **User Order History:** Created a dashboard for users to track past purchases. Engineered a custom visual summarization logic that displays thumbnails of the first three products in an order and dynamically generates a "+X" indicator for remaining items, optimizing vertical layout space.
-
-### 3. Admin Order Control & Status Resolution (`/admin/orders`)
-* **Database Rule Bypass:** Diagnosed a core architectural limitation in the Spring Boot `OrderRepository` where newly created orders default to a `PENDING` status, but the user history query strictly excludes `PENDING` records, making new orders functionally invisible to the buyer.
-* **Resolution Panel:** Built a comprehensive Admin Management table allowing administrators to fetch all orders globally and mutate their states (`CONFIRM`, `SHIP`, `DELIVER`, `CANCEL`). Confirming an order through this interface successfully updates the database and triggers visibility on the client side.
-
-### 4. Role-Based Navigation & Security (`Navbar.tsx`)
-* **JWT Role Extraction:** Upgraded the global Navbar to dynamically parse the `user.role` from the authentication context.
-* **Strict UI Segregation:** Implemented conditional rendering to isolate environments. Administrators (`ROLE_ADMIN`) are served exclusive management links, while standard users see e-commerce links (Cart/Profile/Orders). This prevents UI clutter and obfuscates unauthorized tools.
-* **Responsive Micro-animations:** Engineered a custom CSS "Slide & Fade" transition for the mobile hamburger menu, replacing rigid display toggles with a smoother DOM rendering approach.
-
-### 5. Premium UI & Perceived Performance
-* **Skeleton Loading Infrastructure:** Replaced all static loading states with CSS-driven Shimmer Effect Skeleton loaders across Checkout, Order Details, and History views. This eliminates Cumulative Layout Shift (CLS) and aligns the frontend with modern enterprise standards.
-* **SCSS Variable Hardening:** Resolved compilation errors related to undefined global variables, ensuring consistent cross-component styling and stable shadow rendering across all responsive viewports.
+> **Course:** Web Technology II  
+> **Project:** ShopWave Fusion — E-commerce Platform  
+> **Stack:** Next.js 16 · React 19 · TypeScript · SCSS Modules · Spring Boot (API)
